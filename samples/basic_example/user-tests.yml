@@ -1,0 +1,7 @@
+---
+- name: Get info for myns
+  k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: myns
+  register: myns

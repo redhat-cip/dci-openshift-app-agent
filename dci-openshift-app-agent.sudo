@@ -1,0 +1,3 @@
+dci-openshift-app-agent ALL=(ALL) NOPASSWD:ALL
+
+Defaults:dci-openshift-app-agent !requiretty
