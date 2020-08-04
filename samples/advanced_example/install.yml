@@ -1,0 +1,72 @@
+# Copy samples files to the  hooks dir:
+# sudo cp -r ~/samples/advanced_example/* /etc/dci-openshift-app-agent/hooks/
+---
+- name: 'Create temporary file'
+  tempfile:
+    state: directory
+  register: cnf_tmp_dir
+
+- name: 'Download Operator Lifecycle Manager latest definition'
+  get_url:
+    url: https://raw.githubusercontent.com/operator-framework/operator-lifecycle-manager/master/deploy/upstream/quickstart/olm.yaml
+    dest: "{{ cnf_tmp_dir.path }}/olm.yaml"
+
+- name: 'Install Operator Lifecycle Manager (OLM)'
+  k8s:
+    state: present
+    src: "{{ cnf_tmp_dir.path }}/olm.yaml"
+
+- name: 'Install required rpm packages'
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - git
+    - make
+    - python3-openshift
+    - python3-pyyaml
+  become: true
+
+- name: 'Install performance-addon-operators'
+  k8s:
+    state: present
+    src: "{{ item }}"
+  loop:
+    - "{{ dci_config_dir }}/hooks/performance/01-operator-namespace.yaml"
+    - "{{ dci_config_dir }}/hooks/performance/02-operator_operatorgroup.yaml"
+    - "{{ dci_config_dir }}/hooks/performance/03-operator_catalogsource.yaml"
+    - "{{ dci_config_dir }}/hooks/performance/04-operator_subscription.yaml"
+    - "{{ dci_config_dir }}/hooks/performance/05-performance_profile.yaml"
+
+- name: 'Install sriov-network-operator'
+  k8s:
+    state: present
+    src: "{{ item }}"
+  loop:
+    - "{{ dci_config_dir }}/hooks/sriov/01-sriov-namespace.yaml"
+    - "{{ dci_config_dir }}/hooks/sriov/02-sriov-operatorgroup.yaml"
+    - "{{ dci_config_dir }}/hooks/sriov/03-sriov-subscription.yaml"
+
+- name: 'Download ocp-templates-nfv'
+  git:
+    repo: 'https://github.com/krsacme/ocp-templates-nfv.git'
+    dest: "{{ cnf_tmp_dir.path }}/ocp-templates-nfv"
+
+- name: 'Install ocp-templates-nfv'
+  shell:
+    cmd: 'oc kustomize sriov/ | oc apply -f -'
+    chdir: "{{ cnf_tmp_dir.path }}/ocp-templates-nfv"
+
+- name: 'Download testpmd-operator'
+  git:
+    repo: 'https://github.com/krsacme/testpmd-operator'
+    dest: "{{ cnf_tmp_dir.path }}/testpmd-operator"
+
+- name: 'Install testpmd-operator on master-0'
+  shell:
+    cmd: "{{ item }}"
+    chdir: "{{ cnf_tmp_dir.path }}/testpmd-operator"
+  loop:
+    - oc label node master-0 app=testpmd --overwrite
+    - make cluster-deploy
+    - oc -n example-cnf apply -f deploy/crds/examplecnf.openshift.io_v1_testpmd_cr.yaml
