@@ -1,0 +1,72 @@
+---
+- name: 'Create temporary file'
+  tempfile:
+    state: directory
+  register: cnf_tmp_dir
+
+- name: 'Download Operator Lifecycle Manager latest definition'
+  get_url:
+    url: https://raw.githubusercontent.com/operator-framework/operator-lifecycle-manager/master/deploy/upstream/quickstart/olm.yaml
+    dest: "{{ cnf_tmp_dir.path }}/olm.yaml"
+
+- name: 'Install Operator Lifecycle Manager (OLM)'
+  k8s:
+    state: present
+    src: "{{ cnf_tmp_dir.path }}/olm.yaml"
+
+- name: 'Create example-cnf namespace'
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: example-cnf
+    state: present
+
+- name: 'Install packages'
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - golang
+    - make
+  become: true
+
+- name: 'Install Go libs'
+  shell:
+    cmd: "go get {{ item }}"
+  ignore_errors: yes
+  loop:
+    - github.com/openshift-kni/performance-addon-operators
+    - github.com/openshift/sriov-network-operator
+
+- name: 'Baremetal Node Configuration'
+  environment:
+    GOPATH: /var/lib/dci-cnf-agent/go/
+    # REGISTRY_NAMESPACE: openshift-kni
+    # FULL_OPERATOR_IMAGE: performance-addon-operator
+    IMAGE_TAG: v4.4
+    CLUSTER: manual
+  shell:
+    cmd: "{{ item }}"
+    chdir: $GOPATH/src/github.com/openshift-kni/performance-addon-operators
+  loop:
+    - make cluster-deploy
+    - make cluster-wait-for-mcp
+
+- name: 'Install ocp-templates-nfv'
+  git:
+    repo: 'https://github.com/krsacme/ocp-templates-nfv.git'
+    dest: "{{ cnf_tmp_dir.path }}/ocp-templates-nfv"
+
+- name: 'Install Performance Profile'
+  k8s:
+    state: present
+    src: "{{ cnf_tmp_dir.path }}//ocp-templates-nfv/performance_profile.yaml"
+
+- name: 'Deploy sriov-network-operator'
+  environment:
+    GOPATH: /var/lib/dci-cnf-agent/go/
+  shell:
+    cmd: "{{ item }}"
+    chdir: $GOPATH/src/github.com/openshift/sriov-network-operator
+  loop:
+    - make deploy-setup
