@@ -1,0 +1,44 @@
+---
+- name: Create myns
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: myns
+    state: present
+
+- name: Create a simple pod
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        app: httpd
+        name: webserver
+        namespace: myns
+      spec:
+        containers:
+        - name: webserver
+          image: nginx:latest
+          ports:
+          - containerPort: 80
+
+- name: Create a simple nodeport svc
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: www
+        namespace: myns
+        labels:
+          name: www
+      spec:
+        type: NodePort
+        ports:
+          - port: 80
+            nodePort: 30001
+            name: www
+        selector:
+          name: webserver

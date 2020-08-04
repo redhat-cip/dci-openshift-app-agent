@@ -1,0 +1,2 @@
+# Specify any options to pass to the ansible-playbook when run via systemd
+OPTIONS="-e @/etc/dci-openshift-app-agent/settings.yml"

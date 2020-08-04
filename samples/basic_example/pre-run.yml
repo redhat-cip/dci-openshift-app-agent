@@ -1,0 +1,10 @@
+---
+- name: 'Install required rpm packages'
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - curl
+    - python3-openshift
+    - python3-pyyaml
+  become: true
