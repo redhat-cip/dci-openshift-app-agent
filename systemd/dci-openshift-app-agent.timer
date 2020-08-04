@@ -1,0 +1,9 @@
+[Unit]
+Description=Trigger the DCI Openshift App Agent
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=6h
+
+[Install]
+WantedBy=timers.target
