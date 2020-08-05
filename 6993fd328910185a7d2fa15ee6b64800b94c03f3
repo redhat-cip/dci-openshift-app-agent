@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e3c6ce80_5ae64b3e",
+        "filename": "ansible.cfg",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 606
+      },
+      "writtenOn": "2020-08-05T16:05:49Z",
+      "side": 1,
+      "message": "Maybe chage this to hosts.yml?",
+      "revId": "6993fd328910185a7d2fa15ee6b64800b94c03f3",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1210c1dd_badea240",
+        "filename": "hosts",
+        "patchSetId": 7
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 606
+      },
+      "writtenOn": "2020-08-05T16:05:49Z",
+      "side": 1,
+      "message": "Should this file be hosts.yml?",
+      "revId": "6993fd328910185a7d2fa15ee6b64800b94c03f3",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a918e54_e53729aa",
+        "filename": "systemd/dci-openshift-app-agent.service",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 606
+      },
+      "writtenOn": "2020-08-05T16:05:49Z",
+      "side": 1,
+      "message": "Maybe add a EnvironmentFile\u003d-/etc/sysconfig/dci-openshift-app-agent with the default contents of -e @/etc/dci-openshift-app-agent/settings.yml",
+      "revId": "6993fd328910185a7d2fa15ee6b64800b94c03f3",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3af66f9f_b455d84f",
+        "filename": "systemd/dci-openshift-app-agent.service",
+        "patchSetId": 7
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 606
+      },
+      "writtenOn": "2020-08-05T16:05:49Z",
+      "side": 1,
+      "message": "maybe add a $OPTIONS here..",
+      "revId": "6993fd328910185a7d2fa15ee6b64800b94c03f3",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
