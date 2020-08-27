@@ -1,0 +1,18 @@
+---
+# Wait until livenessProbe starts
+- pause:
+   seconds: 40
+
+- name: Search for all running pods
+  k8s_info:
+    namespace: myns
+    kind: Pod
+    name: webserver
+    field_selectors:
+      - status.phase=Running
+  register: web_service
+
+- name: Fail if pod is NOT found
+  fail:
+    msg: "webserver is not running"
+  when: web_service == False
