@@ -1,5 +1,0 @@
----
-- name: Check that a page returns a status 200
-  uri:
-    url: http://master-0:30001
-    return_content: yes

@@ -1,0 +1,33 @@
+---
+- name: Create myns
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ dci_openshift_app_ns | default('myns') }}"
+    state: present
+
+- name: Create a simple pod
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        app: httpd
+        name: webserver
+        namespace: myns
+      spec:
+        containers:
+        - name: webserver
+          image: "{{ dci_openshift_app_image | default('docker.io/nginx') }}"
+          ports:
+          - containerPort: 80
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 80
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
