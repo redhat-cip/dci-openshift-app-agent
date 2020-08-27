@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "74d2b809_18fdafb2",
+        "filename": "samples/basic_example/hooks/user-tests.yml",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 29
+      },
+      "writtenOn": "2020-08-27T18:51:48Z",
+      "side": 1,
+      "message": "s/nginx/webserver lol",
+      "revId": "20d119d18d8f1b1df23c98f231d2f4c37e504947",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
