@@ -15,14 +15,14 @@
 - name: 'Unarchive oc'
   when: oc_result.rc != 0
   unarchive:
-    src:  '/tmp/oc.tar.gz'
+    src: '/tmp/oc.tar.gz'
     dest: '/tmp'
     creates: '/tmp/oc'
 
 - name: 'Copy oc to /usr/local/bin/'
   when: oc_result.rc != 0
   copy:
-    src:  '/tmp/oc'
+    src: '/tmp/oc'
     dest: '/usr/local/bin/'
     mode: u=rwx,g=rx,o=rx
-  become: yes
+  become: true

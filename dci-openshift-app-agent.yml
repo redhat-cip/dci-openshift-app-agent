@@ -1,7 +1,7 @@
 ---
 # Initial step
 - hosts: jumphost
-  gather_facts: no
+  gather_facts: false
   tags:
     - job
   tasks:
@@ -38,7 +38,7 @@
         - name: 'Execute the failure process'
           include_tasks: plays/failure.yml
   tags:
-      - prepare-host
+    - prepare-host
 
 # Step 2 a : state "Pre-run"
 - name: 'Execute (hooks) pre-run'
@@ -61,7 +61,7 @@
         - name: 'Execute the failure process'
           include_tasks: plays/failure.yml
   tags:
-      - pre-run
+    - pre-run
 
 # Step 2 b : state "Pre-run"
 - name: 'Execute (dci) pre-run'
@@ -74,7 +74,7 @@
           include_tasks: plays/pre-run.yml
       rescue: *rescue_with_upload_logs
   tags:
-      - pre-run
+    - pre-run
 
 # Step 3 a : state "running"
 - name: 'Execute (install) hooks'
@@ -150,22 +150,22 @@
     dci_status: 'success'
   tasks:
     - block:
-         # Execute teardown on success when dci_teardown_on_success
-       - name: 'Run the teardown process'
-         include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
-         when:
-          - dci_teardown_on_success|bool
-          - check_teardown.stat.exists
-       - name: 'Execute success hook'
-         include_tasks: "{{ dci_config_dir }}/hooks/success.yml"
-         when: check_success.stat.exists
+        # Execute teardown on success when dci_teardown_on_success
+        - name: 'Run the teardown process'
+          include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
+          when:
+            - dci_teardown_on_success|bool
+            - check_teardown.stat.exists
+        - name: 'Execute success hook'
+          include_tasks: "{{ dci_config_dir }}/hooks/success.yml"
+          when: check_success.stat.exists
       rescue: *rescue_without_upload_logs
   tags:
     - success
 
 # Final step
 - hosts: jumphost
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: 'Final step'
       debug:
