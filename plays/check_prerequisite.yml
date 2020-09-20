@@ -35,6 +35,7 @@
 - name: 'Read KUBECONFIG path from env vars'
   set_fact:
     kubeconfig_path: "{{ lookup('env','KUBECONFIG') }}"
+  when: kubeconfig_path is not defined
 
 - name: 'Check if KUBECONFIG exists'
   stat:
