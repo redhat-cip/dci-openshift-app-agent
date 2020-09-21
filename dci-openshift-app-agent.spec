@@ -37,7 +37,6 @@ install -p -D -m 644 hooks/pre-run.yml %{buildroot}%{_sysconfdir}/dci-openshift-
 install -p -D -m 644 hooks/success.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/success.yml
 install -p -D -m 644 hooks/user-tests.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/user-tests.yml
 install -p -D -m 644 hooks/teardown.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/teardown.yml
-install -p -D -m 644 hooks/install.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/install.yml
 
 install -p -D -m 644 dcirc.sh.dist %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/dcirc.sh.dist
 install -p -D -m 644 hosts.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hosts.yml
@@ -85,7 +84,6 @@ exit 0
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/success.yml
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/teardown.yml
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/user-tests.yml
-%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/install.yml
 
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hosts.yml
 
