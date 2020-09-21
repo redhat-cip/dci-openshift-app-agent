@@ -46,3 +46,8 @@
   fail:
     msg: "kubeconfig not found at {{ kubeconfig_path }}"
   when: kubeconfig.stat.exists == False
+
+- name: 'Fail if hooks/install.yml NOT found'
+  fail:
+    msg: "hooks/install.yml not found at {{ dci_config_dir }}/hooks/install.yml"
+  when: check_install.stat.exists == False
