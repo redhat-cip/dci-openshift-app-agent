@@ -45,6 +45,8 @@
   hosts: jumphost
   vars:
     dci_status: 'pre-run'
+  env:
+    KUBECONFIG: {{ kubeconfig_path  }}
   tasks:
     - block:
         - name: 'Execute the pre-run playbook'
@@ -68,6 +70,8 @@
   hosts: jumphost
   vars:
     dci_status: 'pre-run'
+  env:
+    KUBECONFIG: {{ kubeconfig_path  }}
   tasks:
     - block:
         - name: 'Execute DCI pre-run'
@@ -81,6 +85,8 @@
   hosts: jumphost
   vars:
     dci_status: 'running'
+  env:
+    KUBECONFIG: {{ kubeconfig_path  }}
   tasks:
     - block:
         - name: 'Execute install'
@@ -95,6 +101,8 @@
   hosts: jumphost
   vars:
     dci_status: 'running'
+  env:
+    KUBECONFIG: {{ kubeconfig_path  }}
   tasks:
     - block:
         - name: 'Execute running'
@@ -108,6 +116,8 @@
   hosts: jumphost
   vars:
     dci_status: 'running'
+  env:
+    KUBECONFIG: {{ kubeconfig_path  }}
   tasks:
     - block:
         - name: 'Execute the DCI tests'
@@ -121,6 +131,8 @@
   hosts: jumphost
   vars:
     dci_status: 'running'
+  env:
+    KUBECONFIG: {{ kubeconfig_path  }}
   tasks:
     - block:
         - name: 'Execute the hooks tests'
@@ -148,6 +160,8 @@
   hosts: jumphost
   vars:
     dci_status: 'success'
+  env:
+    KUBECONFIG: {{ kubeconfig_path  }}
   tasks:
     - block:
          # Execute teardown on success when dci_teardown_on_success
