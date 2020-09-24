@@ -13,6 +13,7 @@ Requires: sudo
 Requires: dci-ansible
 Requires: ansible-role-dci-import-keys
 Requires: ansible-role-dci-retrieve-component
+Requires: util-linux
 Requires(pre): shadow-utils
 Requires(post): systemd
 Requires(preun): systemd
@@ -59,6 +60,7 @@ install -p -D -m 644 systemd/%{name}.timer %{buildroot}%{_unitdir}/%{name}.timer
 install -p -D -m 440 dci-openshift-app-agent.sudo %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 install -p -d -m 755 %{buildroot}/%{_sharedstatedir}/%{name}
 find samples -type f -exec install -Dm 755 "{}" "%{buildroot}%{_sharedstatedir}/dci-openshift-app-agent/{}" \;
+install -p -D -m 755 dci-openshift-agent-app-ctl %{buildroot}%{_bindir}/dci-openshift-app-agent-ctl
 
 %pre
 getent group dci-openshift-app-agent >/dev/null || groupadd -r dci-openshift-app-agent
@@ -90,6 +92,8 @@ exit 0
 %config(noreplace) %{_sysconfdir}/sysconfig/dci-openshift-app-agent
 
 %{_sysconfdir}/dci-openshift-app-agent/dcirc.sh.dist
+
+%{_bindir}/dci-openshift-agent-app-ctl
 
 %{_datadir}/dci-openshift-app-agent/ansible.cfg
 %{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
