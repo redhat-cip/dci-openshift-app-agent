@@ -3,10 +3,7 @@ Description=DCI Agent for Openshift Application
 
 [Service]
 Type=oneshot
-WorkingDirectory=/usr/share/dci-openshift-app-agent
-EnvironmentFile=/etc/dci-openshift-app-agent/dcirc.sh
-EnvironmentFile=-/etc/sysconfig/dci-openshift-app-agent
-ExecStart=-/usr/bin/ansible-playbook -vv /usr/share/dci-openshift-app-agent/dci-openshift-app-agent.yml $OPTIONS
+ExecStart=-dci-openshift-app-agent-ctl -s
 SuccessExitStatus=0
 User=dci-openshift-app-agent
 
