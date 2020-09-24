@@ -16,6 +16,14 @@
       set_fact:
         job_id: "{{ job_info.job.id }}"
 
+    # Check is kubeconfig is passed via pipeline
+    # {{ job_info['inputs']['kubeconfig_path'] }} > kubeconfig_path (from extra vars) > kubeconfig_path (from env)
+    - name: "Set kubeconfig_path if found in job_info"
+      set_fact:
+        kubeconfig_path: "{{ job_info['inputs']['kubeconfig_path'] }}"
+      when:
+        - "{{ job_info['inputs']['kubeconfig_path'] }}"
+
 # Step 1 : state "New job"
 - name: "Prepare Jumphost"
   hosts: jumphost
