@@ -1,7 +1,7 @@
 ---
 # Wait until livenessProbe starts
 - pause:
-   seconds: 40
+    seconds: 40
 
 - name: Search for all running pods
   k8s_info:
