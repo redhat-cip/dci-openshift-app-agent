@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c4edc6ae_40fa0a16",
+        "filename": "dci-openshift-app-agent-ctl",
+        "patchSetId": 5
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 648
+      },
+      "writtenOn": "2020-09-24T18:32:55Z",
+      "side": 1,
+      "message": "what if the uuidgen binary doesn\u0027t exist? Here\u0027s an idea: use the $$ bash variable as your \"random\" piece, it will have the PID of the current process, which is already guaranteed to be unique",
+      "revId": "e448be924d57fb7213dd34c7ab61ce7841eed558",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bc7dbc56_8d048395",
+        "filename": "dci-openshift-app-agent.spec",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 648
+      },
+      "writtenOn": "2020-09-24T18:32:55Z",
+      "side": 1,
+      "message": "is this for uuidgen script? see my previous comment",
+      "revId": "e448be924d57fb7213dd34c7ab61ce7841eed558",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bdf20db3_781162ac",
+        "filename": "systemd/dci-openshift-app-agent.service",
+        "patchSetId": 5
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 648
+      },
+      "writtenOn": "2020-09-24T18:32:55Z",
+      "side": 1,
+      "message": "according to the systemd docs \"If the executable path is prefixed with \"-\", an exit code of the command normally considered a failure (i.e. non-zero exit status or abnormal exit due to signal) is recorded, but has no further effect and is considered equivalent to success.\" - is this what you want here? (just making sure)",
+      "revId": "e448be924d57fb7213dd34c7ab61ce7841eed558",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
