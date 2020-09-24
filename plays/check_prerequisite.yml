@@ -1,53 +1,53 @@
 ---
 # Check if oc is present
-- name: 'Check if oc executable is present'
+- name: "Check if oc executable is present"
   shell: "which oc"
   register: oc_result
-  ignore_errors: true
+  ignore_errors: True
 
 # Check which hooks are present
-- name: 'Check if pre-run hooks is present'
+- name: "Check if pre-run hooks is present"
   stat:
-    path: '{{ dci_config_dir }}/hooks/pre-run.yml'
+    path: "{{ dci_config_dir }}/hooks/pre-run.yml"
   register: check_pre_run
 
-- name: 'Check if install hooks is present'
+- name: "Check if install hooks is present"
   stat:
-    path: '{{ dci_config_dir }}/hooks/install.yml'
+    path: "{{ dci_config_dir }}/hooks/install.yml"
   register: check_install
 
-- name: 'Check if user-tests hooks is present'
+- name: "Check if user-tests hooks is present"
   stat:
-    path: '{{ dci_config_dir }}/hooks/user-tests.yml'
+    path: "{{ dci_config_dir }}/hooks/user-tests.yml"
   register: check_user_tests
 
-- name: 'Check if success hooks is present'
+- name: "Check if success hooks is present"
   stat:
-    path: '{{ dci_config_dir }}/hooks/success.yml'
+    path: "{{ dci_config_dir }}/hooks/success.yml"
   register: check_success
 
-- name: 'Check if teardown hooks is present'
+- name: "Check if teardown hooks is present"
   stat:
-    path: '{{ dci_config_dir }}/hooks/teardown.yml'
+    path: "{{ dci_config_dir }}/hooks/teardown.yml"
   register: check_teardown
 
 # Check if KUBECONFIG is present
-- name: 'Read KUBECONFIG path from env vars'
+- name: "Read KUBECONFIG path from env vars"
   set_fact:
     kubeconfig_path: "{{ lookup('env','KUBECONFIG') }}"
   when: kubeconfig_path is not defined
 
-- name: 'Check if KUBECONFIG exists'
+- name: "Check if KUBECONFIG exists"
   stat:
-    path: '{{ kubeconfig_path }}'
+    path: "{{ kubeconfig_path }}"
   register: kubeconfig
 
-- name: 'Fail if kubeconfig NOT found'
+- name: "Fail if kubeconfig NOT found"
   fail:
     msg: "kubeconfig not found at {{ kubeconfig_path }}"
   when: kubeconfig.stat.exists == False
 
-- name: 'Fail if hooks/install.yml NOT found'
+- name: "Fail if hooks/install.yml NOT found"
   fail:
     msg: "install.yml not found at {{ dci_config_dir }}/hooks/"
   when: check_install.stat.exists == False

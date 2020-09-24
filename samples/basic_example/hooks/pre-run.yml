@@ -1,5 +1,5 @@
 ---
-- name: 'Install required rpm packages'
+- name: "Install required rpm packages"
   package:
     name: "{{ item }}"
     state: latest
