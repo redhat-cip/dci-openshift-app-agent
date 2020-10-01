@@ -21,7 +21,7 @@
       dci_job:
         id: '{{ job_id }}'
         tags: '{{ dci_tags }}'
-      when: dci_tags
+      when: dci_tags[0] is defined
 
 # Step 1 : state "New job"
 - name: "Prepare Jumphost"
