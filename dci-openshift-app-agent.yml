@@ -12,9 +12,16 @@
         topic: "{{ dci_topic }}"
       register: job_info
       when: job_info is not defined
+
     - name: set job id
       set_fact:
         job_id: "{{ job_info.job.id }}"
+
+    - name: 'Set DCI tags for the current job'
+      dci_job:
+        id: '{{ job_id }}'
+        tags: '{{ dci_tags }}'
+      when: dci_tags
 
 # Step 1 : state "New job"
 - name: "Prepare Jumphost"
