@@ -1,0 +1,8 @@
+Code-Review+2: Thomas Vassilian <tvassili@redhat.com>
+Workflow+1: Frederic Lepied <flepied@redhat.com>
+Verified+2: Zuul CI <zuul@softwarefactory-project.io>
+Submitted-by: Zuul CI <zuul@softwarefactory-project.io>
+Submitted-at: Thu, 01 Oct 2020 15:49:38 +0000
+Reviewed-on: https://softwarefactory-project.io/r/19676
+Project: dci-openshift-app-agent
+Branch: refs/heads/master
