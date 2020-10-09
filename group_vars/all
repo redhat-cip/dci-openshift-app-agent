@@ -3,3 +3,4 @@ dci_components: []
 dci_teardown_on_success: true
 dci_teardown_on_failure: true
 oc_url: https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz
+dci_tags: []
