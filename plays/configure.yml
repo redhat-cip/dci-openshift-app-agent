@@ -26,3 +26,14 @@
     dest: "/usr/local/bin/"
     mode: u=rwx,g=rx,o=rx
   become: yes
+
+# Configure oc_path
+- name: "Configure oc_path from $PATH"
+  set_fact:
+    oc_tool_path: {{ oc_result }}
+  when: oc_result.rc == 0
+
+- name: "Configure oc_path from Download"
+  set_fact:
+    oc_tool_path: "/usr/local/bin/oc"
+  when: oc_result.rc != 0
