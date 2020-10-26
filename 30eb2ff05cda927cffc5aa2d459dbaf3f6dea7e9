@@ -1,0 +1,9 @@
+Code-Review+2: Yassine Lamgarchal <yassine.lamgarchal@redhat.com>
+Code-Review+2: Frederic Lepied <flepied@redhat.com>
+Workflow+1: Frederic Lepied <flepied@redhat.com>
+Verified+2: Zuul CI <zuul@softwarefactory-project.io>
+Submitted-by: Zuul CI <zuul@softwarefactory-project.io>
+Submitted-at: Mon, 26 Oct 2020 18:22:09 +0000
+Reviewed-on: https://softwarefactory-project.io/r/19905
+Project: dci-openshift-app-agent
+Branch: refs/heads/master
