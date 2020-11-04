@@ -15,7 +15,7 @@
       metadata:
         app: httpd
         name: webserver
-        namespace: myns
+        namespace: "{{ dci_openshift_app_ns | default('myns') }}"
       spec:
         containers:
           - name: webserver
