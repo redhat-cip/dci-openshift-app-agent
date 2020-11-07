@@ -1,7 +1,7 @@
 ---
 # Check if oc is present
 - name: "Check if oc executable is present"
-  shell: "which oc"
+  command: "which oc"
   register: oc_result
   ignore_errors: True
 
@@ -45,9 +45,9 @@
 - name: "Fail if kubeconfig NOT found"
   fail:
     msg: "kubeconfig not found at {{ kubeconfig_path }}"
-  when: kubeconfig.stat.exists == False
+  when: not kubeconfig.stat.exists
 
 - name: "Fail if hooks/install.yml NOT found"
   fail:
     msg: "install.yml not found at {{ dci_config_dir }}/hooks/"
-  when: check_install.stat.exists == False
+  when: not check_install.stat.exists
