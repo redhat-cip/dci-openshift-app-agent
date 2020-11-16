@@ -4,7 +4,7 @@
     seconds: 40
 
 - name: Search for all running pods
-  k8s_info:
+  community.kubernetes.k8s_info:
     namespace: "{{ dci_openshift_app_ns | default('myns') }}"
     kind: Pod
     name: webserver
