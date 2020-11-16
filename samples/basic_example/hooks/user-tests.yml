@@ -4,13 +4,25 @@
     seconds: 40
 
 - name: Search for all running pods
-  k8s_info:
+  community.kubernetes.k8s_info:
     namespace: "{{ dci_openshift_app_ns | default('myns') }}"
     kind: Pod
     name: webserver
     field_selectors:
       - status.phase=Running
   register: web_service
+
+- name: Get log from the pod
+  community.kubernetes.k8s_log:
+    namespace: "{{ dci_openshift_app_ns | default('myns') }}"
+    label_selectors:
+    - app=mylabel
+  register: log
+
+- name: Write log to a file
+  copy:
+    content: "{{ log }}"
+    dest: "{{ job_logs.path }}/pod.log"
 
 - name: Fail if pod is NOT found
   fail:
