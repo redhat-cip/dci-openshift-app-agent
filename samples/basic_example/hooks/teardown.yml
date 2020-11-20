@@ -2,5 +2,5 @@
   k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ dci_openshift_app_ns | default('myns') }}"
+    name: "{{ dci_openshift_app_ns }}"
     state: absent
