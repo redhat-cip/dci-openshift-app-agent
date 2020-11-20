@@ -16,3 +16,10 @@
   fail:
     msg: "webserver is not running"
   when: web_service == False
+
+- name: Get logs from pods
+  include_role:
+    name: get-logs-from-namespace
+  vars:
+    get_logs_ns: "{{ dci_openshift_app_ns | default('myns') }}"
+    get_logs_folder: "{{ job_logs.path }}"
