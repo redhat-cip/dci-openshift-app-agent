@@ -7,6 +7,6 @@
   dci_file:
     path: "{{ item }}"
     name: "{{ item | basename }}"
-    job_id: "{{ hostvars.localhost.job_id }}"
+    job_id: "{{ job_id }}"
   with_fileglob:
     - "{{ job_logs.path }}/*"

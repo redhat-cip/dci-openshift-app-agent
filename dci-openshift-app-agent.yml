@@ -5,6 +5,13 @@
   tags:
     - job
   tasks:
+    - name: Read credentials from env vars
+      set_fact:
+        dci_client_id="{{ lookup('env','DCI_CLIENT_ID') }}"
+        dci_api_secret="{{ lookup('env','DCI_API_SECRET') }}"
+        dci_cs_url="{{ lookup('env','DCI_CS_URL') }}"
+      no_log: true
+
     # Schedule a new job only if not passed via pipeline
     - name: "Schedule a new job"
       dci_job:
@@ -60,6 +67,8 @@
           include_tasks: "{{ dci_config_dir }}/hooks/pre-run.yml"
           when: check_pre_run.stat.exists
       rescue: &rescue_with_upload_logs
+        - name: "Collect OCP logs"
+          include_tasks: plays/dump_ocp_logs.yml
         - name: "Upload logs"
           include_tasks: plays/upload_logs.yml
         - name: "Execute the teardown process"
@@ -156,6 +165,8 @@
     dci_status: "post-run"
   tasks:
     - block:
+        - name: "Collect OCP logs"
+          include_tasks: plays/dump_ocp_logs.yml
         - name: "Upload logs"
           include_tasks: plays/upload_logs.yml
       rescue: *rescue_without_upload_logs
