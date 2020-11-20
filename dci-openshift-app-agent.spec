@@ -46,6 +46,7 @@ install -p -D -m 644 sysconfig/dci-openshift-app-agent %{buildroot}%{_sysconfdir
 install -p -D -m 644 plays/configure.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/configure.yml
 install -p -D -m 644 plays/failure.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/failure.yml
 install -p -D -m 644 plays/upload_logs.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/upload_logs.yml
+install -p -D -m 644 plays/dump_ocp_logs.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/dump_ocp_logs.yml
 install -p -D -m 644 plays/check_prerequisite.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/check_prerequisite.yml
 install -p -D -m 644 plays/pre-run.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/pre-run.yml
 install -p -D -m 644 plays/running.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/running.yml
@@ -59,6 +60,8 @@ install -p -D -m 644 systemd/%{name}.timer %{buildroot}%{_unitdir}/%{name}.timer
 install -p -D -m 440 dci-openshift-app-agent.sudo %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 install -p -d -m 755 %{buildroot}/%{_sharedstatedir}/%{name}
 find samples -type f -exec install -Dm 755 "{}" "%{buildroot}%{_sharedstatedir}/dci-openshift-app-agent/{}" \;
+find roles/get-logs-from-namespace -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_datadir}/dci-openshift-app-agent/{}" \;
+
 
 %pre
 getent group dci-openshift-app-agent >/dev/null || groupadd -r dci-openshift-app-agent
@@ -99,9 +102,12 @@ exit 0
 %{_datadir}/dci-openshift-app-agent/plays/check_prerequisite.yml
 %{_datadir}/dci-openshift-app-agent/plays/configure.yml
 %{_datadir}/dci-openshift-app-agent/plays/upload_logs.yml
+%{_datadir}/dci-openshift-app-agent/plays/dump_ocp_logs.yml
 %{_datadir}/dci-openshift-app-agent/plays/pre-run.yml
 %{_datadir}/dci-openshift-app-agent/plays/running.yml
 %{_datadir}/dci-openshift-app-agent/plays/dci-tests.yml
+
+%{_datadir}/dci-openshift-app-agent/roles/get-logs-from-namespace/*
 
 %{_datadir}/dci-openshift-app-agent/group_vars/all
 
@@ -115,5 +121,7 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Thu Nov 19 2020 Thomas Vassilian <tvassili@redhat.com> - 0.0.2
+- Add role to dump all logs from pods in a namespace.
 * Mon Jun 29 2020 Thomas Vassilian <tvassili@redhat.com> - 0.0.1
 - Initial release.
