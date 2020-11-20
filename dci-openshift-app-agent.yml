@@ -60,6 +60,8 @@
           include_tasks: "{{ dci_config_dir }}/hooks/pre-run.yml"
           when: check_pre_run.stat.exists
       rescue: &rescue_with_upload_logs
+        - name: "Collect OCP logs"
+          include_tasks: plays/dump_ocp_logs.yml
         - name: "Upload logs"
           include_tasks: plays/upload_logs.yml
         - name: "Execute the teardown process"
@@ -156,6 +158,8 @@
     dci_status: "post-run"
   tasks:
     - block:
+        - name: "Collect OCP logs"
+          include_tasks: plays/dump_ocp_logs.yml
         - name: "Upload logs"
           include_tasks: plays/upload_logs.yml
       rescue: *rescue_without_upload_logs

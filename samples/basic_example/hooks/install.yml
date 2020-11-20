@@ -3,7 +3,7 @@
   k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ dci_openshift_app_ns | default('myns') }}"
+    name: "{{ dci_openshift_app_ns }}"
     state: present
 
 - name: Create a simple pod
@@ -15,7 +15,7 @@
       metadata:
         app: httpd
         name: webserver
-        namespace: myns
+        namespace: "{{ dci_openshift_app_ns }}"
       spec:
         containers:
           - name: webserver
