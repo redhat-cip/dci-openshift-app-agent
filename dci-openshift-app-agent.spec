@@ -59,6 +59,8 @@ install -p -D -m 644 systemd/%{name}.timer %{buildroot}%{_unitdir}/%{name}.timer
 install -p -D -m 440 dci-openshift-app-agent.sudo %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 install -p -d -m 755 %{buildroot}/%{_sharedstatedir}/%{name}
 find samples -type f -exec install -Dm 755 "{}" "%{buildroot}%{_sharedstatedir}/dci-openshift-app-agent/{}" \;
+find roles/get-logs-from-namespace -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_datadir}/dci-openshift-app-agent/{}" \;
+
 
 %pre
 getent group dci-openshift-app-agent >/dev/null || groupadd -r dci-openshift-app-agent
@@ -103,6 +105,8 @@ exit 0
 %{_datadir}/dci-openshift-app-agent/plays/running.yml
 %{_datadir}/dci-openshift-app-agent/plays/dci-tests.yml
 
+%{_datadir}/dci-openshift-app-agent/roles/get-logs-from-namespace/*
+
 %{_datadir}/dci-openshift-app-agent/group_vars/all
 
 %{_unitdir}/*
@@ -115,5 +119,7 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Thu Nov 19 2020 Thomas Vassilian <tvassili@redhat.com> - 0.0.2
+- Add role to dump all logs from pods in a namespace.
 * Mon Jun 29 2020 Thomas Vassilian <tvassili@redhat.com> - 0.0.1
 - Initial release.
