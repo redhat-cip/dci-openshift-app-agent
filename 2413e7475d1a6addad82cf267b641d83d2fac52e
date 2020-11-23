@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d50d42b1_848d2a56",
+        "filename": "roles/get-logs-from-namespace/tasks/main.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 600
+      },
+      "writtenOn": "2020-11-23T16:14:31Z",
+      "side": 1,
+      "message": "Logging status and events of each pod will be thes most helpful info to identify failures, if that is is not feasible, \"describe\" info of each pod would be good to have.",
+      "revId": "2413e7475d1a6addad82cf267b641d83d2fac52e",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
