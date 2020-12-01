@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8bb9256a_bb4b0acc",
+        "filename": "roles/get-logs-from-namespace/tasks/main.yml",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 600
+      },
+      "writtenOn": "2020-12-01T03:37:30Z",
+      "side": 1,
+      "message": "since this is a role, the role name should already be added to the task by ansible. no need for explicit. was it not included as role?",
+      "range": {
+        "startLine": 2,
+        "startChar": 9,
+        "endLine": 2,
+        "endChar": 25
+      },
+      "revId": "46764c50d2cfafb2e1fb7eef17dc18a4e90a4f1b",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
