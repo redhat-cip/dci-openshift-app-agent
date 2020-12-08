@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "163b9142_f3f4dec2",
+        "filename": "roles/get-logs-from-namespace/defaults/main.yml",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 600
+      },
+      "writtenOn": "2020-12-08T16:14:31Z",
+      "side": 1,
+      "message": "in case of multiple runs, dose this folder will be specific to each job?",
+      "range": {
+        "startLine": 3,
+        "startChar": 17,
+        "endLine": 3,
+        "endChar": 30
+      },
+      "revId": "fe2a745dc0d7b7558b431eb56994d67adc630612",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "95794855_a6e22804",
+        "filename": "roles/get-logs-from-namespace/tasks/main.yml",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 600
+      },
+      "writtenOn": "2020-12-08T16:14:31Z",
+      "side": 1,
+      "message": "Does this works on all states of containers? I quickly checked for the ContainerCreating state and here is the result\"\n\n[kni@dell-r730-015 ocp]$ oct logs --all-containers trexconfig-app-5d96587c69-qmqkv\nError from server (BadRequest): container \"trex-server\" in pod \"trexconfig-app-5d96587c69-qmqkv\" is waiting to start: ContainerCreating\n[kni@dell-r730-015 ocp]$ echo $?\n1\n\n\nI believe this will fail this task. Is it possible to get the log only for Running/Error containers or market it as not fail on error?",
+      "revId": "fe2a745dc0d7b7558b431eb56994d67adc630612",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
