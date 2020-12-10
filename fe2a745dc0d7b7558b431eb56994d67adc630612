@@ -39,6 +39,23 @@
       "revId": "fe2a745dc0d7b7558b431eb56994d67adc630612",
       "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "566fb88e_142e182f",
+        "filename": "roles/get-logs-from-namespace/tasks/main.yml",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 600
+      },
+      "writtenOn": "2020-12-10T06:20:35Z",
+      "side": 1,
+      "message": "Why is this removed? Pod status is good to have in the logs.",
+      "revId": "fe2a745dc0d7b7558b431eb56994d67adc630612",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
     }
   ]
 }
