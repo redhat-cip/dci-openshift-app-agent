@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d663ee21_7408224a",
+        "filename": "samples/basic_example/hooks/pre-run.yml",
+        "patchSetId": 10
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 526
+      },
+      "writtenOn": "2020-12-15T15:17:49Z",
+      "side": 1,
+      "message": "This way, it can be passed from the code or via pipeline. wdyt?",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 12,
+        "endChar": 42
+      },
+      "revId": "72e721a7a94790d68ec7e218383bdee6974b87c6",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
