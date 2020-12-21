@@ -16,10 +16,10 @@
     path: "{{ dci_config_dir }}/hooks/install.yml"
   register: check_install
 
-- name: "Check if user-tests hooks is present"
+- name: "Check if tests hooks is present"
   stat:
-    path: "{{ dci_config_dir }}/hooks/user-tests.yml"
-  register: check_user_tests
+    path: "{{ dci_config_dir }}/hooks/tests.yml"
+  register: check_tests
 
 - name: "Check if success hooks is present"
   stat:

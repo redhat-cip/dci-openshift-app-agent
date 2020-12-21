@@ -1,0 +1,17 @@
+---
+- name: running
+  dci_job:
+    id: "{{ job_id }}"
+  status: "post-run"
+
+- name: "Common logging"
+  include_tasks: "common_logging.yml"
+
+- name: "Execute success hook"
+  include_tasks: "{{ dci_config_dir }}/hooks/success.yml"
+  when: check_success.stat.exists
+
+- name: "Final step"
+  debug:
+    msg: "The job is now finished. Review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
+...
