@@ -1,4 +1,13 @@
 ---
+- name: failure
+  dci_job:
+    id: "{{ job_id }}"
+    status: "failure"
+
+- name: "Run common error process"
+  include_tasks: common_logging.yml
+
 - name: Fail properly
   fail:
-    msg: "Something went wrong during the {{ dci_status }}. Review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
+    msg: "Failure: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
+...
