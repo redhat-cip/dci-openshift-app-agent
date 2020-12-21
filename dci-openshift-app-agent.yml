@@ -163,6 +163,8 @@
   hosts: jumphost
   vars:
     dci_status: "post-run"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
         - name: "Collect OCP logs"

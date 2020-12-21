@@ -4,6 +4,12 @@
     path: "{{ get_logs_folder }}"
     state: directory
 
+- name: "Get a list of all pods from {{ get_logs_ns }} using oc"
+  shell: |
+    env
+    {{ oc_tool_path }} get pods --namespace {{ get_logs_ns }}
+  ignore_errors: True
+
 - name: "Get a list of all pods from {{ get_logs_ns }}"
   k8s_info:
     api_version: v1
