@@ -30,7 +30,7 @@ They will NOT be replaced when the `dci-openshift-app-agent` RPM will be updated
 │   ├── running.yml
 │   ├── success.yml
 │   ├── teardown.yml
-│   └── user-tests.yml
+│   └── tests.yml
 ```
 
 ## Samples
@@ -45,13 +45,13 @@ To replay any steps, please use Ansible tags (--limit).
 
 Possible tags are:
 
-* prepare_host
+* job
 * pre-run
 * running
+* testing
 * post-run
-* success
 
-As the `KUBECONFIG` is read from the `prepare-host` tasks, this tag should always be included. 
+As the `KUBECONFIG` is read from the `pre-run` tasks, this tag should always be included. 
 
 ## License
 

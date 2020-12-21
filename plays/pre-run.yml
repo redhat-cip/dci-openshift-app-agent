@@ -1,1 +1,14 @@
 ---
+- name: pre-run
+  dci_job:
+    id: "{{ job_id }}"
+    status: "pre-run"
+
+# Check prerequisite
+- name: "Check prerequisite"
+  include_tasks: check_prerequisite.yml
+
+# Prepare host
+- name: "Configure DCI jumphost"
+  include_tasks: configure.yml
+...
