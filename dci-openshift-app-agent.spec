@@ -1,6 +1,6 @@
 Name:          dci-openshift-app-agent
-Version:       0.0.VERS
-Release:       1%{?dist}
+Version:       0.1.0
+Release:       1.VERS%{?dist}
 Summary:       DCI Openshift App Agent
 License:       ASL 2.0
 URL:           https://github.com/redhat-cip/dci-openshift-app-agent
@@ -33,24 +33,14 @@ install -p -D -m 644 ansible.cfg %{buildroot}%{_datadir}/dci-openshift-app-agent
 install -p -D -m 644 dci-openshift-app-agent.yml  %{buildroot}%{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
 install -p -D -m 644 requirements.yml  %{buildroot}%{_datadir}/dci-openshift-app-agent/requirements.yml
 
-install -p -D -m 644 hooks/pre-run.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/pre-run.yml
-install -p -D -m 644 hooks/success.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/success.yml
-install -p -D -m 644 hooks/user-tests.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/user-tests.yml
-install -p -D -m 644 hooks/teardown.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/teardown.yml
+install -p -D -m 644 hooks/*.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hooks/
 
 install -p -D -m 644 dcirc.sh.dist %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/dcirc.sh.dist
 install -p -D -m 644 hosts.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hosts.yml
 
 install -p -D -m 644 sysconfig/dci-openshift-app-agent %{buildroot}%{_sysconfdir}/sysconfig/dci-openshift-app-agent
 
-install -p -D -m 644 plays/configure.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/configure.yml
-install -p -D -m 644 plays/failure.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/failure.yml
-install -p -D -m 644 plays/upload_logs.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/upload_logs.yml
-install -p -D -m 644 plays/dump_ocp_logs.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/dump_ocp_logs.yml
-install -p -D -m 644 plays/check_prerequisite.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/check_prerequisite.yml
-install -p -D -m 644 plays/pre-run.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/pre-run.yml
-install -p -D -m 644 plays/running.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/running.yml
-install -p -D -m 644 plays/dci-tests.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/dci-tests.yml
+install -p -D -m 644 plays/*.yml %{buildroot}%{_datadir}/dci-openshift-app-agent/plays/
 
 install -p -D -m 644 group_vars/all %{buildroot}%{_datadir}/dci-openshift-app-agent/group_vars/all
 
@@ -83,10 +73,7 @@ exit 0
 %systemd_postun %{name}.timer
 
 %files
-%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/pre-run.yml
-%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/success.yml
-%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/teardown.yml
-%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/user-tests.yml
+%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/*.yml
 
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hosts.yml
 
@@ -98,14 +85,7 @@ exit 0
 %{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
 %{_datadir}/dci-openshift-app-agent/requirements.yml
 
-%{_datadir}/dci-openshift-app-agent/plays/failure.yml
-%{_datadir}/dci-openshift-app-agent/plays/check_prerequisite.yml
-%{_datadir}/dci-openshift-app-agent/plays/configure.yml
-%{_datadir}/dci-openshift-app-agent/plays/upload_logs.yml
-%{_datadir}/dci-openshift-app-agent/plays/dump_ocp_logs.yml
-%{_datadir}/dci-openshift-app-agent/plays/pre-run.yml
-%{_datadir}/dci-openshift-app-agent/plays/running.yml
-%{_datadir}/dci-openshift-app-agent/plays/dci-tests.yml
+%{_datadir}/dci-openshift-app-agent/plays/*.yml
 
 %{_datadir}/dci-openshift-app-agent/roles/get-logs-from-namespace/*
 
@@ -121,7 +101,11 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Mon Dec 21 2020 Frederic Lepied <flepied@redhat.com> 0.1.0-1
+- refactor
+
 * Thu Nov 19 2020 Thomas Vassilian <tvassili@redhat.com> - 0.0.2
 - Add role to dump all logs from pods in a namespace.
+
 * Mon Jun 29 2020 Thomas Vassilian <tvassili@redhat.com> - 0.0.1
 - Initial release.

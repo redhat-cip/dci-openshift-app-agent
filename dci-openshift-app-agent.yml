@@ -1,6 +1,7 @@
 ---
-# Initial step
-- hosts: jumphost
+# Step 0 : initial step
+- name: "Execute initial step"
+  hosts: jumphost
   gather_facts: False
   tags:
     - job
@@ -24,183 +25,81 @@
       set_fact:
         job_id: "{{ job_info.job.id }}"
 
+    - name: set job state
+      dci_job:
+        id: "{{ job_id }}"
+        status: "new"
+
     - name: 'Set DCI tags for the current job'
       dci_job:
         id: '{{ job_id }}'
         tags: '{{ dci_tags }}'
       when: dci_tags[0] is defined
 
-# Step 1 : state "New job"
-- name: "Prepare Jumphost"
+# Step 1 : "pre-run" step
+- name: "Execute pre-run step"
   hosts: jumphost
-  vars:
-    dci_status: "new"
-  tasks:
-    - block:
-        # Check prerequisite
-        - name: "Check prerequisite"
-          include_tasks: plays/check_prerequisite.yml
-        # Prepare host
-        - name: "Configure DCI jumphost"
-          include_tasks: plays/configure.yml
-      rescue: &rescue_without_upload_logs
-        - name: "Execute the teardown process"
-          include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
-          when:
-            - dci_teardown_on_failure|bool
-            - check_teardown.stat.exists
-        - name: "Execute the failure process"
-          include_tasks: plays/failure.yml
   tags:
-    - prepare-host
-
-# Step 2 a : state "Pre-run"
-- name: "Execute (hooks) pre-run"
-  hosts: jumphost
-  vars:
-    dci_status: "pre-run"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    - pre-run
   tasks:
     - block:
-        - name: "Execute the pre-run playbook"
-          include_tasks: "{{ dci_config_dir }}/hooks/pre-run.yml"
+        - name: Run the pre-run hook
+          include_tasks: 'plays/pre-run.yml'
+
+        - name: Run the pre-run hook
+          include_tasks: '{{ dci_config_dir }}/hooks/pre-run.yml'
           when: check_pre_run.stat.exists
-      rescue: &rescue_with_upload_logs
-        - name: "Collect OCP logs"
-          include_tasks: plays/dump_ocp_logs.yml
-        - name: "Upload logs"
-          include_tasks: plays/upload_logs.yml
-        - name: "Execute the teardown process"
-          include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
-          when:
-            - dci_teardown_on_failure|bool
-            - check_teardown.stat.exists
-        - name: "Execute the failure process"
-          include_tasks: plays/failure.yml
-  tags:
-    - pre-run
 
-# Step 2 b : state "Pre-run"
-- name: "Execute (dci) pre-run"
+      rescue: &error_with_upload_logs
+        - name: "Execute the error process"
+          include_tasks: plays/error.yml
+
+# Step 2 : "running" step
+- name: "Execute install step"
   hosts: jumphost
-  vars:
-    dci_status: "pre-run"
+  tags:
+    - running
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
-        - name: "Execute DCI pre-run"
-          include_tasks: plays/pre-run.yml
-      rescue: *rescue_with_upload_logs
-  tags:
-    - pre-run
+        - name: running
+          dci_job:
+            id: "{{ job_id }}"
+            status: "running"
 
-# Step 3 a : state "running"
-- name: "Execute (install) hooks"
-  hosts: jumphost
-  vars:
-    dci_status: "running"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  tasks:
-    - block:
         - name: "Execute install"
           include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
-          when: check_install.stat.exists
-      rescue: *rescue_with_upload_logs
-  tags:
-    - running
 
-# Step 3 b : state "installing"
-- name: "Execute (dci) running"
+      rescue: &failure_with_upload_logs
+        - name: "Execute the failure process"
+          include_tasks: plays/failure.yml
+
+# Step 3 : "tests" step
+- name: "Execute tests step"
   hosts: jumphost
-  vars:
-    dci_status: "running"
+  tags:
+    - testing
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
-        - name: "Execute running"
-          include_tasks: plays/running.yml
-      rescue: *rescue_with_upload_logs
-  tags:
-    - running
+        - name: "Execute Red Hat tests"
+          include_tasks: plays/tests.yml
 
-# Step 4 a : state "dci-tests"
-- name: "Execute (dci) tests"
-  hosts: jumphost
-  vars:
-    dci_status: "running"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  tasks:
-    - block:
-        - name: "Execute the DCI tests"
-          include_tasks: plays/dci-tests.yml
-      rescue: *rescue_with_upload_logs
-  tags:
-    - running
+        - name: "Execute partner tests"
+          include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
+          when: check_tests.stat.exists
+      rescue: *failure_with_upload_logs
 
-# Step 4 b : state "user-tests"
-- name: "Execute (hooks) user-tests"
+# Step 4 : "post-run" step
+- name: "Execute post-run step"
   hosts: jumphost
-  vars:
-    dci_status: "running"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  tasks:
-    - block:
-        - name: "Execute the hooks tests"
-          include_tasks: "{{ dci_config_dir }}/hooks/user-tests.yml"
-          when: check_user_tests.stat.exists
-      rescue: *rescue_with_upload_logs
-  tags:
-    - running
-
-# Step 5 : state "post-run"
-- name: "Execute (dci) post-run"
-  hosts: jumphost
-  vars:
-    dci_status: "post-run"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  tasks:
-    - block:
-        - name: "Collect OCP logs"
-          include_tasks: plays/dump_ocp_logs.yml
-        - name: "Upload logs"
-          include_tasks: plays/upload_logs.yml
-      rescue: *rescue_without_upload_logs
   tags:
     - post-run
-
-# Step 6 : state "success"
-- name: "Execute (hooks) success"
-  hosts: jumphost
-  vars:
-    dci_status: "success"
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
-        # Execute teardown on success when dci_teardown_on_success
-        - name: "Run the teardown process"
-          include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
-          when:
-            - dci_teardown_on_success|bool
-            - check_teardown.stat.exists
-        - name: "Execute success hook"
-          include_tasks: "{{ dci_config_dir }}/hooks/success.yml"
-          when: check_success.stat.exists
-      rescue: *rescue_without_upload_logs
-  tags:
-    - success
-
-# Final step
-- hosts: jumphost
-  gather_facts: False
-  tasks:
-    - name: "Final step"
-      debug:
-        msg: "The job is now finished. Review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
+        - name: "Run post-run"
+          include_tasks: plays/post-run.yml
