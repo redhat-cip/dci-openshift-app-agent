@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.1.0
+Version:       0.1.1
 Release:       1.VERS%{?dist}
 Summary:       DCI Openshift App Agent
 License:       ASL 2.0
@@ -105,6 +105,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Mon Jan 11 16:56:36 CST 2021 Tony Garcia <tonyg@redhat.com> - 0.1.1-1.VERS
+- Add package and repo info for jobs
+
 * Mon Dec 21 2020 Frederic Lepied <flepied@redhat.com> 0.1.0-1
 - refactor
 

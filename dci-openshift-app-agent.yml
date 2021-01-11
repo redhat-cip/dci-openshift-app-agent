@@ -47,8 +47,10 @@
           include_tasks: 'plays/pre-run.yml'
 
         - name: Run the pre-run hook
-          include_tasks: '{{ dci_config_dir }}/hooks/pre-run.yml'
-          when: check_pre_run.stat.exists
+          include_tasks: '{{ item }}/hooks/pre-run.yml'
+          loop: "{{ dci_config_dirs }}"
+          when:
+            - "'{{ item }}/hooks/pre-run.yml' in hooks_found"
 
       rescue: &error_with_upload_logs
         - name: "Execute the error process"
@@ -69,7 +71,10 @@
             status: "running"
 
         - name: "Execute install"
-          include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
+          include_tasks: "{{ item }}/hooks/install.yml"
+          loop: "{{ dci_config_dirs }}"
+          when:
+            - "'{{ item }}/hooks/install.yml' in hooks_found"
 
       rescue: &failure_with_upload_logs
         - name: "Execute the failure process"
@@ -88,8 +93,10 @@
           include_tasks: plays/tests.yml
 
         - name: "Execute partner tests"
-          include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
-          when: check_tests.stat.exists
+          include_tasks: "{{ item }}/hooks/tests.yml"
+          loop: "{{ dci_config_dirs }}"
+          when:
+            - "'{{ item }}/hooks/tests.yml' in hooks_found"
       rescue: *failure_with_upload_logs
 
 # Step 4 : "post-run" step
