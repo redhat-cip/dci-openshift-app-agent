@@ -6,30 +6,19 @@
   changed_when: oc_result.rc != 0
 
 # Check which hooks are present
-- name: "Check if pre-run hooks is present"
-  stat:
-    path: "{{ dci_config_dir }}/hooks/pre-run.yml"
-  register: check_pre_run
-
-- name: "Check if install hooks is present"
-  stat:
-    path: "{{ dci_config_dir }}/hooks/install.yml"
-  register: check_install
-
-- name: "Check if tests hooks is present"
-  stat:
-    path: "{{ dci_config_dir }}/hooks/tests.yml"
-  register: check_tests
-
-- name: "Check if success hooks is present"
-  stat:
-    path: "{{ dci_config_dir }}/hooks/success.yml"
-  register: check_success
-
-- name: "Check if teardown hooks is present"
-  stat:
-    path: "{{ dci_config_dir }}/hooks/teardown.yml"
-  register: check_teardown
+- name: Valid hooks
+  set_fact:
+    hooks_found: >-
+      {% set hooks = lookup('fileglob', '{{ item }}/hooks/*.yml') -%}
+      {% if ',' in hooks -%}
+        {% set hooks = val.split(',')|map('trim')|list -%}
+      {% elif '' in hooks -%}
+        {% set hooks = [hooks] -%}
+      {% else -%}
+        {% set hooks = [] -%}
+      {% endif -%}
+      {{ hooks_found | default([]) + hooks }}
+  loop: "{{ dci_config_dirs }}"
 
 # Check if KUBECONFIG is present
 - name: "Read KUBECONFIG path from env vars"
@@ -47,7 +36,4 @@
     msg: "kubeconfig not found at {{ kubeconfig_path }}"
   when: not kubeconfig.stat.exists
 
-- name: "Fail if hooks/install.yml NOT found"
-  fail:
-    msg: "install.yml not found at {{ dci_config_dir }}/hooks/"
-  when: not check_install.stat.exists
+...

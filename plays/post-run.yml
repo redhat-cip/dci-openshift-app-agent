@@ -23,8 +23,10 @@
     status: "success"
 
 - name: "Execute success hook"
-  include_tasks: "{{ dci_config_dir }}/hooks/success.yml"
-  when: check_success.stat.exists
+  include_tasks: "{{ item }}/hooks/success.yml"
+  loop: "{{ dci_config_dirs }}"
+  when:
+    - "'{{ item }}/hooks/success.yml' in hooks_found"
 
 - name: "Final step"
   debug:
