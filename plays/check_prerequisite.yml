@@ -51,3 +51,5 @@
   fail:
     msg: "install.yml not found at {{ dci_config_dir }}/hooks/"
   when: not check_install.stat.exists
+
+...
