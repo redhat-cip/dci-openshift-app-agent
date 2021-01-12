@@ -16,6 +16,24 @@
       "revId": "f13fd87e5eb5ff7d2a975a02b773ae213b2d718f",
       "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "20491850_0d57f1e5",
+        "filename": "group_vars/all",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-01-12T22:31:35Z",
+      "side": 1,
+      "message": "Good point, I\u0027ve provided another patch to fix that and anywhere else where it\u0027s used",
+      "parentUuid": "1e5c37c9_81d97e13",
+      "revId": "f13fd87e5eb5ff7d2a975a02b773ae213b2d718f",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
     }
   ]
 }
