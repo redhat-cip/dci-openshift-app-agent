@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bdc27f84_5b533d98",
+        "filename": "group_vars/all",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 20
+      },
+      "writtenOn": "2021-01-13T07:55:53Z",
+      "side": 1,
+      "message": "I was more thinking of doing something like:\n\ndci_gits_to_components:\n  - \"{{ dci_config_dir }}\"\n\nwith the way you did it, we\u0027ll also need to change the pipelines.",
+      "revId": "a40ed3a6e65bd4a7b63fa014757bffd017aaace2",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
