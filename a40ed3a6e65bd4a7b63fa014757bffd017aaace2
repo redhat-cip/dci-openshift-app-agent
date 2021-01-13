@@ -16,6 +16,24 @@
       "revId": "a40ed3a6e65bd4a7b63fa014757bffd017aaace2",
       "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b47e223_78d4a9c6",
+        "filename": "group_vars/all",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-01-13T15:14:51Z",
+      "side": 1,
+      "message": "I guess it depends on how do we expect the hooks be, either just one or allow multiple. I assumed there could be many as in d-o-a, but if only one is expected I can revert this last patch.",
+      "parentUuid": "bdc27f84_5b533d98",
+      "revId": "a40ed3a6e65bd4a7b63fa014757bffd017aaace2",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
     }
   ]
 }
