@@ -1,6 +1,6 @@
 dci_config_dir: /etc/dci-openshift-app-agent
 dci_components: []
 dci_teardown_on_success: true
-dci_teardown_on_failure: true
+dci_teardown_on_failure: false
 oc_url: https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz
 dci_tags: []
