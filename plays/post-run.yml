@@ -22,9 +22,9 @@
     id: "{{ job_id }}"
     status: "success"
 
-- name: "Execute success hook"
-  include_tasks: "{{ dci_config_dir }}/hooks/success.yml"
-  when: check_success.stat.exists
+- name: "Execute post-run hook"
+  include_tasks: "{{ dci_config_dir }}/hooks/post-run.yml"
+  when: check_post_run.stat.exists
 
 - name: "Execute the teardown process"
   include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
