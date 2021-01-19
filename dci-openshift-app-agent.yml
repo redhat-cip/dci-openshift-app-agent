@@ -21,11 +21,11 @@
       register: job_info
       when: job_info is not defined
 
-    - name: set job id
+    - name: Set job id
       set_fact:
         job_id: "{{ job_info.job.id }}"
 
-    - name: set job state
+    - name: Set job state - new
       dci_job:
         id: "{{ job_id }}"
         status: "new"
@@ -43,7 +43,7 @@
     - pre-run
   tasks:
     - block:
-        - name: Run the pre-run hook
+        - name: Run Red Hat pre-run
           include_tasks: 'plays/pre-run.yml'
 
         - name: Run the pre-run hook
@@ -58,12 +58,13 @@
 - name: "Execute install step"
   hosts: jumphost
   tags:
+    - install
     - running
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
-        - name: running
+        - name: Set job state - running
           dci_job:
             id: "{{ job_id }}"
             status: "running"
@@ -79,6 +80,7 @@
 - name: "Execute tests step"
   hosts: jumphost
   tags:
+    - running
     - testing
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
@@ -87,7 +89,7 @@
         - name: "Execute Red Hat tests"
           include_tasks: plays/tests.yml
 
-        - name: "Execute partner tests"
+        - name: "Execute tests hook"
           include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
           when: check_tests.stat.exists
       rescue: *failure_with_upload_logs
@@ -103,3 +105,4 @@
     - block:
         - name: "Run post-run"
           include_tasks: plays/post-run.yml
+...

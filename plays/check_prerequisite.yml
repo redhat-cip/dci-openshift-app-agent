@@ -21,10 +21,10 @@
     path: "{{ dci_config_dir }}/hooks/tests.yml"
   register: check_tests
 
-- name: "Check if success hooks is present"
+- name: "Check if post-run hooks is present"
   stat:
-    path: "{{ dci_config_dir }}/hooks/success.yml"
-  register: check_success
+    path: "{{ dci_config_dir }}/hooks/post-run.yml"
+  register: check_post_run
 
 - name: "Check if teardown hooks is present"
   stat:
