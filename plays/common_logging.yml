@@ -5,9 +5,4 @@
 - name: "Upload logs"
   include_tasks: upload_logs.yml
 
-- name: "Execute the teardown process"
-  include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
-  when:
-    - dci_teardown_on_failure|bool
-    - check_teardown.stat.exists
 ...
