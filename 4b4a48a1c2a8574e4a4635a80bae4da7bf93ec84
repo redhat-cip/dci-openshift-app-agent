@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "47e8a9dc_72d82d3b",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-01-20T20:39:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "57d38148_9ff10688",
+      "range": {
+        "startLine": 105,
+        "startChar": 3,
+        "endLine": 105,
+        "endChar": 10
+      },
+      "revId": "4b4a48a1c2a8574e4a4635a80bae4da7bf93ec84",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "257cc997_2e301e58",
         "filename": "plays/post-run.yml",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2021-01-20T08:18:30Z",
       "side": 1,
       "message": "It is a breaking change so we need to check if project that use the app-agent won\u0027t fail because of it. On example-cnf-config side, there is no success.yml so it is  fine.",
+      "range": {
+        "startLine": 26,
+        "startChar": 15,
+        "endLine": 26,
+        "endChar": 16
+      },
+      "revId": "4b4a48a1c2a8574e4a4635a80bae4da7bf93ec84",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e545ed2d_f43ca75e",
+        "filename": "plays/post-run.yml",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-01-20T20:39:04Z",
+      "side": 1,
+      "message": "Good point, I looked at the pipielines and there are only 2 for \"cnf\", the sample and the example-cnf-config, none of them are making use of success.yml",
+      "parentUuid": "257cc997_2e301e58",
       "range": {
         "startLine": 26,
         "startChar": 15,
