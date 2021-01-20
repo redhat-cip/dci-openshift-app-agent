@@ -90,6 +90,7 @@
         - name: "Execute partner tests"
           include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
           when: check_tests.stat.exists
+
       rescue: *failure_with_upload_logs
 
 # Step 4 : "post-run" step
@@ -103,3 +104,29 @@
     - block:
         - name: "Run post-run"
           include_tasks: plays/post-run.yml
+
+        - name: Run the post-run hook
+          include_tasks: '{{ dci_config_dir }}/hooks/post-run.yml'
+          when: check_post_run.stat.exists
+
+      rescue: *error_with_upload_logs
+
+# Step 5: "Final step"
+- name: "Execute final step"
+  hosts: jumphost
+  tasks:
+    - name: "Execute the teardown process"
+      include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
+      when:
+        - dci_teardown_on_success|bool
+        - check_teardown.stat.exists
+    
+    - name: success
+      dci_job:
+        id: "{{ job_id }}"
+        status: "success"
+    
+    - name: "Final step"
+      debug:
+        msg: "The job is now finished. Review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
+...
