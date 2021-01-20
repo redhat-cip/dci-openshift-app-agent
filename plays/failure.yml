@@ -4,7 +4,7 @@
     id: "{{ job_id }}"
     status: "failure"
 
-- name: "Run common error process"
+- name: "Run common logging process"
   include_tasks: common_logging.yml
 
 - name: Fail properly
