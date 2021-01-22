@@ -11,5 +11,5 @@
 
 - name: "Configure the namespace variable"
   set_fact:
-    dci_openshift_app_ns: "myns"
+    dci_openshift_app_ns: "sample-ns"
   when: dci_openshift_app_ns is not defined

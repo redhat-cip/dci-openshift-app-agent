@@ -72,7 +72,9 @@
     - install
     - running
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
+  vars:
+    hook_name: "install"
   tasks:
     - block:
         - name: Set job state - running
@@ -83,9 +85,18 @@
         - name: "Execute install"
           include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
 
-      rescue: &failure_with_upload_logs
+      rescue: &retry_with_cluster_admin_or_fail
+        - name: "Retry hook with cluster-admin"
+          include_tasks: "{{ dci_config_dir }}/plays/rescue_cluster_admin.yml"
+          when:
+          - ansible_failed_result.stderr is defined
+          - ansible_failed_result.stderr | regex_search("forbidden.*user", multiline=True, ignorecase=True)
+
         - name: "Execute the failure process"
           include_tasks: plays/failure.yml
+          when:
+          - ansible_failed_result.stderr is undefined or
+            ansible_failed_result.stderr | not regex_search("forbidden.*user", multiline=True, ignorecase=True)
 
 # Step 3 : "tests" step
 - name: "Execute tests step"
@@ -94,7 +105,9 @@
     - running
     - testing
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
+  vars:
+    hook_name: "tests"
   tasks:
     - block:
         - name: "Execute Red Hat tests"
@@ -104,7 +117,7 @@
           include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
           when: check_tests.stat.exists
 
-      rescue: *failure_with_upload_logs
+      rescue: *retry_with_cluster_admin_or_fail
 
 # Step 4 : "post-run" step
 - name: "Execute post-run step"
@@ -112,7 +125,7 @@
   tags:
     - post-run
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
   tasks:
     - block:
         - name: "Run post-run"
@@ -127,14 +140,11 @@
 # Step 5: "Final step"
 - name: "Execute final step"
   hosts: jumphost
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - name: "Execute the teardown process"
-      include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
+      include_tasks: "plays/teardown.yml"
       when:
         - dci_teardown_on_success|bool
-        - check_teardown.stat.exists
 
     - name: success
       dci_job:

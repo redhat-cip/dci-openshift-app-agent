@@ -1,0 +1,32 @@
+---
+- name: Delete namespaces
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ item.namespace }}"
+    state: absent
+  loop: "{{ users }}"
+
+- name: "Delete users"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  k8s:
+    api_version: user.openshift.io/v1
+    kind: User
+    name: "{{ item.name }}"
+    state: absent
+  loop: "{{ users }}"
+
+- name: "Delete identity binding"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  k8s:
+    api_version: user.openshift.io/v1
+    kind: Identity
+    name: "htpassidp:{{ item.name }}"
+    state: absent
+  loop: "{{ users }}"
+
+...
