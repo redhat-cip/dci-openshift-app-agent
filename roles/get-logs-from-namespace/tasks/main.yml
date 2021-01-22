@@ -9,6 +9,7 @@
     api_version: v1
     kind: Pod
     namespace: "{{ get_logs_ns }}"
+    kubeconfig: "{{ kubeconfig_path }}"
   register: pod_list
 
 - name: "Print pods names"
@@ -16,15 +17,21 @@
     msg: "pod_list: {{ pod_list | json_query('resources[*].metadata.name') }}"
 
 - name: "Get logs from each pods"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
   shell: |
     {{ oc_tool_path }} logs --namespace={{ get_logs_ns }} --all-containers=true {{ item }} > {{ get_logs_folder }}/{{ item }}.log || rm -f {{ get_logs_folder }}/{{ item }}.log
   loop: "{{ pod_list | json_query('resources[*].metadata.name') }}"
 
 - name: "Get pods status from namespace"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
   shell: |
     {{ oc_tool_path }} get pods --namespace={{ get_logs_ns }} --show-labels -o wide > {{ get_logs_folder }}/{{ get_logs_ns }}_status.log || rm -f {{ get_logs_folder }}/{{ get_logs_ns }}_status.log
 
 - name: "Get events from from namespace"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
   shell: |
     {{ oc_tool_path }} get events --namespace={{ get_logs_ns }} > {{ get_logs_folder }}/{{ get_logs_ns }}_events.log || rm -f {{ get_logs_folder }}/{{ get_logs_ns }}_events.log
 ...

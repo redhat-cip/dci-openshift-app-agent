@@ -12,6 +12,10 @@
 - name: "Configure DCI jumphost"
   include_tasks: configure.yml
 
+# Create non cluster-admin account(s)
+- name: "Create custom credentials"
+  include_tasks: "custom_credentials.yml"
+
 - name: Gather the package facts
   package_facts:
     manager: auto

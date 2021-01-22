@@ -36,8 +36,8 @@
         tags: '{{ dci_tags }}'
       when: dci_tags[0] is defined
 
-# Step 1 : "pre-run" step
-- name: "Execute pre-run step"
+# Step 1a : Red Hat "pre-run" step
+- name: "Execute Red Hat pre-run step"
   hosts: jumphost
   tags:
     - pre-run
@@ -46,6 +46,19 @@
         - name: Run the pre-run hook
           include_tasks: 'plays/pre-run.yml'
 
+      rescue: &error_with_upload_logs
+        - name: "Execute the error process"
+          include_tasks: plays/error.yml
+
+# Step 1b : Hook "pre-run" step
+- name: "Execute hooks' pre-run step"
+  hosts: jumphost
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  tags:
+    - pre-run
+  tasks:
+    - block:
         - name: Run the pre-run hook
           include_tasks: '{{ dci_config_dir }}/hooks/pre-run.yml'
           when: check_pre_run.stat.exists
@@ -60,7 +73,7 @@
   tags:
     - running
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
   tasks:
     - block:
         - name: running
@@ -81,7 +94,7 @@
   tags:
     - testing
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
   tasks:
     - block:
         - name: "Execute Red Hat tests"
@@ -99,7 +112,7 @@
   tags:
     - post-run
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
   tasks:
     - block:
         - name: "Run post-run"
@@ -114,14 +127,11 @@
 # Step 5: "Final step"
 - name: "Execute final step"
   hosts: jumphost
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - name: "Execute the teardown process"
-      include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
+      include_tasks: "plays/teardown.yml"
       when:
         - dci_teardown_on_success|bool
-        - check_teardown.stat.exists
 
     - name: success
       dci_job:
