@@ -1,0 +1,32 @@
+---
+- name: "Retry with cluster-admin"
+  block:
+    - name: "Warn about using cluster-admin credentials"
+      debug:
+        msg: >
+          Warning: Using cluster-admin credentials as forbidden access
+          was detected, consider reviewing playbook requirements
+
+    - name: "Point kubeconfig to cluster-admin path"
+      file:
+        dest: "{{ admin_kubeconfig_path }}"
+        src: "{{ kube_config_path }}"
+        state: link
+        force: true
+
+    - name: "Retry hook with cluster-admin"
+      include_tasks: "{{ dci_config_dir }}/hooks/{{ hook_name }}.yml"
+
+  rescue:
+    - name: "Execute the failure process"
+      include_tasks: plays/failure.yml
+
+  always:
+    - name: "Point kubeconfig back to admin path"
+      file:
+        dest: "{{ admin_kubeconfig_path }}"
+        src: "{{ admin_kubeconfig_src_path }}"
+        state: link
+        force: true
+
+...
