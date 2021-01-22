@@ -1,11 +1,4 @@
 ---
-- name: Create myns
-  k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ dci_openshift_app_ns }}"
-    state: present
-
 - name: Create a simple pod
   k8s:
     state: present
