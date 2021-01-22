@@ -72,7 +72,7 @@
     - install
     - running
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
   tasks:
     - block:
         - name: Set job state - running
@@ -94,7 +94,7 @@
     - running
     - testing
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
   tasks:
     - block:
         - name: "Execute Red Hat tests"
@@ -112,7 +112,7 @@
   tags:
     - post-run
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+    KUBECONFIG: "{{ admin_kubeconfig_path }}"
   tasks:
     - block:
         - name: "Run post-run"
@@ -127,14 +127,11 @@
 # Step 5: "Final step"
 - name: "Execute final step"
   hosts: jumphost
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - name: "Execute the teardown process"
-      include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
+      include_tasks: "plays/teardown.yml"
       when:
         - dci_teardown_on_success|bool
-        - check_teardown.stat.exists
 
     - name: success
       dci_job:
