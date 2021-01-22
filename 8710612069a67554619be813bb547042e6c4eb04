@@ -22,6 +22,30 @@
       "revId": "8710612069a67554619be813bb547042e6c4eb04",
       "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e756034a_3c6386ca",
+        "filename": "plays/common_logging.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-01-22T15:12:13Z",
+      "side": 0,
+      "message": "It will, just moved the teardown process outside the common_logging into the dci-openshift-app-agent.yml, here https://softwarefactory-project.io/r/c/20640/3/dci-openshift-app-agent.yml#112 this is similar on how it is done with the pre-run",
+      "parentUuid": "7c34f269_5b38243e",
+      "range": {
+        "startLine": 8,
+        "startChar": 37,
+        "endLine": 8,
+        "endChar": 38
+      },
+      "revId": "8710612069a67554619be813bb547042e6c4eb04",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
     }
   ]
 }
