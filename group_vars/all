@@ -7,3 +7,10 @@ dci_tags: []
 dci_gits_to_component: "{{ dci_config_dir }}"
 dci_rpms_to_components:
   - dci-openshift-app-agent
+users:
+  - name: papyrus
+    password: papyrus
+    namespace: secondns
+  - name: sans
+    password: sans
+    namespace: firstns
