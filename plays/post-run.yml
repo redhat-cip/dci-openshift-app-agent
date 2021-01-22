@@ -4,35 +4,7 @@
     id: "{{ job_id }}"
     status: "post-run"
 
-- block:
-    - name: "Common logging"
-      include_tasks: "common_logging.yml"
-  rescue:
-    - name: error
-      dci_job:
-        id: "{{ job_id }}"
-        status: "error"
+- name: "Run common logging process"
+  include_tasks: "common_logging.yml"
 
-    - name: Fail properly
-      fail:
-        msg: "Error: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
-
-- name: success
-  dci_job:
-    id: "{{ job_id }}"
-    status: "success"
-
-- name: "Execute success hook"
-  include_tasks: "{{ dci_config_dir }}/hooks/success.yml"
-  when: check_success.stat.exists
-
-- name: "Execute the teardown process"
-  include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
-  when:
-    - dci_teardown_on_success|bool
-    - check_teardown.stat.exists
-
-- name: "Final step"
-  debug:
-    msg: "The job is now finished. Review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
 ...
