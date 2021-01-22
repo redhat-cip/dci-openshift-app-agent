@@ -6,6 +6,11 @@
   changed_when: oc_result.rc != 0
 
 # Check which hooks are present
+- name: "Check if users hooks is present"
+  stat:
+    path: "{{ dci_config_dir }}/hooks/users.yml"
+  register: check_users
+
 - name: "Check if pre-run hooks is present"
   stat:
     path: "{{ dci_config_dir }}/hooks/pre-run.yml"
@@ -51,5 +56,21 @@
   fail:
     msg: "install.yml not found at {{ dci_config_dir }}/hooks/"
   when: not check_install.stat.exists
+
+# Include users from hook and validate their fields
+- block:
+  - name: "Include users vars hooks"
+    include_vars: '{{dci_config_dir }}/hooks/users.yml'
+
+  - name: Assert all required fields exist and are valid
+    assert:
+      that:
+        - "'{{ item.name }}' != ''"
+        - "'{{ item.namespace }}' != ''"
+    loop: "{{ users }}"
+
+  #TODO: validate no underscores are used for namespaces
+
+  when: check_users.stat.exists
 
 ...

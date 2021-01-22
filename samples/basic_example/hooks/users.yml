@@ -1,0 +1,6 @@
+---
+# List of users and namespaces
+users:
+  - name: sample_user
+    namespace: sample-ns
+...
