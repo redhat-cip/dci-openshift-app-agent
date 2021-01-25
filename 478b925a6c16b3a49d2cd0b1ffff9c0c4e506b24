@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2632d47f_58dd7045",
+        "filename": "plays/pre-run.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 648
+      },
+      "writtenOn": "2021-01-25T15:06:26Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be part of configure.yml ?",
+      "revId": "478b925a6c16b3a49d2cd0b1ffff9c0c4e506b24",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
