@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "88f53394_7a7be212",
+        "filename": "plays/custom_credentials.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 673
+      },
+      "writtenOn": "2021-01-25T08:47:35Z",
+      "side": 1,
+      "message": "With this oc command, you are giving admin rights to doaa but on which namespace?",
+      "revId": "ac4041d03e3c55ccef14756f7e841f2b5dd04079",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
