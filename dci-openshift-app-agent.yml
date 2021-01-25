@@ -114,6 +114,8 @@
 # Step 5: "Final step"
 - name: "Execute final step"
   hosts: jumphost
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - name: "Execute the teardown process"
       include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
