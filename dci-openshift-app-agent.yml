@@ -50,6 +50,10 @@
           include_tasks: '{{ dci_config_dir }}/hooks/pre-run.yml'
           when: check_pre_run.stat.exists
 
+        # Create a non cluster-admin account
+        - name: "Create custom credentials"
+          include_tasks: "custom_credentials.yml"
+
       rescue: &error_with_upload_logs
         - name: "Execute the error process"
           include_tasks: plays/error.yml

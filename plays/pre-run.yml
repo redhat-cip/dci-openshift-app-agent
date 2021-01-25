@@ -12,6 +12,7 @@
 - name: "Configure DCI jumphost"
   include_tasks: configure.yml
 
+
 - name: Gather the package facts
   package_facts:
     manager: auto
