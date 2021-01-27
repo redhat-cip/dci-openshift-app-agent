@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4e230c48_5d5fac71",
+        "filename": "plays/custom_credentials.yml",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-01-27T15:07:51Z",
+      "side": 1,
+      "message": "This is a very good point, I thought about the implications of it, but since we are providing a kubeconfig that can be used to interact with OpenShift, nonetheless, the limitation is that it is valid only for 24hrs, but I think it should be enough for troubleshooting, if that does not turn to be the case we can revisit and either store the passwords or do something different.",
+      "parentUuid": "59e4002f_adc55907",
+      "revId": "64b6f06e6c5db2431b1c71c16e25dec8b46e3252",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5f063646_a96d26c1",
         "filename": "plays/custom_credentials.yml",
         "patchSetId": 6
@@ -30,6 +48,30 @@
       "writtenOn": "2021-01-27T09:44:00Z",
       "side": 1,
       "message": "If you want to hide all passwords, you should also set \u0027no_log\u0027 to true at this stage too",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 6
+      },
+      "revId": "64b6f06e6c5db2431b1c71c16e25dec8b46e3252",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fceef1af_eda23246",
+        "filename": "plays/custom_credentials.yml",
+        "patchSetId": 6
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-01-27T15:07:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5f063646_a96d26c1",
       "range": {
         "startLine": 87,
         "startChar": 4,
