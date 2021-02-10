@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b73ab68e_d20d6a67",
+        "filename": "plays/check_prerequisite.yml",
+        "patchSetId": 11
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-02-10T15:30:26Z",
+      "side": 1,
+      "message": "That is one case :)\nWhat I think we need to validate is that it is using only allowed chars for a sub domain.",
+      "parentUuid": "e349d69a_1c3a5b26",
+      "revId": "475216dc4ca1b856176f118b9bf7562cf8b54637",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f548a8a8_fbf880d2",
         "filename": "plays/custom_credentials.yml",
         "patchSetId": 11
@@ -30,6 +48,24 @@
       "writtenOn": "2021-02-10T08:36:45Z",
       "side": 1,
       "message": "It should be precised in the README",
+      "revId": "475216dc4ca1b856176f118b9bf7562cf8b54637",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "345b770f_5426782d",
+        "filename": "plays/custom_credentials.yml",
+        "patchSetId": 11
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-02-10T15:30:26Z",
+      "side": 1,
+      "message": "+1, I think the documentation will need to be updated to reflect exactly what we\u0027re doing here",
+      "parentUuid": "f548a8a8_fbf880d2",
       "revId": "475216dc4ca1b856176f118b9bf7562cf8b54637",
       "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
       "unresolved": false
