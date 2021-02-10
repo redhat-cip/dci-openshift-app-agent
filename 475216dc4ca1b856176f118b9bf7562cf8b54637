@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e349d69a_1c3a5b26",
+        "filename": "plays/check_prerequisite.yml",
+        "patchSetId": 11
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 673
+      },
+      "writtenOn": "2021-02-10T08:36:45Z",
+      "side": 1,
+      "message": "when: item.namespace is regex(\u0027(\\w)*_(\\w)*\u0027)\nsomething like that ^^",
+      "revId": "475216dc4ca1b856176f118b9bf7562cf8b54637",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f548a8a8_fbf880d2",
+        "filename": "plays/custom_credentials.yml",
+        "patchSetId": 11
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 673
+      },
+      "writtenOn": "2021-02-10T08:36:45Z",
+      "side": 1,
+      "message": "It should be precised in the README",
+      "revId": "475216dc4ca1b856176f118b9bf7562cf8b54637",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
