@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "729859b2_36a5c6ae",
+        "filename": "plays/check_prerequisite.yml",
+        "patchSetId": 12
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 673
+      },
+      "writtenOn": "2021-02-11T13:55:18Z",
+      "side": 1,
+      "message": "+1",
+      "revId": "4ae1190fd6b785a062d884d3ba97a72630bc5532",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
