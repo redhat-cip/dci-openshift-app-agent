@@ -16,6 +16,24 @@
       "revId": "491c55beb33cea7066907ba2b1fd9cd1a28b6446",
       "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93ae6b7d_d1917614",
+        "filename": "plays/rescue_cluster_admin.yml",
+        "patchSetId": 13
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 667
+      },
+      "writtenOn": "2021-02-22T21:23:10Z",
+      "side": 1,
+      "message": "Well, at this point the failure should be for reasons different to permissions, since is trying with cluster-admin credentials.",
+      "parentUuid": "ff03b010_6b710523",
+      "revId": "491c55beb33cea7066907ba2b1fd9cd1a28b6446",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
     }
   ]
 }
