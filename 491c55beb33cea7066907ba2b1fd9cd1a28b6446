@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff03b010_6b710523",
+        "filename": "plays/rescue_cluster_admin.yml",
+        "patchSetId": 13
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 673
+      },
+      "writtenOn": "2021-02-22T09:53:17Z",
+      "side": 1,
+      "message": "Failure or error?\nI think it is fine like this: a pb with right or permission on OCP from the playbook should be a failure.",
+      "revId": "491c55beb33cea7066907ba2b1fd9cd1a28b6446",
+      "serverId": "6c1dc8ef-8b94-40e4-bd83-c2359d45ecc0",
+      "unresolved": false
+    }
+  ]
+}
