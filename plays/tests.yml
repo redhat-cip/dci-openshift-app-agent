@@ -1,1 +1,13 @@
 ---
+
+- name: "cnf-cert tests"
+  include_role:
+    name: cnf-cert
+    tasks_from: tests.yml
+  vars:
+    tnf_ns: "{{ dci_openshift_app_ns }}"
+    tnf_tempdir:
+      path: "{{ job_logs.path }}"
+  when: do_cnf_cert|bool
+
+...
