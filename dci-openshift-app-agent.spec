@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.1.1
+Version:       0.2.1
 Release:       1.VERS%{?dist}
 Summary:       DCI Openshift App Agent
 License:       ASL 2.0
@@ -54,7 +54,7 @@ install -p -D -m 644 systemd/%{name}.timer %{buildroot}%{_unitdir}/%{name}.timer
 install -p -D -m 440 dci-openshift-app-agent.sudo %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 install -p -d -m 755 %{buildroot}/%{_sharedstatedir}/%{name}
 find samples -type f -exec install -Dm 755 "{}" "%{buildroot}%{_sharedstatedir}/dci-openshift-app-agent/{}" \;
-find roles/get-logs-from-namespace -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_datadir}/dci-openshift-app-agent/{}" \;
+find roles/* -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_datadir}/dci-openshift-app-agent/{}" \;
 
 
 %pre
@@ -91,7 +91,7 @@ exit 0
 
 %{_datadir}/dci-openshift-app-agent/plays/*.yml
 
-%{_datadir}/dci-openshift-app-agent/roles/get-logs-from-namespace/*
+%{_datadir}/dci-openshift-app-agent/roles/*
 
 %{_datadir}/dci-openshift-app-agent/group_vars/all
 
@@ -105,6 +105,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Thu Apr 22 2021 Frederic Lepied <flepied@redhat.com> 0.2.1-1
+- Include all roles
+
 * Mon Jan 11 16:56:36 CST 2021 Tony Garcia <tonyg@redhat.com> - 0.1.1-1
 - Add package and repo info for jobs
 
