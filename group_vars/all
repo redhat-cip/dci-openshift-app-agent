@@ -7,3 +7,4 @@ dci_tags: []
 dci_gits_to_component: "{{ dci_config_dir }}"
 dci_rpms_to_components:
   - dci-openshift-app-agent
+dci_cache_dir: /var/lib/dci-openshift-app-agent
