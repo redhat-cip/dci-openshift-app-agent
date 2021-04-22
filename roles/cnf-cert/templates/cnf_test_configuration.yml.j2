@@ -1,0 +1,26 @@
+operators:
+{% for csv in tnf_csv_list.resources %}
+  - name: {{ csv.metadata.name }}
+    namespace: {{ tnf_ns }}
+    status: Succeeded
+    autogenerate: false
+    tests:
+      - OPERATOR_STATUS
+    certifiedoperatorrequestinfo:
+{% endfor %}
+cnfs:
+{% for csv in tnf_csv_list.resources %}
+{% for deployment in csv.spec.install.spec.deployments %}
+{% for pod in tnf_pod_list.resources %}
+{% if pod.metadata.name.startswith(deployment.name) %}
+  - name: {{ pod.metadata.name }}
+    namespace: {{ tnf_ns }}
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
