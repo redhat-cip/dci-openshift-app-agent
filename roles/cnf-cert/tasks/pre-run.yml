@@ -1,0 +1,38 @@
+---
+- name: Clone test-network-function
+  git:
+    repo: "{{ test_network_function_repo }}"
+    version: "{{ test_network_function_version }}"
+    dest: "{{ tnf_git_dir }}/test_network_function"
+    force: yes
+  # On RHEL8 git clone can sporadically fail with OpenSSL SSL_read:
+  # SSL_ERROR_SYSCALL, errno 104. This is a workaround to try cloning the repo
+  # multiple times.
+  retries: 3
+  delay: 10
+
+- name: Clone cnf-certification-test-partner
+  git:
+    repo: "{{ cnf_certification_test_partner_repo }}"
+    version: "{{ cnf_certification_test_partner_version }}"
+    dest: "{{ tnf_git_dir }}/cnf_certification_test_partner"
+    force: yes
+  # On RHEL8 git clone can sporadically fail with OpenSSL SSL_read:
+  # SSL_ERROR_SYSCALL, errno 104. This is a workaround to try cloning the repo
+  # multiple times.
+  retries: 3
+  delay: 10
+
+- name: Build the partner pod
+  shell: |
+    set -ex
+    cd {{ tnf_git_dir }}/cnf_certification_test_partner/test-partner
+    podman build -t testnetworkfunction/cnf-test-partner .
+    if [ -n "{{ tnf_registry }}" -a -n "{{ tnf_registry_creds }}" ]; then
+      podman tag testnetworkfunction/cnf-test-partner {{ tnf_registry }}/testnetworkfunction/cnf-test-partner
+      podman push --creds {{ tnf_registry_creds }} {{ tnf_registry }}/testnetworkfunction/cnf-test-partner
+    fi
+    oc create -f ./namespace.yaml || :
+    oc create -f ./partner.yaml || :
+
+...
