@@ -1,0 +1,28 @@
+---
+containersUnderTest:
+{% for pod in tnf_pod_list.resources %}
+{% for container in pod.spec.containers %}
+  ? namespace: {{ tnf_ns }}
+    podName: {{ pod.metadata.name }}
+    containerName: {{ container.name }}
+  : defaultNetworkDevice: {{ tnf_if }}
+{% endfor %}
+{% endfor %}
+partnerContainers:
+  ? namespace: tnf
+    podName: partner
+    containerName: partner
+  : defaultNetworkDevice: {{ tnf_if }}
+testOrchestrator:
+  namespace: tnf
+  podName: partner
+  containerName: partner
+excludeContainersFromConnectivityTests:
+{% for pod in tnf_pod_list.resources %}
+{% for container in pod.spec.containers %}
+  - namespace: {{ tnf_ns }}
+    podName: {{ pod.metadata.name }}
+    containerName: {{ container.name }}
+{% endfor %}
+{% endfor %}
+...

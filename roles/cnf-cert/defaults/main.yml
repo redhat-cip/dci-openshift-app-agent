@@ -1,0 +1,5 @@
+---
+do_cnf_cert: false
+test_network_function_repo: https://github.com/test-network-function/test-network-function
+test_network_function_version: HEAD
+tnf_if: eth0
