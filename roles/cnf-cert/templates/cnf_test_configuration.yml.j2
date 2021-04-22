@@ -1,0 +1,86 @@
+operators:
+  - name: cnf-app-mac-operator.v0.2.3
+    namespace: example-cnf
+    status: Succeeded
+    autogenerate: false
+    tests:
+      - OPERATOR_STATUS
+    certifiedoperatorrequestinfo:
+  - name: testpmd-lb-operator.v0.2.3 
+    namespace: example-cnf
+    status: Succeeded
+    autogenerate: false
+    tests:
+      - OPERATOR_STATUS
+    certifiedoperatorrequestinfo:
+  - name: testpmd-operator.v0.2.3
+    namespace: example-cnf
+    status: Succeeded
+    autogenerate: false
+    tests:
+      - OPERATOR_STATUS
+    certifiedoperatorrequestinfo:
+  - name: trex-operator.v0.2.3  
+    namespace: example-cnf
+    status: Succeeded
+    autogenerate: false
+    tests:
+      - OPERATOR_STATUS
+    certifiedoperatorrequestinfo:
+cnfs:
+  - name: cnf-app-mac-operator-controller-manager-5c4c6dcb4c-q2llv
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+  - name: testpmd-lb-operator-controller-manager-5c9c86b85d-gtjlj 
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+  - name: testpmd-operator-controller-manager-5c78d6b88f-xqq75
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+  - name: testpmd-app-5c5867d5b7-dthf5 
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+  - name: testpmd-app-5c5867d5b7-r7fj5 
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+  - name: loadbalancer-78764488bd-2f6j9 
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+  - name: trex-operator-controller-manager-9489b66d7-ntq4q
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
+  - name: trexconfig-6f5bc966f9-b6fn7 
+    namespace: example-cnf
+    status: Running
+    tests:
+      - PRIVILEGED_POD
+      - PRIVILEGED_ROLE
+    certifiedcontainerrequestinfo:
