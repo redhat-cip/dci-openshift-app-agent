@@ -1,1 +1,9 @@
 ---
+
+- name: "cnf-cert tests"
+  include_role:
+    name: cnf-cert
+    tasks_from: tests.yml
+  when: do_cnf_cert|bool
+
+...

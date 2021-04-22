@@ -1,0 +1,8 @@
+---
+
+- name: Run the CNF Test Suite
+  command: "./run-container.sh -t /dev/null -o {{ job_logs.path }} diagnostic generic"
+  args:
+    chdir: "{{ dci_cache_dir }}/test_network_function_repo"
+
+...
