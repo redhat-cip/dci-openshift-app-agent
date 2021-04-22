@@ -90,7 +90,16 @@ This hook is controlled with two variables:
 
 It's included either when there's a failure or at the end of all the steps.
 
-## Samples
+## Variables
+
+Name | Default | Description
+------------ | ------------- | -------------
+dci\_openshift\_app\_ns | | namespace for the workload
+do\_cnf\_cert | false | launch the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
+tnf\_operators\_regexp | "" | regexp to select operators
+tnf\_cnfs\_regexp | "" |  regexp to select CNF
+tnf\_exclude\_connectivity_regexp | | regexp to exclude containers from the connectivity test
+tnf\_suites | "diagnostic generic" | list of space separated [test suites](https://github.com/test-network-function/test-network-function#general)
 
 ## Tags
 

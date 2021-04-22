@@ -36,19 +36,27 @@
         tags: '{{ dci_tags }}'
       when: dci_tags[0] is defined
 
+    - block:
+        - name: Check kubeconfig
+          include_tasks: 'plays/check_kubeconfig.yml'
+
+      rescue: &error_with_upload_logs
+        - name: "Execute the error process"
+          include_tasks: plays/error.yml
+
 # Step 1a : Red Hat "pre-run" step
 - name: "Execute Red Hat pre-run step"
   hosts: jumphost
   tags:
     - pre-run
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
-        - name: Run the pre-run hook
+        - name: "Execute pre-run"
           include_tasks: 'plays/pre-run.yml'
 
-      rescue: &error_with_upload_logs
-        - name: "Execute the error process"
-          include_tasks: plays/error.yml
+      rescue: *error_with_upload_logs
 
 # Step 1b : Hook "pre-run" step
 - name: "Execute hooks' pre-run step"
