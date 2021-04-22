@@ -37,3 +37,15 @@
   set_fact:
     oc_tool_path: "/usr/local/bin/oc"
   when: oc_result.rc != 0
+
+- name: "cnf-cert pre-run"
+  include_role:
+    name: cnf-cert
+    tasks_from: pre-run.yml
+  vars:
+    tnf_git_dir: "{{ dci_cache_dir }}"
+    tnf_registry: "{{ local_registry_host }}:{{ local_registry_port }}"
+    tnf_registry_creds: "{{ local_registry_user }}:{{ local_registry_password }}"
+  when: do_cnf_cert|bool
+
+...
