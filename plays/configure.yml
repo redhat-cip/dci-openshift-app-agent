@@ -37,3 +37,10 @@
   set_fact:
     oc_tool_path: "/usr/local/bin/oc"
   when: oc_result.rc != 0
+
+- name: "cnf-cert pre-run"
+  role: cnf-cert
+  tasks: pre-run.yml
+  when: do_cnf_cert|bool
+
+...

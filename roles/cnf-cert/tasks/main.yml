@@ -1,0 +1,7 @@
+---
+- name: cnf-cert
+  when: do_cnf_cert|bool
+  block:
+    - name: pre-run
+      include_tasks: pre-run.yml
+...

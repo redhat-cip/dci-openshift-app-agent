@@ -1,0 +1,23 @@
+---
+- name: Clone test-network-function
+  git:
+    repo: "{{ test_network_function_repo }}"
+    version: "{{ test_network_function_version }}"
+    dest: "{{ dci_cache_dir }}/test_network_function_repo"
+    force: yes
+  # On RHEL8 git clone can sporadically fail with OpenSSL SSL_read:
+  # SSL_ERROR_SYSCALL, errno 104. This is a workaround to try cloning the repo
+  # multiple times.
+  register: test_network_function_clone
+  retries: 3
+  delay: 10
+
+- debug:
+    msg: "{{ test_network_function_clone }}"
+
+- name: Build the CNF Test Suite
+  command: docker build -t test-network-function .
+  args:
+    chdir: "{{ dci_cache_dir }}/test_network_function_repo"
+
+...
