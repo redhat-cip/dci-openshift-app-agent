@@ -90,7 +90,12 @@ This hook is controlled with two variables:
 
 It's included either when there's a failure or at the end of all the steps.
 
-## Samples
+## Variables
+
+Name | Default | Description
+------------ | ------------- | -------------
+dci\_openshift\_app\_ns | | namespace for the workload
+ do\_cnf\_cert | false | launch the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
 
 ## Tags
 
