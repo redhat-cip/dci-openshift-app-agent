@@ -1,0 +1,15 @@
+---
+- name: Execute CVP Operators role
+  include_role:
+    name: dci-cvp
+  vars:
+    OO_INDEX:  "{{ dci_cvp_index }}"
+    OO_BUNDLE:  "{{ dci_cvp_bundle }}"
+    OO_PACKAGE: "{{ dci_cvp_package }}"
+    OO_CHANNEL: "{{ dci_cvp_channel }}"
+    DCI_SUBMIT: "{{ dci_cvp_submit | default(false) }}"
+  when:
+    - dci_cvp_bundle is defined
+    - dci_cvp_package is defined
+    - dci_cvp_channel is defined
+...
