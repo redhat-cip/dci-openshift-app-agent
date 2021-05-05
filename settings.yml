@@ -1,0 +1,11 @@
+---
+
+# dci-openshift-app-agent settings
+# defaults from /usr/share/dci-openshift-app-agent/group_vars/all
+
+# Remove "debug" when your jobs are working to get them in the
+# statistics:
+
+dci_tags: ["debug"]
+
+...

@@ -1,10 +1,13 @@
 ---
+
 - block:
     - name: Get OCP logs from namespace
       include_role:
         name: get-logs-from-namespace
       vars:
-        get_logs_ns:  "{{ dci_openshift_app_ns }}"
+        get_logs_ns: "{{ dci_openshift_app_ns }}"
         get_logs_folder: "{{ job_logs.path }}"
       when: dci_openshift_app_ns is defined
-  ignore_errors: True
+  ignore_errors: true
+
+...

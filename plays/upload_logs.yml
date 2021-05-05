@@ -12,10 +12,12 @@
     mime: "text/plain"
   with_fileglob:
     - "{{ job_logs.path }}/*.log"
+    - "{{ job_logs.path }}/*.json"
     - "{{ job_logs.path }}/*.yml"
     - "{{ job_logs.path }}/*.yaml"
     - "{{ job_logs.path }}/*.html"
     - "{{ job_logs.path }}/*.txt"
+  tags: [dci]
 
 - name: Upload Junit files to DCI Control Server
   environment:
@@ -29,6 +31,7 @@
     mime: "application/junit"
   with_fileglob:
     - "{{ job_logs.path }}/*.xml"
+  tags: [dci]
 
 - name: Upload compressed files to DCI Control Server
   environment:
@@ -42,11 +45,11 @@
     mime: "application/x-gzip"
   with_fileglob:
     - "{{ job_logs.path }}/*.gz"
+  tags: [dci]
 
-# - name: Remove log dir
-#   file:
-#     path: "{{ job_logs.path }}"
-#     state: absent
+- name: Remove log dir
+  file:
+    path: "{{ job_logs.path }}"
+    state: absent
 
 ...
-

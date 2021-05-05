@@ -1,9 +1,4 @@
 ---
-- name: "Check if oc executable is present"
-  command: "which oc"
-  register: oc_result
-  ignore_errors: True
-  changed_when: oc_result.rc != 0
 
 # Check which hooks are present
 - name: "Check if pre-run hooks is present"

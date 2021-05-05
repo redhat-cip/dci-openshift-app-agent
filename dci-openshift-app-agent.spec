@@ -1,7 +1,7 @@
 Name:          dci-openshift-app-agent
-Version:       0.2.1
+Version:       0.3.0
 Release:       1.VERS%{?dist}
-Summary:       DCI Openshift App Agent
+Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
 URL:           https://github.com/redhat-cip/dci-openshift-app-agent
 BuildArch:     noarch
@@ -19,7 +19,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description
-DCI Openshift App Agent
+DCI OpenShift App Agent
 
 %prep
 %setup -qc
@@ -39,6 +39,7 @@ done
 
 install -p -D -m 644 dcirc.sh.dist %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/dcirc.sh.dist
 install -p -D -m 644 hosts.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hosts.yml
+install -p -D -m 644 settings.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/settings.yml
 
 install -p -D -m 644 sysconfig/dci-openshift-app-agent %{buildroot}%{_sysconfdir}/sysconfig/dci-openshift-app-agent
 
@@ -53,9 +54,10 @@ install -p -D -m 644 systemd/%{name}.timer %{buildroot}%{_unitdir}/%{name}.timer
 
 install -p -D -m 440 dci-openshift-app-agent.sudo %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 install -p -d -m 755 %{buildroot}/%{_sharedstatedir}/%{name}
-find samples -type f -exec install -Dm 755 "{}" "%{buildroot}%{_sharedstatedir}/dci-openshift-app-agent/{}" \;
+find samples -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_sharedstatedir}/dci-openshift-app-agent/{}" \;
 find roles/* -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_datadir}/dci-openshift-app-agent/{}" \;
 
+install -v -p -D -m 755 dci-openshift-app-agent-ctl %{buildroot}%{_bindir}/dci-openshift-app-agent-ctl
 
 %pre
 getent group dci-openshift-app-agent >/dev/null || groupadd -r dci-openshift-app-agent
@@ -78,33 +80,31 @@ exit 0
 
 %files
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/*.yml
-
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hosts.yml
-
+%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/settings.yml
 %config(noreplace) %{_sysconfdir}/sysconfig/dci-openshift-app-agent
+
+%{_bindir}/dci-openshift-app-agent-ctl
 
 %{_sysconfdir}/dci-openshift-app-agent/dcirc.sh.dist
 
 %{_datadir}/dci-openshift-app-agent/ansible.cfg
 %{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
 %{_datadir}/dci-openshift-app-agent/requirements.yml
-
 %{_datadir}/dci-openshift-app-agent/plays/*.yml
-
 %{_datadir}/dci-openshift-app-agent/roles/*
-
 %{_datadir}/dci-openshift-app-agent/group_vars/all
 
 %{_unitdir}/*
-
-%exclude /%{_datadir}/dci-openshift-app-agent/*.pyc
-%exclude /%{_datadir}/dci-openshift-app-agent/*.pyo
 
 %dir %{_sharedstatedir}/dci-openshift-app-agent
 %attr(0755, dci-openshift-app-agent, dci-openshift-app-agent) %{_sharedstatedir}/dci-openshift-app-agent
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Wed May  5 2021 Frederic Lepied <flepied@redhat.com> 0.3.0-1
+- add dci-openshift-app-agent-ctl and settings.yml
+
 * Thu Apr 22 2021 Frederic Lepied <flepied@redhat.com> 0.2.1-1
 - Include all roles
 

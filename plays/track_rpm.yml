@@ -1,4 +1,5 @@
 ---
+
 - name: Create package component
   dci_component:
     name: "{{ item }} {{ ansible_facts.packages[item][0].version }}-{{ ansible_facts.packages[item][0].release }}"
@@ -8,6 +9,7 @@
     type: rpm
     state: present
   register: package_component
+  tags: [dci]
 
 - name: Attach package component to the job
   dci_job_component:
@@ -16,4 +18,6 @@
   when:
     - "'component' in package_component"
     - "'id' in package_component.component"
+  tags: [dci]
+
 ...

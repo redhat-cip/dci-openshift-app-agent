@@ -1,6 +1,6 @@
 # DCI Openshift App Agent
 
-`dci-openshift-app-agent` enables Cloud-Native Applications and Operators in Red Hat Distributed CI service.
+`dci-openshift-app-agent` enables Cloud-Native Applications and Operators in OpenShift using Red Hat Distributed CI service.
 
 ## Table of Contents
 
@@ -14,9 +14,9 @@
 
 ## Worflow
 
-The `dci-openshift-app-agent` is an Ansible playbook that enables Cloud-Native Applications and Operators in Red Hat Distributed CI service. The main entrypoint is the file “dci-openshift-app-agent.yml”. It is composed of several steps executed sequentially.
+The `dci-openshift-app-agent` is an Ansible playbook that enables Cloud-Native Applications and Operators in OpenShift using Red Hat Distributed CI service. The main entrypoint is the file `dci-openshift-app-agent.yml`. It is composed of several steps executed sequentially.
 
-In case of an issue, the agent will terminate its execution by launching (optionally) the teardown AND failure playbooks.
+In case of an issue, the agent will terminate its execution by launching (optionally) the teardown and failure playbooks.
 
 There are two fail statuses:
 
@@ -98,30 +98,79 @@ dci\_openshift\_app\_ns | | namespace for the workload
 do\_cnf\_cert | false | launch the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
 tnf\_operators\_regexp | "" | regexp to select operators
 tnf\_cnfs\_regexp | "" |  regexp to select CNF
-tnf\_exclude\_connectivity_regexp | | regexp to exclude containers from the connectivity test
+tnf\_exclude\_connectivity\_regexp | | regexp to exclude containers from the connectivity test
 tnf\_suites | "diagnostic generic" | list of space separated [test suites](https://github.com/test-network-function/test-network-function#general)
+
+## Launching the agent
+
+Once the agent is configured, you can start it as a service.
+
+Please note that the service is a systemd `Type=oneshot`. This means that if you need to run a DCI job periodically, you have to configure a `systemd timer` or a `crontab`.
+
+```ShellSession
+# systemctl start dci-openshift-app-agent
+```
+
+If you need to run the `dci-openshift-app-agent` manually in foreground,
+you can use this command line:
+
+```ShellSession
+# su - dci-openshift-app-agent
+$ dci-openshift-app-agent-ctl -s
+```
 
 ## Tags
 
-To replay any steps, please use Ansible tags (--limit).
+To replay any steps, please use Ansible tags (--tags).
 
-```bash
-$ cd /usr/share/dci-openshift-app-agent &&
-  source /etc/dci-openshift-app-agent/dcirc.sh &&
-  ansible-playbook -vv /usr/share/dci-openshift-app-agent/dci-openshift-app-agent.yml \
-  --tags "pre-run,running,post-run"
+```ShellSession
+# su - dci-openshift-app-agent
+$ dci-openshift-app-agent-ctl -s -- --tags job,pre-run,running,post-run
+```
+
+or to avoid one or multiple steps, use `--skip-tags`:
+
+```ShellSession
+# su - dci-openshift-app-agent
+$ dci-openshift-app-agent-ctl -s -- --skip-tags testing
 ```
 
 Possible tags are:
 
 - `job`
+- `dci`
+- `kubeconfig`
 - `pre-run`
+- `redhat-pre-run`
+- `partner-pre-run`
 - `install`
 - `running`
 - `testing`
+- `redhat-testing`
+- `partner-testing`
 - `post-run`
 
-As the `KUBECONFIG` is read from the `pre-run` tasks, this tag should always be included.
+As the `KUBECONFIG` is read from the `kubeconfig` tasks, this tag should always be included.
+
+The `dci` tag can be used to skip all DCI calls else the `job` tag is
+mandatory to initialize all the DCI specifics. You will need to
+provide a fake `job_info` variable in a `myvars.yml` file like this:
+
+```YAML
+job_id: fake-id
+job_info:
+  job:
+    components:
+    - name: 1.0.0
+      type: my-component
+```
+
+and then call the agent like this:
+
+```ShellSession
+# su - dci-openshift-app-agent
+$ dci-openshift-app-agent-ctl -s -- --skip-tags dci -e @myvars.yml
+```
 
 ## License
 

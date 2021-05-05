@@ -1,8 +1,10 @@
 ---
+
 - name: post-run
   dci_job:
     id: "{{ job_id }}"
     status: "post-run"
+  tags: [dci]
 
 - name: "Run common logging process"
   include_tasks: "common_logging.yml"

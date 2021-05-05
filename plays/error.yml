@@ -1,8 +1,10 @@
 ---
+
 - name: error
   dci_job:
     id: "{{ job_id }}"
     status: "error"
+  tags: [dci]
 
 - name: "Run common logging process"
   include_tasks: common_logging.yml

@@ -1,8 +1,10 @@
 ---
+
 - name: pre-run
   dci_job:
     id: "{{ job_id }}"
     status: "pre-run"
+  tags: [dci]
 
 # Check prerequisite
 - name: "Check prerequisite"

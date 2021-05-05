@@ -1,0 +1,132 @@
+#!/bin/bash
+#
+# Copyright (C) 2021 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+start=0
+params="$(getopt -o hsdp:c:v -l help,start,dev,prefix:,config:,verbose --name "$(basename -- "$0")" -- "$@")"
+
+function usage ()
+{
+    name=$(basename -- "$0")
+    cat << EOF
+Usage: $name [-h] [-s] [-d] [-v] [-p PREFIX] [-c CONFIG] -- [ansible-playbook args]
+
+arguments:
+    -h, --help        Display this help message.
+    -s, --start       Start the dci-openshift-app-agent.
+    -p PREFIX, --prefix PREFIX
+                      Specify prefix for Inventory and settings (use to specify different
+                      clusters for example)
+    -d, --dev         Use script directory to find dcirc.sh and dci-openshift-app-agent.yml (for dev usage)
+    -c CONFIG, --config CONFIG
+                      Path to config file. default is /etc/dci-openshift-app-agent/settings.yml
+    -v, --verbose     Display commands
+EOF
+    exit $1
+}
+
+if [ -r /etc/dci-openshift-app-agent/config ]; then
+    . /etc/dci-openshift-app-agent/config
+fi
+
+config_dir=${CONFIG_DIR:-/etc/dci-openshift-app-agent}
+config=$config_dir/settings.yml
+extra_args=--syntax-check
+
+eval set -- "$params"
+unset params
+
+while true
+do
+    case $1 in
+        -h|--help)
+            usage 0
+        ;;
+        -s|--start)
+            start=1
+            extra_args=
+            shift
+        ;;
+        -d|--dev)
+            dev=1
+            sed -e "s@/etc/dci-openshift-app-agent/@$DIR/@" -e "s@\(roles_path\s*=\s*\)/@\1$DIR/roles:/@" < $DIR/ansible.cfg > $DIR/dev-ansible.cfg
+            config_dir="$DIR"
+            config="$config_dir/settings.yml"
+            DCI_OPENSHIFT_APP_AGENT_DIR="$DIR"
+            shift
+        ;;
+        -c|--config)
+            shift
+            config=$1
+            shift
+        ;;
+        -p|--prefix)
+            shift
+            prefix=$1
+            shift
+        ;;
+        -v|--verbose)
+            set -x
+            shift
+            ;;
+        --)
+            shift
+            break
+        ;;
+        *)
+            usage 1
+        ;;
+    esac
+done
+
+if [ "$dev" != 1 -a "$( id -u dci-openshift-app-agent 2>/dev/null )" != "$( id -u )" ]; then
+    echo "must be run as the dci-openshift-app-agent user"
+    usage 1
+fi
+
+if [ -n "$prefix" ]; then
+    hosts="$config_dir/${prefix}-hosts"
+    settings="$config_dir/${prefix}-settings.yml"
+    if [ -e "$settings" ]; then
+        prefix_args="${prefix_args} -e @$settings"
+    else
+        echo "Missing $settings, will only use $config."
+    fi
+
+    if [ -e "$hosts" ]; then
+        prefix_args="-i $hosts"
+    else
+        echo "Missing $hosts"
+        exit 1
+    fi
+fi
+
+if [ "$start" != 1 ]; then
+    echo "Dry-Run: pass -s or --start to actually execute"
+fi
+
+if [ -z "$dev" ]; then
+    [ -e /etc/dci-openshift-app-agent/dcirc.sh ] && . /etc/dci-openshift-app-agent/dcirc.sh
+    [ -d ${DCI_OPENSHIFT_APP_AGENT_DIR:-/usr/share/dci-openshift-app-agent} ] && cd ${DCI_OPENSHIFT_APP_AGENT_DIR:-/usr/share/dci-openshift-app-agent}
+else
+    [ -e $DIR/dcirc.sh ] && . $DIR/dcirc.sh
+    export ANSIBLE_CONFIG=$DIR/dev-ansible.cfg
+fi
+
+exec ansible-playbook $extra_args dci-openshift-app-agent.yml -e @$config ${prefix_args} "$@"
+
+# dci-openshift-app-agent-ctl ends here
