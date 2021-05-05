@@ -1,5 +1,4 @@
 ---
-
 # Check which hooks are present
 - name: "Check if pre-run hooks is present"
   stat:
