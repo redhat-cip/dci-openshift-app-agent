@@ -62,7 +62,7 @@ install -v -p -D -m 755 dci-openshift-app-agent-ctl %{buildroot}%{_bindir}/dci-o
 %pre
 getent group dci-openshift-app-agent >/dev/null || groupadd -r dci-openshift-app-agent
 getent passwd dci-openshift-app-agent >/dev/null || \
-    useradd -r -m -g dci-openshift-app-agent -d %{_sharedstatedir}/dci-openshift-app-agent -s /bin/bash \
+    useradd -m -g dci-openshift-app-agent -d %{_sharedstatedir}/dci-openshift-app-agent -s /bin/bash \
             -c "DCI Openshift App Agent service" dci-openshift-app-agent
 exit 0
 
