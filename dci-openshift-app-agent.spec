@@ -108,7 +108,7 @@ exit 0
 * Thu Apr 22 2021 Frederic Lepied <flepied@redhat.com> 0.2.1-1
 - Include all roles
 
-* Mon Jan 11 16:56:36 CST 2021 Tony Garcia <tonyg@redhat.com> - 0.1.1-1
+* Mon Jan 11 2021 Tony Garcia <tonyg@redhat.com> - 0.1.1-1
 - Add package and repo info for jobs
 
 * Mon Dec 21 2020 Frederic Lepied <flepied@redhat.com> 0.1.0-1
