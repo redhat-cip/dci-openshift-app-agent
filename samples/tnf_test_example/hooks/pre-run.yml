@@ -1,0 +1,15 @@
+---
+- name: "Install required rpm packages"
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - curl
+    - python3-openshift
+    - python3-pyyaml
+  become: true
+
+- name: "Configure the namespace variable"
+  set_fact:
+    dci_openshift_app_ns: "myns"
+  when: dci_openshift_app_ns is not defined

@@ -1,0 +1,18 @@
+---
+# Wait until pod starts
+- pause:
+    seconds: 60
+
+- name: Search for all running pods
+  k8s_info:
+    namespace: "{{ dci_openshift_app_ns }}"
+    kind: Pod
+    name: test
+    field_selectors:
+      - status.phase=Running
+  register: test_service
+
+- name: Fail if pod is NOT found
+  fail:
+    msg: "test is not running"
+  when: test_service == False

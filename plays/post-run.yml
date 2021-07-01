@@ -9,4 +9,10 @@
 - name: "Run common logging process"
   include_tasks: "common_logging.yml"
 
+- name: "cnf-cert post-run"
+  include_role:
+    name: cnf-cert
+    tasks_from: post-run.yml
+  when: do_cnf_cert is defined and do_cnf_cert|bool
+
 ...

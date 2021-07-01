@@ -1,0 +1,26 @@
+---
+- name: Create namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ dci_openshift_app_ns }}"
+    state: present
+
+- name: Create a simple pod
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: test
+        namespace: "{{ dci_openshift_app_ns }}"
+      spec:
+        containers:
+          - command: [ "/bin/bash", "-c", "echo 'logs' && tail -f /dev/null" ]
+            image: "{{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}"
+            name: test
+            resources:
+              limits:
+                memory: 512Mi
+                cpu: 0.25
