@@ -7,7 +7,7 @@
   k8s_info:
     namespace: "{{ dci_openshift_app_ns }}"
     kind: Pod
-    name: test
+    name: "{{ test_pod_name }}"
     field_selectors:
       - status.phase=Running
   register: test_service

@@ -6,21 +6,47 @@
     name: "{{ dci_openshift_app_ns }}"
     state: present
 
-- name: Create a simple pod
+- name: Create a Deployment with 1 replica of the testing pod
   k8s:
     state: present
     definition:
-      apiVersion: v1
-      kind: Pod
+      apiVersion: apps/v1
+      kind: Deployment
       metadata:
         name: test
         namespace: "{{ dci_openshift_app_ns }}"
       spec:
-        containers:
-          - command: [ "/bin/bash", "-c", "echo 'logs' && tail -f /dev/null" ]
-            image: "{{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}"
+        replicas: 1
+        selector:
+          matchLabels:
+            app: test
+        template:
+          metadata:
+            labels:
+              app: test
             name: test
-            resources:
-              limits:
-                memory: 512Mi
-                cpu: 0.25
+          spec:
+            containers:
+              - command: [ "/bin/bash", "-c", "echo 'logs' && tail -f /dev/null" ]
+                image: "{{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}"
+                name: test
+                resources:
+                  limits:
+                    memory: 512Mi
+                    cpu: 0.25
+
+- name: Retrieve pod name
+  shell: |
+    set -ex
+    oc get pods -n "{{ dci_openshift_app_ns }}" -o json|jq -r .items[0].metadata.name
+  register: test_pod_name_output
+
+- name: Set test_pod_name variable
+  set_fact:
+    test_pod_name: "{{ test_pod_name_output.stdout }}"
+
+#- name: Tag pod if labels are provided
+#  shell: |
+#    set -ex
+#    oc label pod "{{ test_pod_name }}" "{{ tnf_targetpodlabels_name }}"="{{ tnf_targetpodlabels_value }}" -n "{{ dci_openshift_app_ns }}"
+#  when: tnf_targetpodlabels_name is not undefined and tnf_targetpodlabels_value is not undefined
