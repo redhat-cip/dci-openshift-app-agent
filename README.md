@@ -137,8 +137,7 @@ Possible tags are:
 - `redhat-testing`
 - `partner-testing`
 - `post-run`
-
-Note that [teardown](#teardown) step cannot be omitted by using tags. If you want to skip it, you will have to do it by removing the teardown hook or by commenting the tasks that you do not want to be executed.
+- `success`
 
 As the `KUBECONFIG` is read from the `kubeconfig` tasks, this tag should always be included.
 
@@ -238,8 +237,8 @@ While this hook is not required it is highly recommended to be included. Its mai
 
 This hook is controlled with two variables:
 
-- `dci_teardown_on_success`
-- `dci_teardown_on_failure`
+- `dci_teardown_on_success` (default: true)
+- `dci_teardown_on_failure` (default: false)
 
 It's included either when there's a failure or at the end of all the steps.
 

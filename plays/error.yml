@@ -12,7 +12,7 @@
 - name: "Execute the teardown process"
   include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
   when:
-    - dci_teardown_on_failure|bool
+    - dci_teardown_on_failure|default(false)|bool
     - check_teardown.stat.exists
 
 - name: Fail properly
