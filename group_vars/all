@@ -1,6 +1,7 @@
 ---
 
 dci_config_dir: /etc/dci-openshift-app-agent
+dci_cache_dir: /var/lib/dci-openshift-app-agent
 dci_components: []
 dci_teardown_on_success: true
 dci_teardown_on_failure: false
