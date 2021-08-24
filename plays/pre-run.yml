@@ -6,10 +6,6 @@
     status: "pre-run"
   tags: [dci]
 
-# Check prerequisite
-- name: "Check prerequisite"
-  include_tasks: check_prerequisite.yml
-
 # Prepare host
 - name: "Configure DCI jumphost"
   include_tasks: configure.yml

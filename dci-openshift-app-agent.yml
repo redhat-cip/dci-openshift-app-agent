@@ -1,6 +1,6 @@
 ---
 
-# Step 0a : set kubeconfig_path, OCP version vars and dci_topic
+# Step 0a : set kubeconfig_path, OCP version vars and dci_topic. Check hooks
 - name: "Execute kubeconfig step"
   hosts: jumphost
   tags:
@@ -9,6 +9,10 @@
     - block:
         - name: Check kubeconfig
           include_tasks: 'plays/check_kubeconfig.yml'
+
+        # Check prerequisite
+        - name: "Check prerequisite"
+          include_tasks: 'plays/check_prerequisite.yml'
 
       rescue: &error_with_upload_logs
         - name: "Execute the error process"
