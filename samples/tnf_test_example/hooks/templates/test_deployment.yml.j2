@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+  namespace: {{ dci_openshift_app_ns }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+        test-network-function.com/generic: target
+        test-network-function.com/container: target
+{% if targetpodlabels_name|length and targetpodlabels_value|length %}
+        {{ dci_openshift_app_ns }}/{{ targetpodlabels_name }}: {{ targetpodlabels_value }}
+{% if exclude_connectivity_regexp|length and ( "test" | regex_search(exclude_connectivity_regexp) ) %}
+        test-network-function.com/skip_connectivity_tests: 'true'
+{% endif %}
+{% endif %}
+      annotations:
+        test-network-function.com/container_tests: '["PRIVILEGED_POD","PRIVILEGED_ROLE"]' # optional
+        test-network-function.com/defaultnetworkinterface: '"eth0"' # optional
+      name: test
+    spec:
+      containers:
+        - command: [ "/bin/bash", "-c", "echo 'logs' && tail -f /dev/null" ]
+          image: {{ dci_openshift_app_image }}
+          name: test
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 0.10
+            limits:
+              memory: 512Mi
+              cpu: 0.25
+          lifecycle:
+            preStop:
+               exec:
+                 command: ["/bin/sh","-c","killall -0 tail"]
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - test
+            topologyKey: "kubernetes.io/hostname"
