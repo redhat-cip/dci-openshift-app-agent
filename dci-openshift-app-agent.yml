@@ -50,11 +50,6 @@
       set_fact:
         job_id: "{{ job_info.job.id }}"
 
-    - name: Set job state - new
-      dci_job:
-        id: "{{ job_id }}"
-        status: "new"
-
     - name: 'Set DCI tags for the current job'
       dci_job:
         id: '{{ job_id }}'
