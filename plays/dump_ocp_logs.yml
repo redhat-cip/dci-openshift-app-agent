@@ -7,7 +7,6 @@
       vars:
         get_logs_ns: "{{ dci_openshift_app_ns }}"
         get_logs_folder: "{{ job_logs.path }}"
-      when: dci_openshift_app_ns is defined
 
     - name: Get logs from OCP deployment
       environment:

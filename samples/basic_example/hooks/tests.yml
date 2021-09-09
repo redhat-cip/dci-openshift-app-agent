@@ -5,7 +5,7 @@
 
 - name: Search for all running pods
   k8s_info:
-    namespace: "{{ dci_openshift_app_ns }}"
+    namespace: "{{ app_ns }}"
     kind: Pod
     name: webserver
     field_selectors:

@@ -11,6 +11,7 @@ dci_gits_to_component: "{{ dci_config_dir }}"
 dci_rpms_to_components:
   - dci-openshift-app-agent
 dci_cache_dir: /var/lib/dci-openshift-app-agent
+dci_openshift_app_ns: "myns"
 do_cnf_cert: false
 provisionhost_registry: "{% if dci_disconnected is defined and dci_disconnected|bool and local_registry_host is defined and local_registry_port is defined %}{{ local_registry_host }}:{{ local_registry_port }}{% else %}{% endif %}"
 provisionhost_registry_creds: "{% if dci_disconnected is defined and dci_disconnected|bool and provision_cache_store is defined %}{{ provision_cache_store }}/pull-secret.txt{% else %}{% endif %}"

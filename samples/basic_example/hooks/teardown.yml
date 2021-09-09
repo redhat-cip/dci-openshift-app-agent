@@ -1,6 +1,7 @@
-- name: Delete myns
+---
+- name: Delete namespace
   k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ dci_openshift_app_ns }}"
+    name: "{{ app_ns }}"
     state: absent

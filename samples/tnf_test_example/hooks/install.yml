@@ -1,16 +1,24 @@
 ---
+- name: Check if namespace exists
+  k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: "{{ app_ns }}"
+  register: app_namespace
+
 - name: Create namespace
   k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ dci_openshift_app_ns }}"
+    name: "{{ app_ns }}"
     state: present
+  when: app_namespace.resources|length == 0
 
 - name: Check if test pods exist
   k8s_info:
     api_version: v1
     kind: Pod
-    namespace: "{{ dci_openshift_app_ns }}"
+    namespace: "{{ app_ns }}"
     label_selectors:
       - test-network-function.com/generic = target
   register: test_pods
@@ -24,3 +32,21 @@
     targetpodlabels_value: "{{ tnf_targetpodlabels_value|default('') }}"
     exclude_connectivity_regexp: "{{ tnf_exclude_connectivity_regexp|default('') }}"
   when: test_pods.resources|length == 0
+
+- name: Wait untill all test pods are running
+  k8s_info:
+    namespace: "{{ app_ns }}"
+    kind: Pod
+    label_selectors:
+      - app=test
+  register: test_result
+  retries: 60
+  delay: 5
+  until:
+    - "test_result.resources|length == 2"
+    - "'status' in test_result.resources[0]"
+    - "'phase' in test_result.resources[0].status"
+    - "test_result.resources[0].status.phase == 'Running'"
+    - "'status' in test_result.resources[1]"
+    - "'phase' in test_result.resources[1].status"
+    - "test_result.resources[1].status.phase == 'Running'"

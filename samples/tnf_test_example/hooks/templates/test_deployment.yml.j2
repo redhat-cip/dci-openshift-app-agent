@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: test
-  namespace: {{ dci_openshift_app_ns }}
+  namespace: {{ app_ns }}
 spec:
   replicas: 2
   selector:
@@ -12,10 +12,8 @@ spec:
     metadata:
       labels:
         app: test
-        test-network-function.com/generic: target
-        test-network-function.com/container: target
 {% if targetpodlabels_name|length and targetpodlabels_value|length %}
-        {{ dci_openshift_app_ns }}/{{ targetpodlabels_name }}: {{ targetpodlabels_value }}
+        test-network-function.com/{{ targetpodlabels_name }}: {{ targetpodlabels_value }}
 {% if exclude_connectivity_regexp|length and ( "test" | regex_search(exclude_connectivity_regexp) ) %}
         test-network-function.com/skip_connectivity_tests: 'true'
 {% endif %}

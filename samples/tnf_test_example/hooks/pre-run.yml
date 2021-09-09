@@ -11,5 +11,4 @@
 
 - name: "Configure the namespace variable"
   set_fact:
-    dci_openshift_app_ns: "myns"
-  when: dci_openshift_app_ns is not defined
+    app_ns: "{{ dci_openshift_app_ns|default('myns') }}"
