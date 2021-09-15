@@ -44,7 +44,7 @@
     - name: "Schedule a new job"
       dci_job:
         components: "{{ dci_components | default([]) }}"
-        components_by_query: "{{ dci_components_by_query | default('') }}"
+        components_by_query: "{{ dci_components_by_query | default([]) }}"
         topic: "{{ dci_topic }}"
         comment: "{{ dci_comment | default('') }}"
         url: "{{ dci_url | default('') }}"

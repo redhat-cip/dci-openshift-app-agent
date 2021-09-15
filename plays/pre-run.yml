@@ -105,4 +105,9 @@
   become: true
   when: dci_chart_tgz_url is defined
 
+- name: Preflight tests
+  include_role:
+    name: preflight
+    tasks_from: pre-run.yml
+  when: do_preflight_tests | bool
 ...
