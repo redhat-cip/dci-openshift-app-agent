@@ -8,6 +8,17 @@
         get_logs_ns: "{{ dci_openshift_app_ns }}"
         get_logs_folder: "{{ job_logs.path }}"
       when: dci_openshift_app_ns is defined
+
+    - name: Get logs from OCP deployment
+      environment:
+        - DCI_MUST_GATHER_IMAGES: '{{ dci_must_gather_images | default(["registry.redhat.io/openshift4/ose-must-gather"]) | join(" ") }}'
+      script: ./scripts/get-logs "{{ provisioner_user }}@{{ provisioner_name }}" "{{ job_logs.path }}"
+      delegate_to: localhost
+      when:
+        - provisioner_user is defined
+        - provisioner_user|length
+        - provisioner_name is defined
+        - provisioner_name|length
   ignore_errors: true
 
 ...

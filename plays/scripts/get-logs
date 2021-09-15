@@ -1,0 +1,153 @@
+#!/bin/sh
+#
+# Copyright (C) 2020 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+log=$1
+dir="$2"
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <provisioner login> <dest dir>" 1>&2
+    exit 1
+fi
+
+rem="timeout -v 2m ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $log"
+
+shift 2
+masters=()
+for name in "$@"; do
+      mod=$(echo "$name" | tr -d ,][)
+      masters+=($mod)
+done
+
+myscript=$(mktemp)
+
+if [ ! -w $myscript ]; then
+    echo "Unable to create a temporary file" 1>&2
+fi
+
+set -x
+
+cat > $myscript <<EOF
+# do not display the output of the spawn process
+log_user 0
+
+spawn ssh $log sudo virsh list
+
+expect {
+    -re "\\\\d+\\\\s+(.*)\\\\s+running" {set nodename \$expect_out(1,string)}
+    eof {puts stderr "Unable to find the vm name"; exit 1}
+}
+
+spawn ssh -t $log sudo virsh console \$nodename
+
+expect "Escape character is"
+send "\n"
+
+expect {
+    -re ".*: ((?:\\\\d+\\.){3}\\\\d+) " {puts \$expect_out(1,string); exit}
+    ogin: {puts stderr "No IPv4 found"; exit 1}
+}
+EOF
+
+ip=$(expect -f $myscript)
+
+rm $myscript
+domain=$($rem hostname -d)
+
+# Copy openshift install log and rendered install config
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $log:clusterconfigs/.openshift_install.log $dir/openshift_install.log
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $log:clusterconfigs/install-config.yaml.bkup $dir/install-config-yaml.txt
+
+if [ -n "$ip" ]; then
+    echo "found VM IPv4 $ip"
+
+    for pod in $($rem ssh core@$ip sudo podman ps 2>&1 | sed 's/.* //'|egrep -v '^(hosts\.|NAMES$)'); do
+        $rem ssh core@$ip sudo podman logs $pod > $dir/$pod.log
+    done
+
+    # If API lists nodes then SSH to them and get the journal logs
+    nodes=$(oc get nodes -o custom-columns=NAME:.metadata.name --no-headers 2>/dev/null | wc -l)
+    if [ "$nodes" -gt 0 ]; then
+
+      # Get the output of various oc commands
+      $rem oc get nodes > $dir/nodes.txt
+      $rem oc get csr > $dir/csr.txt
+      $rem oc get clusteroperator > $dir/clusteroperator.txt
+
+    fi
+
+else
+    remdir=$($rem mktemp -d)
+
+    # Get outputs
+    if [ -n "$remdir" ]; then
+
+        # Get the output of various oc commands
+        $rem oc version > $dir/version.txt
+        $rem oc get clusterversion/version > $dir/clusterversion.txt
+        $rem oc get clusteroperator > $dir/clusteroperator.txt
+        $rem oc get network cluster -o yaml > $dir/clusternetwork.txt
+        $rem oc get nodes -o wide > $dir/nodes.txt
+        $rem oc get nodes -o yaml > $dir/all-nodes.txt
+        $rem oc get events --all-namespaces --sort-by='.metadata.creationTimestamp' > $dir/events.txt
+        $rem oc get pods --all-namespaces -o wide > $dir/pods.txt
+
+        # must-gather
+        # When a policy is defined, use the same mirror (local registry)
+        registry=$($rem oc get imageContentSourcePolicy image-policy-0 -o json |
+                            jq -r '.spec.repositoryDigestMirrors[].mirrors[]' |
+                            grep -Pom1 '(\w+[.:])+\d+')
+        for image in ${DCI_MUST_GATHER_IMAGES:-"registry.redhat.io/openshift4/ose-must-gather"}
+        do
+            if [[ -n "${registry}" ]]
+            then
+                image="${registry}/${image#*/}"
+            fi
+
+            must_gather_opts="${must_gather_opts} --image=${image}"
+        done
+
+        must_gather_dir="${remdir}/must_gather"
+        $rem mkdir "${must_gather_dir}"
+        $rem oc adm must-gather \
+             --dest-dir=${must_gather_dir} \
+             ${must_gather_opts}
+
+        # Compress must-gather data, using a friendly name
+        $rem tar \
+            --use-compress-program='"pigz --best --recursive"' \
+            --directory "${remdir}" \
+            --create \
+            --file ${must_gather_dir}.tar.gz must_gather/
+        $rem rm -rf "${must_gather_dir}"
+
+        # Get remote logs
+        scp $log:$remdir/* $dir/
+        $rem rm -rf $remdir
+
+        # Post processing
+        cd $dir
+        for f in $(ls *.tar.gz 2> /dev/null); do
+            hostname=$(tar xOf $f journal|grep 'set hostname'|sed -e "s/.*set hostname to '//" -e "s/'.*//")
+            if [ -n "$hostname" ]; then
+                mv $f $hostname-files.tar.gz
+            fi
+        done
+    else
+        echo "Unable to create a temporary directory on $rem" 1>&2
+    fi
+fi
+
+# get-logs ends here
