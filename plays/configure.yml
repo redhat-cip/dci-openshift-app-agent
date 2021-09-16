@@ -13,8 +13,6 @@
     tasks_from: pre-run.yml
   vars:
     tnf_git_dir: "{{ dci_cache_dir }}"
-    tnf_registry: "{{ local_registry_host }}:{{ local_registry_port }}"
-    tnf_registry_creds: "{{ local_registry_user }}:{{ local_registry_password }}"
-  when: do_cnf_cert is defined and do_cnf_cert|bool
+  when: do_cnf_cert|bool
 
 ...

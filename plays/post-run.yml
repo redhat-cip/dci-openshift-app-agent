@@ -13,6 +13,6 @@
   include_role:
     name: cnf-cert
     tasks_from: post-run.yml
-  when: do_cnf_cert is defined and do_cnf_cert|bool
+  when: do_cnf_cert|bool
 
 ...

@@ -9,6 +9,6 @@
     tnf_ns: "{{ dci_openshift_app_ns }}"
     tnf_tempdir:
       path: "{{ job_logs.path }}"
-  when: do_cnf_cert is defined and do_cnf_cert|bool
+  when: do_cnf_cert|bool
 
 ...
