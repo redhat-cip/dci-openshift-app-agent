@@ -241,7 +241,7 @@ This hook is controlled with two variables:
 - `dci_teardown_on_success` (default: true)
 - `dci_teardown_on_failure` (default: false)
 
-It's included either when there's a failure or at the end of all the steps.
+It's included either when there's a failure, error or at the end of all the steps.
 
 ## Known issues
 
