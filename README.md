@@ -1,6 +1,7 @@
 # DCI Openshift App Agent
 
 `dci-openshift-app-agent` enables Cloud-Native Applications and Operators in OpenShift using Red Hat Distributed CI service.
+This agent is expected to be installed in a RHEL8 server (from now on referred as jumphost) with access to the API of an already deployed OCP cluster.
 
 ## Table of Contents
 
@@ -21,17 +22,23 @@
 
 ## Requirements
 
-The `dci-openshift-app-agent` is packaged and available as a RPM file located in [this repository](https://packages.distributed-ci.io/dci-release.el8.noarch.rpm). It can be installed with the following command:
+The `dci-openshift-app-agent` is packaged and available as a RPM file located in [this repository](https://packages.distributed-ci.io/dci-release.el8.noarch.rpm). It can be installed in the jumphost server with the following command:
+
+NOTE: Access to baseos-rpms and appstream-rpms repositories is required too.
 
 ```bash
-dnf -y install dci-openshift-app-agent
+# dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+# dnf -y install https://packages.distributed-ci.io/dci-release.el8.noarch.rpm
+# dnf -y install dci-openshift-app-agent
 ```
 
 Once installed, to execute the `dci-openshift-app-agent`, a running OpenShift cluster, together with the credentials needed to make use of the cluster (i.e. through the `KUBECONFIG` environment variable) are needed.
 
-The OpenShift cluster can be built beforehand by running the [DCI OpenShift Agent](https://github.com/redhat-cip/dci-openshift-agent) with the proper configuration to install the desired OCP version. 
+The OpenShift cluster can be built beforehand by running the [DCI OpenShift Agent](https://github.com/redhat-cip/dci-openshift-agent) with the proper configuration to install the desired OCP version.
 
-Once installed, you need to export the `kubeconfig` file from the provisionhost (usually located in `~/clusterconfigs/auth/kubeconfig`) to the host in which `dci-openshift-app-agent` is executed. Then, you have set the `KUBECONFIG` environment variable to the path to the kubeconfig file in that host with `export KUBECONFIG=<path_to_kubeconfig>` 
+Once installed, you need to export the `kubeconfig` from the jumphost to the host in which `dci-openshift-app-agent` is executed. Then, you have set the `KUBECONFIG` environment variable to the path to the kubeconfig file in that host with `export KUBECONFIG=<path_to_kubeconfig>`
+
+NOTE: If you followed the instructions of DCI Openshift Agent to deploy the cluster, the `kubeconfig` file is on the provisionhost (usually located in `~/clusterconfigs/auth/kubeconfig`)
 
 These instructions applies when using the `dci-openshift-app-agent` over both baremetal and virtual machines (libvirt) environments.
 
@@ -47,7 +54,7 @@ Copy this to `/etc/dci-openshift-app-agent/dcirc.sh` to get started, then replac
 
 From the web the [DCI web dashboard](https://www.distributed-ci.io), the partner team administrator has to create a `Remote CI` in the DCI web dashboard.
 
-Copy the relative credential and paste it locally on the Jumpbox to `/etc/dci-openshift-app-agent/dcirc.sh`.
+Copy the relative credential and paste it locally on the Jumphost to `/etc/dci-openshift-app-agent/dcirc.sh`.
 
 This file should be edited once:
 
@@ -71,6 +78,7 @@ dci\_topic                         |                                            
 dci\_tags                          | ["debug"]                                            | List of tags to set on the job
 dci\_name                          |                                                      | Name of the job
 dci\_configuration                 |                                                      | String representing the configuration of the job
+dci\_config\_dir                   |                                                      | Path of the desired hooks directory
 dci\_comment                       |                                                      | Comment to associate with the job
 dci\_url                           |                                                      | URL to associate with the job
 dci\_components\_by\_query         | []                                                   | Component by query. ['name:4.5.9']
@@ -89,6 +97,23 @@ tnf\_targetpodlabels\_name         | ""                                         
 tnf\_targetpodlabels\_value        | ""                                                   | for CNF Cert Suite v3.0.0, value of the label to be attached to the workload created, then using it in the CNF Cert Suite configuration file for retrieving automatically the workload. Not to be used for versions equal or lower to v2.0.0
 tnf\_non\_intrusive\_only          | true                                                 | for CNF Cert Suite v3.0.0, set it to true if you would like to skip intrusive tests which may disrupt cluster operations. Likewise, to enable intrusive tests, set it to false. Not to be used for versions equal or lower to v2.0.0
 verify\_cnf\_features              | false                                                | for CNF Cert Suite v3.0.0, the test suites from [openshift-kni/cnf-feature-deploy](https://github.com/openshift-kni/cnf-features-deploy) can be run prior to the actual CNF certification test execution and the results are incorporated in the same claim file if the following environment variable is set to true. Not to be used for versions equal or lower to v2.0.0
+
+A minimal configuration is required for the DCI OpenShift App Agent to run, before launching the agent, make sure you have the following:
+
+1. In /etc/dci-openshift-app-agent/settings.yml these variables are required, see their definitions in the table above. You can also define this variables in a different form, see section [Using customized tags](#using-customized-tags) below where a fake `job_info` is created.
+```ShellSession
+dci_topic:
+dci_components_by_query:
+dci_comment:
+```
+2. The DCI OpenShift App Agent by default runs a series of Ansible playbooks called hooks in phases (see section [Hooks](#hooks)). The default files only contain the string `---` and no actions are performed. The install.yml is missing on purpose, and if you run the agent at this point, you will receive an error. In that case you can choose between one of the following options to proceed:
+
+- Create install.yml file with the string `---` and no actions will be performed at this phase.
+- Create install.yml with your own tasks.
+- Include dci_config_dir variable in `settings.yml` with the path where the hooks you want to execute are located.
+
+Some examples of hooks are provided in the $HOME directory of the `dci-openshift-app-agent` user (/var/lib/dci-openshift-app-agent/samples/).
+
 
 ## Launching the agent
 
