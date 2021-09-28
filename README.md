@@ -24,6 +24,10 @@
 The `dci-openshift-app-agent` is packaged and available as a RPM file located in [this repository](https://packages.distributed-ci.io/dci-release.el8.noarch.rpm). It can be installed with the following command:
 
 ```bash
+dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+dnf -y install https://packages.distributed-ci.io/dci-release.el8.noarch.rpm
+subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms
+subscription-manager repos --enable=rhel-8-for-x86_64-appstream-rpms
 dnf -y install dci-openshift-app-agent
 ```
 
