@@ -6,6 +6,7 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
 ## Table of Contents
 
 - [Requirements](#requirements)
+- [Installation](#installation)
 - [Configuration](#configuration)
 - [Launching the agent](#launching-the-agent)
   - [Using customized tags](#using-customized-tags)
@@ -16,23 +17,50 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
   - [Tests](#tests)
   - [Post-run](#post-run)
   - [Teardown](#teardown)
+- [Examples](#examples)
 - [Known issues](#known-issues)
+- [Proxy Considerations](#proxy-considerations)
 - [License](#license)
 - [Contact](#contact)
 
 ## Requirements
 
-The `dci-openshift-app-agent` is packaged and available as a RPM file located in [this repository](https://packages.distributed-ci.io/dci-release.el8.noarch.rpm). It can be installed in the jumphost server with the following command:
+Before starting make sure the next list of items are covered in the Jumpbox server.
 
-NOTE: Access to baseos-rpms and appstream-rpms repositories is required too.
+- Be running the latest stable RHEL release (**8.4 or higher**) and registered via RHSM.
+- Ansible 2.9 (See section [Known issues](#know-issues) for newer Ansible versions)
+- Access to the Internet, it could be through a proxy. (See section [Proxy Considerations](#proxy-considerations))
+- Access to the following repositories:
+  - epel
+  - dci-release
+  - baseos-rpms
+  - appstream-rpms
+- kubernetes python module (Optional, but most use cases will probably require it to use k8s ansible module)
+
+In an already registered server with RHEL you can fullfil the repositories requirements with the following commands:
 
 ```bash
 # dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 # dnf -y install https://packages.distributed-ci.io/dci-release.el8.noarch.rpm
+# subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms
+# subscription-manager repos --enable=rhel-8-for-x86_64-appstream-rpms
+```
+
+Then install kubernetes module
+```bash
+# dnf install python3-kubernetes
+```
+> NOTE: Another option is to use pip3, and you can use a more recent version of the module
+
+## Installation
+
+The `dci-openshift-app-agent` is packaged and available as a RPM file located in [this repository](https://packages.distributed-ci.io/dci-release.el8.noarch.rpm). It can be installed in the jumphost server with the following command:
+
+```bash
 # dnf -y install dci-openshift-app-agent
 ```
 
-Once installed, to execute the `dci-openshift-app-agent`, a running OpenShift cluster, together with the credentials needed to make use of the cluster (i.e. through the `KUBECONFIG` environment variable) are needed.
+In order to execute the `dci-openshift-app-agent`, a running OpenShift cluster, together with the credentials needed to make use of the cluster (i.e. through the `KUBECONFIG` environment variable) are needed.
 
 The OpenShift cluster can be built beforehand by running the [DCI OpenShift Agent](https://github.com/redhat-cip/dci-openshift-agent) with the proper configuration to install the desired OCP version.
 
@@ -44,17 +72,11 @@ These instructions applies when using the `dci-openshift-app-agent` over both ba
 
 ## Configuration
 
-There are two configuration files for `dci-openshift-app-agent`: `/etc/dci-openshift-app-agent/dcirc.sh` and `/etc/dci-openshift-app-agent/settings.yml`.
+There are two configuration files for `dci-openshift-app-agent`:
 
-- `/etc/dci-openshift-app-agent/dcirc.sh`
+**1. /etc/dci-openshift-app-agent/dcirc.sh**
 
-Note: The initial copy of `dcirc.sh` is shipped as `/etc/dci-openshift-app-agent/dcirc.sh.dist`.
-
-Copy this to `/etc/dci-openshift-app-agent/dcirc.sh` to get started, then replace inline some values with your own credentials.
-
-From the web the [DCI web dashboard](https://www.distributed-ci.io), the partner team administrator has to create a `Remote CI` in the DCI web dashboard.
-
-Copy the relative credential and paste it locally on the Jumphost to `/etc/dci-openshift-app-agent/dcirc.sh`.
+From the [DCI web dashboard](https://www.distributed-ci.io), the partner team administrator has to create a `Remote CI` in the DCI web dashboard. Copy the relative credential and paste it locally on the Jumphost to `/etc/dci-openshift-app-agent/dcirc.sh`.
 
 This file should be edited once:
 
@@ -68,7 +90,9 @@ export DCI_API_SECRET
 export DCI_CS_URL
 ```
 
-- `/etc/dci-openshift-app-agent/settings.yml`
+> NOTE: The initial copy of `dcirc.sh` is shipped as `/etc/dci-openshift-app-agent/dcirc.sh.dist`. You can copy this to `/etc/dci-openshift-app-agent/dcirc.sh` to get started, then replace inline some values with your own credentials.
+
+**2. /etc/dci-openshift-app-agent/settings.yml**
 
 This file allows to provide some variables to the DCI OpenShift App Agent for configuration purposes. Main variables available (mainly related to the [CNF Cert Suite](https://github.com/test-network-function/test-network-function)) are the following:
 
@@ -109,33 +133,35 @@ dci_comment:
 2. The DCI OpenShift App Agent by default runs a series of Ansible playbooks called hooks in phases (see section [Hooks](#hooks)). The default files only contain the string `---` and no actions are performed. The install.yml is missing on purpose, and if you run the agent at this point, you will receive an error. In that case you can choose between one of the following options to proceed:
 
 - Create install.yml file with the string `---` and no actions will be performed at this phase.
-- Create install.yml with your own tasks.
+- Create install.yml with your own tasks. (You might also consider provide tasks for all the phases: pre-run, tests, post-run, teardown)
 - Include dci_config_dir variable in `settings.yml` with the path where the hooks you want to execute are located.
 
-Some examples of hooks are provided in the $HOME directory of the `dci-openshift-app-agent` user (/var/lib/dci-openshift-app-agent/samples/).
-
+> See section [Examples](#examples) for basic configurations of settings.yml to start using the agent.
 
 ## Launching the agent
 
-Once the agent is configured, you can start it as a service.
+The agent can be executed manually or through systemd, once the agent is configured, you can start it either way.
 
-Please note that the service is a systemd `Type=oneshot`. This means that if you need to run a DCI job periodically, you have to configure a `systemd timer` or a `crontab`.
-
-```ShellSession
-# systemctl start dci-openshift-app-agent
-```
-
-If you need to run the `dci-openshift-app-agent` manually in foreground,
-you can use this command line:
+### Running it manually
+If you need to run the `dci-openshift-app-agent` manually in foreground, you can use this command line:
 
 ```ShellSession
 # su - dci-openshift-app-agent
 $ dci-openshift-app-agent-ctl -s
 ```
+### Running it as a service.
+
+If you prefer to launch a job with systemd, start the dci-openshift-app-agent service
+
+```ShellSession
+# systemctl start dci-openshift-app-agent
+```
+
+> Please note that the service is a systemd `Type=oneshot`. This means that if you need to run a DCI job periodically, you have to configure a `systemd timer` or a `crontab`.
 
 ### Using customized tags
 
-To replay any steps, please use Ansible tags (--tags). Please refer to [Workflow](#workflow) section to understand the steps that compose the `dci-openshift-app-agent`.
+To replay any steps, the use of Ansible tags (--tags) is an option. Please refer to [Workflow](#workflow) section to understand the steps that compose the `dci-openshift-app-agent`.
 
 ```ShellSession
 # su - dci-openshift-app-agent
@@ -268,14 +294,90 @@ This hook is controlled with two variables:
 
 It's included either when there's a failure, error or at the end of all the steps.
 
+## Examples
+
+Some examples of hooks are provided in the $HOME directory of the `dci-openshift-app-agent` user (/var/lib/dci-openshift-app-agent/samples/). You can use those to initialize the agent tests.
+To use these samples, you need to include the variable `dci_config_dir` with the path of the sample to use in the settings.yml.
+
+> NOTE: Please check the README.md and requirements.txt files for more information of how to use the examples.
+
+1. To create a namespace and webserver pod, validate is running, and delete it, the settings.yml file will look like this:
+
+File: settings.yml
+```bash
+dci_topic: OCP-4.8
+dci_components_by_query: ['4.8.13']
+dci_comment: "Test webserver"
+dci_openshift_app_ns: testns
+dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
+```
+
+2. To validate the CNF test suite against a example workload, the settings.yml file will look like this:
+
+File: settings.yml
+```bash
+dci_topic: OCP-4.8
+dci_components_by_query: ['4.8.13']
+dci_comment: "Test CNF suite"
+dci_openshift_app_ns: testns
+dci_config_dir: /var/lib/dci-openshift-app-agent/samples/tnf_test_example
+dci_openshift_app_image: quay.io/testnetworkfunction/cnf-test-partner:latest
+tnf_suites: "diagnostic access-control networking lifecycle observability platform-alteration"
+tnf_targetpodlabels_name: environment
+tnf_targetpodlabels_value: testing
+```
+
 ## Known issues
 
-- If you want to test the CNF Cert Suite in a libvirt environment, remember to tag the OCP nodes to fit in the NodeSelector property defined in partner's pod (`NodeSelectors: role=partner`):
+### Libvirt Considerations
+
+If you want to test the CNF Cert Suite in a libvirt environment, remember to tag the OCP nodes to fit in the NodeSelector property defined in partner's pod (`NodeSelectors: role=partner`):
 
 ```bash
 # for X in 0:n, with n = { number of master nodes - 1 }
 oc label node master-X role=partner
 ```
+
+### Newer Ansible Versions
+
+Red Hat Enterprise Linux 8 defaults to Ansible 2.9 installed from Ansible or base repositories, it is highly recommended to use this version because using Ansible >= 2.10 requires newer versions of other python modules that can affect your entire server. You can install Ansible 2.10 or Ansible core (2.11) via other methods, but because starting at 2.10 the use of collections has introduced some changes, you need to install a few collections to make it work
+
+After installing the agent, login as dci-openshift-app-agent user and install the following collections
+
+```bash
+# su - dci-openshift-app-agent
+$ ansible-galaxy collection install community.kubernetes
+$ ansible-galaxy collection install community.general
+```
+Also the use of newer Ansible versions requires a recent version of the kubernetes python module ( >= 12.0.0), as today only available through pip3
+
+You can upgrade the current version for the dci-openshift-app-agent user only or install a specific version like this:
+```bash
+$ python3 -m pip install -U kubernetes --user
+# or
+$ python3 -m pip install kubernetes==12.0.1 --user
+```
+
+### Permissions to use Topics
+
+You might encounter an error when running the dci-openshift-app-agent for first time with the message `Topic: XYZ Resource not found` the reasons could be the following:
+
+- Incorrect spelling of the Topic. Login to the [DCI web dashboard](https://www.distributed-ci.io) and go to the `Topics` section in the left menu. There you could find the correct names and Topics available to use.
+- If spelling is correct, then this might be a permissions issue. Ask the partner team administrator to verify the permissions on the group your account belongs.
+
+## Proxy Considerations
+
+If you use a proxy to go to the Internet, export the following variables in the dci-openshift-app-agent user session where you run the agent, if you use the systemd service then it would be a good idea to store these variables in the ~/.bashrc file of the dci-openshift-app-agent user
+
+Replace PROXY-IP:PORT with your respective settings and 10.X.Y.Z/24 with the cluster subnet of the OCP cluster, and example.com with the base domain of your cluster.
+
+```bash
+$ export http_proxy=http://PROXY-IP:PORT
+$ export https_proxy=http://PROXY-IP:PORT
+$ export no_proxy=10.X.Y.Z/24,.example.com
+```
+
+> NOTE: Also consider setting the proxy settings in the /etc/rhsm/rhsm.conf file if you use the Red Hat CDN to pull packages, otherwise the agent might fail to install dependencies required during the execution of the CNF test suite.
 
 ## License
 
