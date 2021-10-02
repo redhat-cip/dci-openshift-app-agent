@@ -64,6 +64,12 @@ do
         -d|--dev)
             dev=1
             sed -e "s@/etc/dci-openshift-app-agent/@$DIR/@" -e "s@\(roles_path\s*=\s*\)/@\1$DIR/roles:/@" < $DIR/ansible.cfg > $DIR/dev-ansible.cfg
+            if [ -n "$DCI_ANSIBLE_DIR" ]; then
+                sed -i -e "s@/usr/share/dci/\(modules\|module_utils\|action_plugins\)@$DCI_ANSIBLE_DIR/\1@g" -e "s@/usr/share/dci/callback/@$DCI_ANSIBLE_DIR/callback/@" dev-ansible.cfg
+            fi
+            if [ -n "$DCI_ANSIBLE_ROLES" ]; then
+                sed -i -e "s@\(roles_path\s*=\s*\)@\1${DCI_ANSIBLE_ROLES}:@" dev-ansible.cfg
+            fi
             config_dir="$DIR"
             config="$config_dir/settings.yml"
             DCI_OPENSHIFT_APP_AGENT_DIR="$DIR"
@@ -116,8 +122,10 @@ if [ -n "$prefix" ]; then
 fi
 
 if [ "$start" != 1 ]; then
-    echo "Dry-Run: pass -s or --start to actually execute"
+    echo "Dry-Run: pass -s or --start to actually execute. Running a syntax check instead:"
 fi
+
+set -x
 
 if [ -z "$dev" ]; then
     [ -e /etc/dci-openshift-app-agent/dcirc.sh ] && . /etc/dci-openshift-app-agent/dcirc.sh

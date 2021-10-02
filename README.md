@@ -327,6 +327,21 @@ tnf_targetpodlabels_name: environment
 tnf_targetpodlabels_value: testing
 ```
 
+## Development mode
+
+You can launch the agent from a local copy by passing the `-d` command line option:
+
+```ShellSession
+$ dci-openshift-app-agent-ctl -s -d
+```
+
+`dcirc.sh` is read from the current directory instead of `/etc/dci-openshift-app-agent/dcirc.sh`.
+
+You can override the location of `dci-ansible` using the `DCI_ANSIBLE_DIR` environment variable.
+
+You can add extra paths for Ansible roles using the
+`DCI_ANSIBLE_ROLES` environment variable separating paths by `:`.
+
 ## Known issues
 
 ### Libvirt Considerations
