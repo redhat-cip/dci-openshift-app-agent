@@ -2,7 +2,7 @@
 - name: "Install required rpm packages"
   package:
     name: "{{ item }}"
-    state: latest
+    state: present
   loop:
     - curl
     - python3-openshift
