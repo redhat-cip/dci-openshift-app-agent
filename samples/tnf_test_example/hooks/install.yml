@@ -33,7 +33,7 @@
     exclude_connectivity_regexp: "{{ tnf_exclude_connectivity_regexp|default('') }}"
   when: test_pods.resources|length == 0
 
-- name: Wait untill all test pods are running
+- name: Wait until all test pods are running
   k8s_info:
     namespace: "{{ app_ns }}"
     kind: Pod
