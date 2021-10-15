@@ -48,6 +48,10 @@ for play in plays/*.yml; do
     install -p -D -m 644 $play %{buildroot}%{_datadir}/dci-openshift-app-agent/$play
 done
 
+for script in plays/scripts/*; do
+    install -p -D -m 755 $script %{buildroot}%{_datadir}/dci-openshift-app-agent/$script
+done
+
 install -p -D -m 644 group_vars/all %{buildroot}%{_datadir}/dci-openshift-app-agent/group_vars/all
 
 install -p -D -m 644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
@@ -93,6 +97,7 @@ exit 0
 %{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
 %{_datadir}/dci-openshift-app-agent/requirements.yml
 %{_datadir}/dci-openshift-app-agent/plays/*.yml
+%{_datadir}/dci-openshift-app-agent/plays/scripts/*
 %{_datadir}/dci-openshift-app-agent/roles/*
 %{_datadir}/dci-openshift-app-agent/group_vars/all
 
