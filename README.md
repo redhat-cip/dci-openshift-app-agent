@@ -389,6 +389,70 @@ You might encounter an error when running the dci-openshift-app-agent for first 
 
 Note that have to add the SSH public key of the user that runs the "dci-openshift-app-agent-ctl" command to SSH "provisioner_name" with "provisioner_user", in case you want to retrieve logs from the OCP deployment.
 
+### Problems related to UIDs while running containers with podman in localhost
+
+Conditions in which the issue appeared:
+
+- dci-openshift-app-agent installed.
+- Execution of dci-openshift-app-agent directly using dci-openshift-app-agent-ctl, with the dci-openshift-app-agent user.
+- Attempt to run a container, using podman, in localhost (e.g. tnf container for running the CNF Cert Suite).
+
+Under these conditions, the error presented is the following (there may be other different errors, but all related to the same issue - lack of IDs available):
+
+```
+Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
+ Error: unable to pull quay.io/testnetworkfunction/test-network-function:unstable: unable to pull image: Error committing the finished image: error adding layer with blob "sha256:0a3cf4c29951bdca5c283957249a78290fb441c4ef2ce74f51815056e4be7e7f": Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
+```
+
+The problem seems to be related to the subordinate user and group mapping applied for the dci-openshift-app-agent user, a feature that is needed to run rootless containers in podman, or to isolate containers with a user namespace.
+
+This issue has already been fixed by removing -r option when creating the dci-openshift-app-agent user in dci-openshift-app-agent.spec file. But, in case you installed dci-openshift-app-agent prior to this patch (you can check it by looking at /etc/subuid and /etc/subgid files, confirming that no entries related to dci-openshift-app-agent user are present there), you have to follow these steps:
+
+1. Check the content of /etc/subuid and /etc/subgid files. If you have already installed dci-openshift-agent on your system, you should have an entry like this in both files:
+
+```bash
+$ dci-openshift-agent:100000:65536
+```
+
+2. Copy that entry and paste it in both files, but setting the first value to dci-openshift-app-agent. If dci-openshift-agent is not installed in your server, then copy directly the line above and change the first value to dci-openshift-app-agent. Both /etc/subuid and /etc/subgid files should include a line like this now:
+
+```bash
+$ dci-openshift-app-agent:100000:65536
+```
+
+3. Stop and delete all containers that may be running on podman.
+
+```bash
+podman stop $(podman ps -a -q)
+podman rm $(podman ps -a -q)
+```
+
+4. Kill processes related to podman:
+
+```bash
+ps -fe | grep podman | grep -v grep
+# kill the processes obtained with kill -9 <pid>
+```
+
+5. To conclude, execute the following (it should not be necessary but just in case there are some containers running):
+
+```bash
+podman system migrate
+```
+
+Make sure of changing the ownership of certain resources (e.g. the ones under /var/lib/dci-openshift-app-agent directory):
+
+```bash
+sudo chown dci-openshift-app-agent:dci-openshift-app-agent -R /var/lib/dci-openshift-app-agent/
+```
+
+Then, you can retry to deploy the containers and it should work.
+
+References:
+
+- https://access.redhat.com/solutions/4381691
+- https://docs.docker.com/engine/security/userns-remap/
+
 ## Proxy Considerations
 
 If you use a proxy to go to the Internet, export the following variables in the dci-openshift-app-agent user session where you run the agent, if you use the systemd service then it would be a good idea to store these variables in the ~/.bashrc file of the dci-openshift-app-agent user
