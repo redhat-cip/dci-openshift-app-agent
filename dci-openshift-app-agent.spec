@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.3.0
+Version:       0.3.1
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -67,7 +67,7 @@ install -v -p -D -m 755 dci-openshift-app-agent-ctl %{buildroot}%{_bindir}/dci-o
 %pre
 getent group dci-openshift-app-agent >/dev/null || groupadd -r dci-openshift-app-agent
 getent passwd dci-openshift-app-agent >/dev/null || \
-    useradd -r -m -g dci-openshift-app-agent -d %{_sharedstatedir}/dci-openshift-app-agent -s /bin/bash \
+    useradd -m -g dci-openshift-app-agent -d %{_sharedstatedir}/dci-openshift-app-agent -s /bin/bash \
             -c "DCI Openshift App Agent service" dci-openshift-app-agent
 exit 0
 
@@ -108,6 +108,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Wed Oct 10 2021 Ramon Perez <raperez@redhat.com> 0.3.1-1
+- Sub-ids support in d-o-a-a user. Including d-o-a-a/plays/scripts/ entry.
+
 * Wed May  5 2021 Frederic Lepied <flepied@redhat.com> 0.3.0-1
 - add dci-openshift-app-agent-ctl and settings.yml
 
