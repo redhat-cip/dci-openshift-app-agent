@@ -28,8 +28,7 @@
     state: present
     definition: "{{ lookup('template', 'templates/test_deployment.yml.j2') | from_yaml }}"
   vars:
-    targetpodlabels_name: "{{ tnf_targetpodlabels_name|default('') }}"
-    targetpodlabels_value: "{{ tnf_targetpodlabels_value|default('') }}"
+    targetpodlabels: "{{ tnf_targetpodlabels|default([]) }}"
     exclude_connectivity_regexp: "{{ tnf_exclude_connectivity_regexp|default('') }}"
   when: test_pods.resources|length == 0
 

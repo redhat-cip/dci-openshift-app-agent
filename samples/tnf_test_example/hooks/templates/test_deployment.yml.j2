@@ -12,8 +12,10 @@ spec:
     metadata:
       labels:
         app: test
-{% if targetpodlabels_name|length and targetpodlabels_value|length %}
-        test-network-function.com/{{ targetpodlabels_name }}: {{ targetpodlabels_value }}
+{% if targetpodlabels|length %}
+{% for label in targetpodlabels %}
+        {{ label|regex_replace('=', ': ') }}
+{% endfor %}
 {% if exclude_connectivity_regexp|length and ( "test" | regex_search(exclude_connectivity_regexp) ) %}
         test-network-function.com/skip_connectivity_tests: 'true'
 {% endif %}

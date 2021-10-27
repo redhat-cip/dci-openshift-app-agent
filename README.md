@@ -113,20 +113,19 @@ provisionhost\_registry\_creds     | ""                                         
 dci\_openshift\_app\_image         | quay.io/testnetworkfunction/cnf-test-partner:latest  | image to be used for the workload. It can be retrieved from public repositories (i.e. Quay.io) or internal repositories (e.g. for disconnected environments)
 dci\_openshift\_app\_ns            | "myns"                                               | namespace for the workload
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
-postrun\_delete\_partner           | true                                                 | Primarily used for debugging partner deployments. Setting to 'false' will not delete the partner deployment during the postrun.
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 do\_cnf\_cert                      | false                                                | launch the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
 test\_network\_function\_version   | HEAD                                                 | CNF Cert Suite version downloaded. The DCI OpenShift App Agent currently supports only the latest version, which is HEAD in the main branch
-tnf\_operators\_regexp             | ""                                                   | regexp to select operators to be tested by the CNF Cert Suite. In case of needing it, the code to handle it must be included in the partner's hooks.
-tnf\_cnfs\_regexp                  | ""                                                   | regexp to select CNF to be tested by the CNF Cert Suite. In case of needing it, the code to handle it must be included in the partner's hooks.
-tnf\_exclude\_connectivity\_regexp | ""                                                   | regexp to exclude containers from the connectivity test. When deploying the pods, some code is needed to use this regex, [like in this example](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/samples/tnf_test_example/hooks/templates/test_deployment.yml.j2).
 tnf\_suites                        | "diagnostic access-control networking lifecycle observability platform-alteration operator"                                                                                 | list of space separated [test suites](https://github.com/test-network-function/test-network-function#general-tests).
-tnf\_targetpodlabels\_name         | ""                                                   | name of the label to be attached to the workload created, then using it in the CNF Cert Suite configuration file for retrieving automatically the workload
-tnf\_targetpodlabels\_value        | ""                                                   | value of the label to be attached to the workload created, then using it in the CNF Cert Suite configuration file for retrieving automatically the workload
+tnf\_targetpodlabels               | []                                                   | list of autodiscovery labels to be considered by the CNF Cert Suite for pod testing. The format of each element of the list must be one of the following two: <label\_name>=<label\_value> if no prefix is provided (e.g. [environment=test]) or <label\_prefix>/<label\_name>=<label\_value> if a prefix is provided (e.g. [test-network-function.com/environment=test]). Remember to label the pods you want to test with these autodiscovery labels before executing the CNF Cert Suite. You can do it manually or programatically (an example of this can be found in [tnf_test_example](samples/tnf_test_example)) 
+tnf\_operators\_regexp             | ""                                                   | regexp to select operators to be tested by the CNF Cert Suite. In case of needing it, the code to handle it must be included in the partner's hooks.
+tnf\_exclude\_connectivity\_regexp | ""                                                   | regexp to exclude containers from the connectivity test. When deploying the pods, some code is needed to use this regex, [like in this example](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/samples/tnf_test_example/hooks/templates/test_deployment.yml.j2).
 tnf\_non\_intrusive\_only          | true                                                 | set it to true if you would like to skip intrusive tests which may disrupt cluster operations. Likewise, to enable intrusive tests, set it to false
 tnf\_run\_cfd\_test                | false                                                | the test suites from [openshift-kni/cnf-feature-deploy](https://github.com/openshift-kni/cnf-features-deploy) can be run prior to the actual CNF certification test execution and the results are incorporated in the same claim file if the following environment variable is set to true
 tnf\_debug\_image                  | quay.io/openshift-release-dev/ocp-v4.0-art-dev@sh... | image to be used for `oc debug` command in CNF Cert Suite
+tnf\_log\_level                    | "debug"                                              | log level used to run the CNF Cert Suite. Possible values can be checked [here](https://github.com/test-network-function/test-network-function#log-level)
+tnf\_postrun\_delete\_resources    | true                                                 | Primarily used for debugging partner deployments when using the CNF Cert Suite. Setting to 'false' will not delete the partner deployment and the debug daemonSet during the postrun.
 
 A minimal configuration is required for the DCI OpenShift App Agent to run, before launching the agent, make sure you have the following:
 
@@ -329,8 +328,7 @@ dci_openshift_app_ns: testns
 dci_config_dir: /var/lib/dci-openshift-app-agent/samples/tnf_test_example
 dci_openshift_app_image: quay.io/testnetworkfunction/cnf-test-partner:latest
 tnf_suites: "diagnostic access-control networking lifecycle observability platform-alteration"
-tnf_targetpodlabels_name: environment
-tnf_targetpodlabels_value: testing
+tnf_targetpodlabels: [test-network-function/environment=testing]
 ```
 
 ## Development mode
