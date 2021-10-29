@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - command: [ "/bin/bash", "-c", "echo 'logs' && tail -f /dev/null" ]
-          image: {{ dci_openshift_app_image }}
+          image: {{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
           name: test
           resources:
             requests:
