@@ -14,6 +14,7 @@ Requires: dci-ansible
 Requires: ansible-role-dci-import-keys
 Requires: ansible-role-dci-retrieve-component
 Requires: ansible-role-dci-cvp
+Requires: ansible-collection-community-kubernetes
 Requires(pre): shadow-utils
 Requires(post): systemd
 Requires(preun): systemd
