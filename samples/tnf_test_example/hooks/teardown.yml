@@ -5,3 +5,4 @@
     kind: Namespace
     name: "{{ app_ns }}"
     state: absent
+  when: app_ns is defined

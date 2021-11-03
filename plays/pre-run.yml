@@ -57,6 +57,7 @@
 - name: Display ocp_component_id
   debug:
     msg: "{{ ocp_component_id }}"
+  when: "ocp_component_id is defined"
 
 - name: Attach ocp component to the job
   dci_job_component:
