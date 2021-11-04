@@ -27,7 +27,9 @@
       loop: "{{ prev_job.job.components }}"
       tags: [dci]
 
-  when: "dci_previous_job_id is defined"
+  when:
+    - dci_previous_job_id is defined
+    - dci_previous_job_id|length
 
 - name: Lookup ocp component from oc version
   block:
