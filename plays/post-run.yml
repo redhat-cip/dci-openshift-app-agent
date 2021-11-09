@@ -15,4 +15,20 @@
     tasks_from: post-run.yml
   when: do_cnf_cert|bool
 
+- name: Run helm uninstall
+  command: "/usr/local/bin/helm -n {{ dci_openshift_app_ns }} uninstall instance"
+  ignore_errors: true
+  when:
+    - dci_chart_tgz_url is defined
+    - dci_teardown_on_success
+
+- name: Delete namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ dci_openshift_app_ns }}"
+    state: absent
+  when:
+    - dci_teardown_on_success
+
 ...

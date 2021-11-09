@@ -1,4 +1,5 @@
 ---
+
 - name: failure
   dci_job:
     id: "{{ job_id }}"
@@ -8,7 +9,24 @@
 - name: "Run common logging process"
   include_tasks: common_logging.yml
 
+- name: Run helm uninstall
+  command: "/usr/local/bin/helm -n {{ dci_openshift_app_ns }} uninstall instance"
+  ignore_errors: true
+  when:
+    - dci_chart_tgz_url is defined
+    - dci_teardown_on_failure
+
+- name: Delete namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ dci_openshift_app_ns }}"
+    state: absent
+  when:
+    - dci_teardown_on_failure
+
 - name: Fail properly
   fail:
     msg: "Failure: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
+
 ...

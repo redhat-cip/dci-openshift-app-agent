@@ -18,7 +18,7 @@
         - name: "Execute the teardown process"
           include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
           when:
-            - dci_teardown_on_failure|default(false)|bool
+            - dci_teardown_on_failure
             - check_teardown.stat.exists
 
         - name: "Execute the error process"
@@ -124,14 +124,17 @@
             status: "running"
           tags: [dci]
 
-        - name: "Execute install"
+        - name: "Execute install play"
+          include_tasks: 'plays/install.yml'
+
+        - name: "Execute install hook"
           include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
 
       rescue: &failure_with_upload_logs
         - name: "Execute the teardown process"
           include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
           when:
-            - dci_teardown_on_failure|default(false)|bool
+            - dci_teardown_on_failure
             - check_teardown.stat.exists
 
         - name: "Execute the failure process"
@@ -179,12 +182,12 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
-        - name: "Run post-run"
-          include_tasks: plays/post-run.yml
-
         - name: Run the post-run hook
           include_tasks: '{{ dci_config_dir }}/hooks/post-run.yml'
           when: check_post_run.stat.exists
+
+        - name: "Run post-run"
+          include_tasks: plays/post-run.yml
 
       rescue: *error_with_upload_logs
 
@@ -199,7 +202,7 @@
     - name: "Execute the teardown process"
       include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
       when:
-        - dci_teardown_on_success|default(true)|bool
+        - dci_teardown_on_success
         - check_teardown.stat.exists
 
     - name: success
