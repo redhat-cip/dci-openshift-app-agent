@@ -1,18 +1,4 @@
 ---
-- name: Check if namespace exists
-  k8s_info:
-    api_version: v1
-    kind: Namespace
-    name: "{{ app_ns }}"
-  register: app_namespace
-
-- name: Create namespace
-  k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ app_ns }}"
-    state: present
-  when: app_namespace.resources|length == 0
 
 - name: Create a simple pod
   k8s:

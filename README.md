@@ -108,6 +108,7 @@ dci\_url                           |                                            
 dci\_components\_by\_query         | []                                                   | Component by query. ['name:4.5.9']
 dci\_component                     | []                                                   | Component by UUID. ['acaf3f29-22bb-4b9f-b5ac-268958a9a67f']
 dci\_previous\_job\_id             | ""                                                   | Previous job UUID
+dci\_chart\_tgz\_url               | undefined                                            | The URL to an Helm chart tgz. For example: https://github.com/redhat-certification/chart-verifier/raw/main/pkg/chartverifier/checks/chart-0.1.0-v3.valid.tgz
 provisionhost\_registry            | ""                                                   | registry to fetch containers that may be used. Must be set in disconnected environments.
 provisionhost\_registry\_creds     | ""                                                   | path to the pull-secret.txt file to access to the registry. Must be set in disconnected environments.
 dci\_openshift\_app\_image         | quay.io/testnetworkfunction/cnf-test-partner:latest  | image to be used for the workload. It can be retrieved from public repositories (i.e. Quay.io) or internal repositories (e.g. for disconnected environments)
