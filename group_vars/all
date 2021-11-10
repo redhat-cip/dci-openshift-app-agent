@@ -7,7 +7,8 @@ dci_teardown_on_success: true
 dci_teardown_on_failure: false
 ocp_clients_url: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest
 dci_tags: ["debug"]
-dci_gits_to_component: "{{ dci_config_dir }}"
+dci_gits_to_components: "{{ dci_config_dir }}"
+dev_gits_to_components: []
 dci_rpms_to_components:
   - dci-openshift-app-agent
 dci_cache_dir: /var/lib/dci-openshift-app-agent
