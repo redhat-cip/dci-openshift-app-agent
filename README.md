@@ -9,6 +9,8 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Launching the agent](#launching-the-agent)
+  - [Running it manually](#running-it-manually)
+  - [Running it as a service](#running-it-as-a-service)
   - [Using customized tags](#using-customized-tags)
 - [General workflow](#general-workflow)
 - [Hooks](#hooks)
@@ -18,8 +20,16 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
   - [Post-run](#post-run)
   - [Teardown](#teardown)
 - [Examples](#examples)
+- [Development mode](#development-mode)
 - [Known issues](#known-issues)
+  - [Libvirt Considerations](#libvirt-considerations)
+  - [Newer Ansible Versions](#newer-ansible-versions)
+  - [Permissions to use Topics](#permissions-to-use-topics)
+  - [Remote access to provisioner](#remote-access-to-provisioner)
+  - [Problems related to UIDs while running containers with podman in localhost](#problems-related-to-uids-while-running-containers-with-podman-in-localhost)
+  - [Old Podman versions](#old-podman-versions)
 - [Proxy Considerations](#proxy-considerations)
+- [Testing a code change](#testing-a-code-change)
 - [License](#license)
 - [Contact](#contact)
 
@@ -27,14 +37,15 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
 
 Before starting make sure the next list of items are covered in the Jumpbox server.
 
-- Be running the latest stable RHEL release (**8.4 or higher**) and registered via RHSM.
-- Ansible 2.9 (See section [Known issues](#know-issues) for newer Ansible versions)
-- Access to the Internet, it could be through a proxy. (See section [Proxy Considerations](#proxy-considerations))
+- Be running the latest stable RHEL release (**8.4 or higher**) and registered via RHSM
+- Ansible 2.9 (See section [Newer Ansible Versions](#newer-ansible-versions) for newer Ansible versions)
+- Access to the Internet, it could be through a proxy (See section [Proxy Considerations](#proxy-considerations))
 - Access to the following repositories:
   - epel
   - dci-release
   - baseos-rpms
   - appstream-rpms
+- Podman 3.0 (See section [Old Podman versions](#old-podman-versions) for older Podman versions)
 - kubernetes python module (Optional, but most use cases will probably require it to use k8s ansible module)
 
 In an already registered server with RHEL you can fullfil the repositories requirements with the following commands:
@@ -155,7 +166,7 @@ If you need to run the `dci-openshift-app-agent` manually in foreground, you can
 # su - dci-openshift-app-agent
 $ dci-openshift-app-agent-ctl -s
 ```
-### Running it as a service.
+### Running it as a service
 
 If you prefer to launch a job with systemd, start the dci-openshift-app-agent service
 
@@ -454,6 +465,35 @@ References:
 
 - https://access.redhat.com/solutions/4381691
 - https://docs.docker.com/engine/security/userns-remap/
+
+### Old Podman versions
+
+It is recommended to use, at least, Podman 3.0 when running dci-openshift-app-agent, to avoid issues when pulling or building container images.
+
+If `sudo dnf update podman` does not work, you may need to follow some of these steps:
+
+1. Try to clean the cache just in case, and then list the available packages from the upstream repository to confirm if version 3 is listed. For example, for Podman 1.6.4, it is indeed provided by `rhel-8-for-x86_64-appstream-rpms` repo:
+
+```ShellSession
+$ sudo dnf clean all
+$ sudo dnf --disableexcludes all --disablerepo all --enablerepo rhel-8-for-x86_64-appstream-rpms list --available --showduplicates podman
+
+# If version 3 is listed, then run again:
+$ sudo dnf update podman
+```
+
+2. Try to find issues related to the Podman version you are using and apply the workarounds proposed. For example, for Podman 1.6.4, there was a [bug](https://github.com/containers/podman/issues/5306) related to the usage of rootless containers, in which it seems that, by removing .config and .local directories and starting from scratch, it fixed the issue.
+
+3. Confirm that the container tools version that corresponds to Podman 3 is enabled or not, and enable it if disabled (as long as it does not impact in other workloads apart from dci-openshift-app-agent running in the server). It can be checked with the following command:
+
+```ShellSession
+$ sudo dnf module list container-tools
+
+# If container-tools rhel8 is not enabled, type the following:
+$ sudo dnf module reset container-tools
+$ sudo dnf module enable container-tools:rhel8
+# And then upgrade podman
+```
 
 ## Proxy Considerations
 
