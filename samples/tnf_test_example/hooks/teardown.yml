@@ -1,1 +1,18 @@
 ---
+
+# if the namespace is dci_openshift_app_ns,
+# its deletion is handled in d-o-a-a plays, so
+# we do not need to do that here
+- name: Delete namespaces if not done before
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ item.namespace }}"
+    state: absent
+  when:
+    - tnf_config is defined
+    - tnf_config|length
+    - item.namespace is defined
+    - item.namespace|length
+    - item.namespace != dci_openshift_app_ns
+  loop: "{{ tnf_config }}"

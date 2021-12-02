@@ -1,37 +1,21 @@
 ---
 
-- name: Check if test pods exist
-  k8s_info:
-    api_version: v1
-    kind: Pod
-    namespace: "{{ app_ns }}"
-    label_selectors:
-      - test-network-function.com/generic = target
-  register: test_pods
-
-- name: Create a Deployment with 2 replicas of the testing pod
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'templates/test_deployment.yml.j2') | from_yaml }}"
+# If the namespace is dci_openshift_app_ns, its creation is handled in 
+# d-o-a-a plays, so we do not need to do that here.
+# exclude_connectivity_regexp is not checked because it is optional.
+- name: Create namespaces and deploy test pods on each namespace if not done before
+  include_tasks: deploy_pods_in_ns.yml
   vars:
-    targetpodlabels: "{{ tnf_targetpodlabels|default([]) }}"
-    exclude_connectivity_regexp: "{{ tnf_exclude_connectivity_regexp|default('') }}"
-  when: test_pods.resources|length == 0
-
-- name: Wait until all test pods are running
-  k8s_info:
-    namespace: "{{ app_ns }}"
-    kind: Pod
-    label_selectors:
-      - app=test
-  register: test_result
-  retries: 60
-  delay: 5
-  until:
-    - "test_result.resources|length == 2"
-    - "'status' in test_result.resources[0]"
-    - "'phase' in test_result.resources[0].status"
-    - "test_result.resources[0].status.phase == 'Running'"
-    - "'status' in test_result.resources[1]"
-    - "'phase' in test_result.resources[1].status"
-    - "test_result.resources[1].status.phase == 'Running'"
+    app_ns: "{{ pods_in_same_ns.namespace }}"
+    targetpodlabels: "{{ pods_in_same_ns.targetpodlabels }}"
+    exclude_connectivity_regexp: "{{ pods_in_same_ns.exclude_connectivity_regexp|default('') }}"
+  when:
+    - tnf_config is defined
+    - tnf_config|length
+    - pods_in_same_ns.namespace is defined
+    - pods_in_same_ns.namespace|length
+    - pods_in_same_ns.targetpodlabels is defined
+    - pods_in_same_ns.targetpodlabels is iterable
+  loop: "{{ tnf_config }}"
+  loop_control:
+    loop_var: pods_in_same_ns
