@@ -9,13 +9,6 @@
 - name: "Run common logging process"
   include_tasks: common_logging.yml
 
-- name: Run helm uninstall
-  command: "/usr/local/bin/helm -n {{ dci_openshift_app_ns }} uninstall instance"
-  ignore_errors: true
-  when:
-    - dci_chart_tgz_url is defined
-    - dci_teardown_on_failure
-
 - name: Delete namespace
   k8s:
     api_version: v1
