@@ -14,6 +14,7 @@ dci_rpms_to_components:
 dci_openshift_app_ns: "myns"
 do_cnf_cert: false
 do_preflight_tests: false
+submit_preflight_to_pyxis: false
 provisionhost_registry: "{% if dci_disconnected is defined and dci_disconnected|bool and local_registry_host is defined and local_registry_port is defined %}{{ local_registry_host }}:{{ local_registry_port }}{% else %}{% endif %}"
 provisionhost_registry_creds: "{% if dci_disconnected is defined and dci_disconnected|bool and provision_cache_store is defined %}{{ provision_cache_store }}/pull-secret.txt{% else %}{% endif %}"
 
