@@ -24,6 +24,7 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
 - [Known issues](#known-issues)
   - [Libvirt Considerations](#libvirt-considerations)
   - [Newer Ansible Versions](#newer-ansible-versions)
+    - [Upgrading Ansible version](#upgrading-ansible-version)
   - [Permissions to use Topics](#permissions-to-use-topics)
   - [Remote access to provisioner](#remote-access-to-provisioner)
   - [Problems related to UIDs while running containers with podman in localhost](#problems-related-to-uids-while-running-containers-with-podman-in-localhost)
@@ -395,6 +396,20 @@ $ python3 -m pip install -U kubernetes --user
 # or
 $ python3 -m pip install kubernetes==12.0.1 --user
 ```
+
+#### Upgrading Ansible version
+
+In this section from the [Ansible documentation web page](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#upgrading-ansible-with-pip), you can find the instructions to be followed to upgrade Ansible to a newer version.
+
+Apart from that, it is recommended to do the following:
+
+- Remove all Ansible packages installed via dnf
+- Remove dci-* packages if already installed
+- Reboot the jumphost (i.e. the server where dci-openshift-app-agent is executed)
+- Reinstall Ansible from pip/pip3 as recommended in the documentation
+- Reinstall dci packages
+
+And check that everything works.
 
 ### Permissions to use Topics
 
