@@ -99,25 +99,34 @@ do
     esac
 done
 
-if [ -r ${config_dir}/hosts ] && [ -z "$prefix" ] ; then
-    hosts_args="-i ${config_dir}/hosts"
-fi
-
 if [ -n "$prefix" ]; then
-    hosts="$config_dir/${prefix}-hosts"
     settings="$config_dir/${prefix}-settings.yml"
-    if [ -e "$settings" ]; then
-        prefix_args="${prefix_args} -e @$settings"
+    if [ -r "$settings" ]; then
+        settings_args="-e @$settings"
     else
         echo "Missing $settings, will only use $config."
+        settings_args="-e @$config"
     fi
 
-    if [ -e "$hosts" ]; then
-        prefix_args="-i $hosts"
+    hosts="$config_dir/${prefix}-hosts"
+    if [ -r "$hosts" ]; then
+        hosts_args="-i ${hosts}"
+    elif [ -r "${hosts}.yml" ]; then
+        hosts_args="-i ${hosts}.yml"
+    elif [ -r "${config_dir}/hosts" ]; then
+        hosts_args="-i ${config_dir}/hosts"
     else
-        echo "Missing $hosts"
-        exit 1
+        echo "Missing $hosts(.yml) or ${config_dir}/hosts"
     fi
+else
+    if [ -r ${config_dir}/hosts ]; then
+        hosts_args="-i ${config_dir}/hosts"
+    elif [ -r "${config_dir}/hosts.yml" ]; then
+        hosts_args="-i ${config_dir}/hosts.yml"
+    else
+        echo "Missing ${config_dir}/hosts(.yml)"
+    fi
+    settings_args="-e @$config"
 fi
 
 if [ "$start" != 1 ]; then
@@ -134,6 +143,6 @@ else
     export ANSIBLE_CONFIG=$DIR/dev-ansible.cfg
 fi
 
-exec ansible-playbook $extra_args dci-openshift-app-agent.yml -e @$config ${prefix_args} ${hosts_args} "$@"
+exec ansible-playbook ${extra_args} dci-openshift-app-agent.yml ${settings_args} ${hosts_args} "$@"
 
 # dci-openshift-app-agent-ctl ends here

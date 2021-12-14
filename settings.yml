@@ -1,11 +1,15 @@
 ---
 
+dci_agent: openshift-app        # needed for dci-agent-ctl
+
 # dci-openshift-app-agent settings
 # defaults from /usr/share/dci-openshift-app-agent/group_vars/all
 
+#dci_name: "ocp-workload"
+#dci_configuration: "my-conf"
+
 # Remove "debug" when your jobs are working to get them in the
 # statistics:
-
 dci_tags: ["debug"]
 
 ...

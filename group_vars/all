@@ -1,5 +1,6 @@
 ---
 
+dci_name: "ocp-workload"
 dci_config_dir: /etc/dci-openshift-app-agent
 dci_cache_dir: /var/lib/dci-openshift-app-agent
 dci_components: []
