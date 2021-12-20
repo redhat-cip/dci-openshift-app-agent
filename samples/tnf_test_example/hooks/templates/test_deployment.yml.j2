@@ -25,9 +25,11 @@ spec:
         test-network-function.com/defaultnetworkinterface: '"eth0"' # optional
       name: test
     spec:
+      automountServiceAccountToken: false
       containers:
         - command: [ "/bin/bash", "-c", "echo 'logs' && tail -f /dev/null" ]
           image: {{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
+          imagePullPolicy: IfNotPresent
           name: test
           resources:
             requests:
