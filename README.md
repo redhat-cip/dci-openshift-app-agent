@@ -535,25 +535,13 @@ $ dci-openshift-agent:100000:65536
 $ dci-openshift-app-agent:100000:65536
 ```
 
-3. Stop and delete all containers that may be running on podman.
-
-```bash
-podman stop $(podman ps -a -q)
-podman rm $(podman ps -a -q)
-```
-
-4. Kill processes related to podman:
-
-```bash
-ps -fe | grep podman | grep -v grep
-# kill the processes obtained with kill -9 <pid>
-```
-
-5. To conclude, execute the following (it should not be necessary but just in case there are some containers running):
+3. To conclude, execute the podman system migration command, it will take care of killing the podman "pause" process and restarting the running containers with the new subuid/subgid mapping. 
 
 ```bash
 podman system migrate
 ```
+
+* If the containers do not restart automatically, then you can try to restart them manually.
 
 Make sure of changing the ownership of certain resources (e.g. the ones under /var/lib/dci-openshift-app-agent directory):
 
@@ -567,6 +555,7 @@ References:
 
 - https://access.redhat.com/solutions/4381691
 - https://docs.docker.com/engine/security/userns-remap/
+- https://www.redhat.com/sysadmin/debug-rootless-podman-mounted-volumes
 
 ### Old Podman versions
 
