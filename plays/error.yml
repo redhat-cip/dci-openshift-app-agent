@@ -9,8 +9,4 @@
 - name: "Run common logging process"
   include_tasks: common_logging.yml
 
-- name: Fail properly
-  fail:
-    msg: "Error: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
-
 ...
