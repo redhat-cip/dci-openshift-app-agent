@@ -133,10 +133,13 @@ dci\_openshift\_app\_ns            | "myns"                                     
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
-|dci_chart_tgz_url                 |undefined                                                              |The URL to an Helm chart tgz. For example: https://github.com/redhat-certification/chart-verifier/raw/main/pkg/chartverifier/checks/chart-0.1.0-v3.valid.tgz. <br>The Helm chart will be tested using the [Helm Chart Verifier](https://github.com/redhat-certification/chart-verifier).
-|See [Operator Certification (preflight)](roles/preflight/README.md) for details to enable the Operator Certifications tests suite.||
-|See [CNF-cert role](roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite||
-|See [Pyxis Role](roles/pyxis/README.md) for details about submiting [preflight](roles/preflight/README.md) certification results||
+do\_preflight\_tests               | false                                                | Launch the [Preflight Cert Suite](https://github.com/redhat-openshift-ecosystem/
+do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
+do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
+|See [Operator Certification (preflight)](roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
+|See [CNF-cert role](roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
+|See [chart-verifier role](roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
+|See [Pyxis Role](roles/pyxis/README.md) for details about submiting [preflight](roles/preflight/README.md) certification results  ||
 
 A minimal configuration is required for the DCI OpenShift App Agent to run, before launching the agent, make sure you have the following:
 
@@ -298,22 +301,34 @@ tnf_config:
 For specific details about the features and variables for this test suite see: [CNF-cert role](roles/cnf-cert/README.md) documentation.
 
 ### Helm Chart Verifier
-[Helm Chart Verifier](https://github.com/redhat-certification/chart-verifier) is a test suite that validates the Helm charts deployed by the DCI OpenShift App Agent.
+[Helm Chart Verifier](https://github.com/redhat-certification/chart-verifier) is a test tool that validates Helm charts based on Red Hat recommendations.
+
+The [chart-verifier role](roles/chart-verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details.
 
 An example of how to run the Helm chart verifier tests:
 
 ```console
 $ dci-openshift-app-agent-ctl -s -- -v \
 -e kubeconfig_path=path/to/kubeconfig \
--e @helm_config.yaml
+-e do_chart_verifier=true \
+-e @helm_config.yml
 ```
 
 where the config file looks like this:
 
 ```yaml
 ---
-# helm-config.yaml
-dci_chart_tgz_url: https://github.com/redhat-certification/chart-verifier/raw/main/pkg/chartverifier/checks/chart-0.1.0-v3.valid.tgz
+dci_charts:
+  -
+    name: mychart1
+    chart: http://xyz/pub/projects/mychart1.tgz
+    chart_values: http://xyz/pub/projects/mychart1.yml
+    install: true
+  -
+    name: mychart2
+    chart: http://xyz/pub/projects/mychart2.tgz
+    chart_values: http://xyz/pub/projects/mychart2.yml
+    install: false
 ```
 
 ## General workflow

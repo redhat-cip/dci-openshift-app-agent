@@ -103,7 +103,7 @@
     dest: "/usr/local/bin/helm"
     mode: u=rwx,g=rx,o=rx
   become: true
-  when: dci_chart_tgz_url is defined
+  when: do_chart_verifier|bool
 
 - name: Preflight tests
   include_role:

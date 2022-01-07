@@ -6,9 +6,4 @@
     kind: Namespace
     name: "{{ dci_openshift_app_ns }}"
     state: present
-
-- name: Run helm install
-  command: "/usr/local/bin/helm -n {{ dci_openshift_app_ns }} install instance {{ dci_chart_tgz_url }}"
-  when: dci_chart_tgz_url is defined
-
 ...

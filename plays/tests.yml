@@ -1,35 +1,10 @@
 ---
 
-- block:
-
-    - name: Run helm list
-      command: "/usr/local/bin/helm -n {{ dci_openshift_app_ns }} list -o json -l name=instance"
-      register: helm_list
-
-    - name: Validate helm chart is deployed
-      assert:
-        that: "{{ helm_list.stdout | from_json }}[0].status == 'deployed'"
-
-    - name: Run chart-verifier
-      shell: |
-        podman run --rm quay.io/redhat-certification/chart-verifier verify -o json --openshift-version {{ ocp_version_full }} {{ dci_chart_tgz_url }} 2> chart-verifier-report.json
-      args:
-        chdir: "{{ job_logs.path }}"
-      ignore_errors: true
-
-    - name: Get chart-verifier failed tests
-      shell: |
-        jq '.results[]  | select(.outcome == "FAIL") | .' chart-verifier-report.json
-      args:
-        chdir: "{{ job_logs.path }}"
-      register: chart_verifier_failures
-
-    - name: Display chart-verifier failed tests
-      debug:
-        msg: "{{ chart_verifier_failures.stdout }}"
-
+- name: "Chart verifier tests"
+  include_role:
+    name: chart-verifier
   when:
-    - dci_chart_tgz_url is defined
+    - do_chart_verifier|bool
 
 - name: "cnf-cert tests"
   include_role:
