@@ -94,6 +94,7 @@
     - skopeo_copy is not failed
   loop: "{{ dci_must_gather_images | default(['registry.redhat.io/openshift4/ose-must-gather']) }}"
   when:
+    - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
     - all_registries_creds|length
 
