@@ -443,7 +443,7 @@ dci_openshift_app_ns: testns
 dci_config_dir: /var/lib/dci-openshift-app-agent/samples/tnf_test_example
 dci_openshift_app_image: quay.io/testnetworkfunction/cnf-test-partner:latest
 tnf_suites: "diagnostic access-control networking lifecycle observability platform-alteration"
-tnf_config: 
+tnf_config:
   - namespace: testns
     targetpodlabels: [test-network-function/environment=testing]
 ```
@@ -550,7 +550,7 @@ $ dci-openshift-agent:100000:65536
 $ dci-openshift-app-agent:100000:65536
 ```
 
-3. To conclude, execute the podman system migration command, it will take care of killing the podman "pause" process and restarting the running containers with the new subuid/subgid mapping. 
+3. To conclude, execute the podman system migration command, it will take care of killing the podman "pause" process and restarting the running containers with the new subuid/subgid mapping.
 
 ```bash
 podman system migrate
