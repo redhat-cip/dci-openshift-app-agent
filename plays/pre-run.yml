@@ -110,5 +110,5 @@
   include_role:
     name: preflight
     tasks_from: pre-run.yml
-  when: do_preflight_tests | bool
+  when: preflight_operators_to_check is defined
 ...
