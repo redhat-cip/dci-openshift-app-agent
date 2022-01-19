@@ -10,26 +10,12 @@
 - name: "Configure DCI jumphost"
   include_tasks: configure.yml
 
-- name: Lookup ocp component from previous job
-  block:
-
-    - name: Lookup components from previous job
-      dci_job:
-        id: "{{ dci_previous_job_id }}"
-        embed: "components"
-      register: prev_job
-      tags: [dci]
-
-    - name: get ocp component from previous job
-      set_fact:
-        ocp_component_id: "{{ item.id }}"
-      when: "item.type == 'ocp'"
-      loop: "{{ prev_job.job.components }}"
-      tags: [dci]
-
+- name: Get ocp component id from file content
+  set_fact:
+    ocp_component_id: "{{ lookup('file', ocp_comp_path) }}"
   when:
-    - dci_previous_job_id is defined
-    - dci_previous_job_id|length
+    - ocp_component_id is not defined
+    - ocp_comp_path is defined
 
 - name: Lookup ocp component from oc version
   block:
