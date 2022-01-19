@@ -342,6 +342,8 @@ There are two fail statuses:
 - `failure` - Whenever there's an issue with either the installation of the application or during testing.
 - `error` - Whenever there's an error anywhere else during the playbook.
 
+All the tasks prefixed with test_ will get exported in Junit using the Ansible Junit callback and submitted automatically to the DCI control server.
+
 ## Hooks
 
 Files located in `/etc/dci-openshift-app-agent/hooks/` need to be filled by the user.

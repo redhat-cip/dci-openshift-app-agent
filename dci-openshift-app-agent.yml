@@ -69,6 +69,12 @@
       set_fact:
         job_id: "{{ job_info.job.id }}"
 
+    - name: Copy the job_id to the JOB_ID_FILE if it exists
+      copy:
+        content: "{{ job_id }}"
+        dest: "{{ JOB_ID_FILE }}"
+      when: JOB_ID_FILE is defined
+
     - name: Set previous job id
       set_fact:
         dci_previous_job_id: "{{ job_info.job.previous_job_id }}"
