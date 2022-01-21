@@ -133,7 +133,6 @@ dci\_openshift\_app\_ns            | "myns"                                     
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
-do\_preflight\_tests               | false                                                | Launch the [Preflight Cert Suite](https://github.com/redhat-openshift-ecosystem/
 do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
 |See [Operator Certification (preflight)](roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
@@ -249,7 +248,6 @@ An example of how to run the Operator Certifications tests:
 ```console
 $ dci-openshift-app-agent-ctl -s -- -v \
 -e kubeconfig_path=path/to/kubeconfig \
--e do_preflight_tests=true \
 -e @preflight_config.yaml
 ```
 where bare minimal config is a list of operators to test:
@@ -260,7 +258,7 @@ where bare minimal config is a list of operators to test:
 preflight_operators_to_check:
   - name: "simple-demo-operator"
     version: "v0.0.3"
-    image: "quay.io/opdev/simple-demo-operator-bundle@sha256:eff7f86a54ef2a340dbf739ef955ab50397bef70f26147ed999e989cfc116b79"
+    bundle_image: "quay.io/opdev/simple-demo-operator-bundle@sha256:eff7f86a54ef2a340dbf739ef955ab50397bef70f26147ed999e989cfc116b79"
     index_image: "quay.io/opdev/simple-demo-operator-catalog:v0.0.3"
 ```
 
@@ -622,7 +620,7 @@ If you want to test a code change from Gerrit, you need to have `dci-check-chang
 Then for example, if you want to test the change from https://softwarefactory-project.io/r/c/dci-openshift-app-agent/+/22647, issue the following command:
 
 ```ShellSession
-$ dci-check-change 22647 /var/lib/dci-openshift-agent/clusterconfigs/kubeconfig -e do_preflight_tests=true
+$ dci-check-change 22647 /var/lib/dci-openshift-agent/clusterconfigs/kubeconfig
 ```
 
 You can omit the kubeconfig file as a second argument if you want `dci-check-change` to re-install OCP using `dci-openshift-agent-ctl` before testing the change.
