@@ -13,7 +13,7 @@
       spec:
         containers:
           - name: webserver
-            image: "{{ dci_openshift_app_image | default('docker.io/nginx') }}"
+            image: "{{ dci_openshift_app_image | default('docker.io/library/nginx') }}"
             ports:
               - containerPort: 80
             livenessProbe:
