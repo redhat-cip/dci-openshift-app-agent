@@ -135,10 +135,10 @@ provisioner\_name                  |                                            
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
-|See [Operator Certification (preflight)](roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
-|See [CNF-cert role](roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
-|See [chart-verifier role](roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
-|See [Pyxis Role](roles/pyxis/README.md) for details about submiting [preflight](roles/preflight/README.md) certification results  ||
+|See [Operator Certification (preflight)](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
+|See [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
+|See [chart-verifier role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
+|See [Pyxis Role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/pyxis/README.md) for details about submiting [preflight](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) certification results  ||
 
 A minimal configuration is required for the DCI OpenShift App Agent to run, before launching the agent, make sure you have the following:
 
@@ -262,12 +262,12 @@ preflight_operators_to_check:
     index_image: "quay.io/opdev/simple-demo-operator-catalog:v0.0.3"
 ```
 
-For specific details about the features and variables for this test suite see: [Preflight role](roles/preflight/README.md) documentation.
+For specific details about the features and variables for this test suite see: [Preflight role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) documentation.
 
-The test results for each operator can be submitted to the [Red Hat connect Site](https://connect.redhat.com/). Please see [Pyxis Role](roles/pyxis/README.md) documentation about how to enable this feature.
+The test results for each operator can be submitted to the [Red Hat connect Site](https://connect.redhat.com/). Please see [Pyxis Role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/pyxis/README.md) documentation about how to enable this feature.
 
 ### Cloud Native Functions (CNF) Certification tests
-The [CNF-cert role](roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/test-network-function) in the order to meet minimum requirements for Red Hat OpenShift Certification.
+The [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/test-network-function) in the order to meet minimum requirements for Red Hat OpenShift Certification.
 
 An example of how to run the CNF certification tests:
 
@@ -283,8 +283,7 @@ Example:
 ```yaml
 ---
 # cnf-config.yaml
-tnf_suites:
-  - "diagnostic access-control networking lifecycle observability platform-alteration operator"
+tnf_suites: "diagnostic access-control networking lifecycle observability platform-alteration operator"
 tnf_config:
   - namespace: "test-cnf"
     targetpodlabels: [environment=test]
@@ -296,12 +295,12 @@ tnf_config:
     exclude_connectivity_regexp: "*"
 ```
 
-For specific details about the features and variables for this test suite see: [CNF-cert role](roles/cnf-cert/README.md) documentation.
+For specific details about the features and variables for this test suite see: [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) documentation.
 
 ### Helm Chart Verifier
 [Helm Chart Verifier](https://github.com/redhat-certification/chart-verifier) is a test tool that validates Helm charts based on Red Hat recommendations.
 
-The [chart-verifier role](roles/chart-verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details.
+The [chart-verifier role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/chart-verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details.
 
 An example of how to run the Helm chart verifier tests:
 
@@ -631,7 +630,7 @@ All the other arguments will be passed to `dci-openshift-app-agent-ctl`.
 
 ## License
 
-Apache License, Version 2.0 (see [LICENSE](LICENSE) file)
+Apache License, Version 2.0 (see [LICENSE](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/LICENSE) file)
 
 ## Contact
 
