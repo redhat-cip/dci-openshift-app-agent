@@ -1,4 +1,7 @@
 ---
+- name: "Setup job_logs directory"
+  include_tasks: plays/log-dir.yml
+  when: job_logs is undefined
 
 - name: Upload text files to DCI Control Server
   environment:
