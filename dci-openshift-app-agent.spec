@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.3.1
+Version:       0.3.2
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -85,6 +85,7 @@ exit 0
 %systemd_postun %{name}.timer
 
 %files
+%license LICENSE
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/*.yml
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hosts.yml
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/settings.yml
@@ -109,6 +110,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Fri Jan 28 2022 Tony Garcia <tonyg@redhat.com> 0.3.2-1
+- Add LICENSE file
+
 * Wed Oct 10 2021 Ramon Perez <raperez@redhat.com> 0.3.1-1
 - Sub-ids support in d-o-a-a user. Including d-o-a-a/plays/scripts/ entry.
 
