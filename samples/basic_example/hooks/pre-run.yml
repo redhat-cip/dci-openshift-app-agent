@@ -12,3 +12,14 @@
 - name: "Configure the namespace variable"
   set_fact:
     app_ns: "{{ dci_openshift_app_ns|default('myns') }}"
+
+- name: Copy nginx image
+  shell: |
+    set -ex
+    skopeo copy --authfile {{ all_registries_creds }} --remove-signatures \
+    docker://docker.io/library/nginx \
+    docker://{{ provisionhost_registry }}/library/nginx
+  when:
+    - dci_disconnected | default(false) | bool
+    - provisionhost_registry|length
+    - all_registries_creds|length
