@@ -108,6 +108,11 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
+
+        - name: "Setup job_logs directory"
+          include_tasks: plays/log-dir.yml
+          when: job_logs is undefined
+
         - name: "Execute pre-run"
           include_tasks: 'plays/pre-run.yml'
 
@@ -123,6 +128,11 @@
     - partner-pre-run
   tasks:
     - block:
+
+        - name: "Setup job_logs directory"
+          include_tasks: plays/log-dir.yml
+          when: job_logs is undefined
+
         - name: Run the pre-run hook
           include_tasks: '{{ dci_config_dir }}/hooks/pre-run.yml'
           when: check_pre_run.stat.exists
@@ -176,6 +186,11 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
+
+        - name: "Setup job_logs directory"
+          include_tasks: plays/log-dir.yml
+          when: job_logs is undefined
+
         - name: "Execute Red Hat tests"
           include_tasks: plays/tests.yml
 
@@ -192,6 +207,11 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
     - block:
+
+        - name: "Setup job_logs directory"
+          include_tasks: plays/log-dir.yml
+          when: job_logs is undefined
+
         - name: "Execute tests hook"
           include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
           when: check_tests.stat.exists
