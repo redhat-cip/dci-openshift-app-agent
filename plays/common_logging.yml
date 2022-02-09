@@ -1,8 +1,59 @@
 ---
+
+- name: "Setup job_logs directory"
+  include_tasks: plays/log-dir.yml
+  when: job_logs is undefined
+
 - name: "Collect OCP logs"
   include_tasks: dump_ocp_logs.yml
 
-- name: "Upload logs"
-  include_tasks: upload_logs.yml
+- name: "Find deployment logs (text)"
+  find:
+    paths: "{{ job_logs.path }}"
+    recurse: yes
+    patterns: "*.log,*.txt,*.html,*.yaml,*.yml,*.json,*.pcap,*.trace"
+  register: logs_matched
+  tags: [dci]
 
+- name: "Upload logs (text)"
+  vars:
+    mime_type: "text/plain"
+  include_tasks: upload_logs.yml
+  with_items: "{{ logs_matched.files }}"
+  tags: [dci]
+
+- name: "Find deployment JUnit files"
+  find:
+    paths: "{{ job_logs.path }}"
+    recurse: yes
+    patterns: "*.xml"
+  register: logs_matched
+  tags: [dci]
+
+- name: "Upload JUnit files"
+  vars:
+    mime_type: "application/junit"
+  include_tasks: upload_logs.yml
+  with_items: "{{ logs_matched.files }}"
+  tags: [dci]
+
+- name: "Find deployment compressed files"
+  find:
+    paths: "{{ job_logs.path }}"
+    recurse: yes
+    patterns: "*.gz"
+  register: logs_matched
+  tags: [dci]
+
+- name: "Upload compressed files to DCI Control Server"
+  vars:
+    mime_type: "application/x-gzip"
+  include_tasks: upload_logs.yml
+  with_items: "{{ logs_matched.files }}"
+  tags: [dci]
+
+- name: "Remove log dir"
+  file:
+    path: "{{ job_logs.path }}"
+    state: absent
 ...

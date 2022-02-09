@@ -19,14 +19,14 @@
           include_tasks: 'plays/check_prerequisite.yml'
 
       rescue: &error_with_upload_logs
-        - name: "Execute the error process"
-          include_tasks: plays/error.yml
-
         - name: "Execute the teardown process"
           include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
           when:
             - dci_teardown_on_failure
             - check_teardown.stat.exists
+
+        - name: "Execute the error process"
+          include_tasks: plays/error.yml
 
         # The error may happen before creating the job_info variable, so we have to set a different error message in that case
         - name: Fail properly
@@ -162,14 +162,14 @@
           include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
 
       rescue: &failure_with_upload_logs
-        - name: "Execute the failure process"
-          include_tasks: plays/failure.yml
-
         - name: "Execute the teardown process"
           include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
           when:
             - dci_teardown_on_failure
             - check_teardown.stat.exists
+
+        - name: "Execute the failure process"
+          include_tasks: plays/failure.yml
 
         - name: Fail properly
           fail:
@@ -260,5 +260,4 @@
       debug:
         msg: "The job is now finished. Review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
       tags: [dci]
-
 ...
