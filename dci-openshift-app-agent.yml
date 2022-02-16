@@ -90,7 +90,7 @@
     - name: 'Set DCI tags for the current job'
       dci_job:
         id: '{{ job_id }}'
-        tags: '{{ dci_tags }}'
+        tags: '{{ dci_tags + dci_workarounds }}'
       when: dci_tags[0] is defined
 
     # Keep in sync with test-runner parsing from d-o-a

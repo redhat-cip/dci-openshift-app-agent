@@ -18,6 +18,7 @@ do_chart_verifier: false
 submit_preflight_to_pyxis: false
 provisionhost_registry: "{% if dci_disconnected is defined and dci_disconnected|bool and local_registry_host is defined and local_registry_port is defined %}{{ local_registry_host }}:{{ local_registry_port }}{% else %}{% endif %}"
 all_registries_creds: ""
+dci_workarounds: []
 
 ...
 

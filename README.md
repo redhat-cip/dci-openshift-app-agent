@@ -128,6 +128,7 @@ dci\_component                     | []                                         
 dci\_previous\_job\_id             | ""                                                   | Previous job UUID
 provisionhost\_registry            | ""                                                   | Registry to fetch containers that may be used. Mandatory for disconnected environments.
 all\_registries\_creds             | ""                                                   | Path to the pull-secret.txt file with authentication for all the registries that require an authorized access. Must be set both in connected and disconnected environments if there are private registries to use.
+dci\_workarounds                   | []                                                   | List of workarounds to be considered in the execution. Each element of the list must be a String with the following format: bz<id> or gh-org-repo-<id>
 dci\_openshift\_app\_image         | quay.io/testnetworkfunction/cnf-test-partner:latest  | Image that can be to be used on the agent workloads, it needs to be mirrored to a local registry in disconnected environments. The default value is an "ideal" Cloud Native Function that can be used for testing purposes.
 dci\_openshift\_app\_ns            | "myns"                                               | Default namespace  to deploy workloads in the running cluster.
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
