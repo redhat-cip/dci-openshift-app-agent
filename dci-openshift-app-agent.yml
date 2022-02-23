@@ -25,6 +25,9 @@
             - dci_teardown_on_failure
             - check_teardown.stat.exists
 
+        - name: "Run the teardown play"
+          include_tasks: plays/teardown.yml
+
         - name: "Execute the error process"
           include_tasks: plays/error.yml
 
@@ -175,6 +178,9 @@
             - dci_teardown_on_failure
             - check_teardown.stat.exists
 
+        - name: "Run the teardown play"
+          include_tasks: plays/teardown.yml
+
         - name: "Execute the failure process"
           include_tasks: plays/failure.yml
 
@@ -256,6 +262,9 @@
       when:
         - dci_teardown_on_success
         - check_teardown.stat.exists
+
+    - name: "Run the teardown play"
+      include_tasks: plays/teardown.yml
 
     - name: success
       dci_job:
