@@ -58,7 +58,7 @@
     # Schedule a new job only if not passed via pipeline
     - name: "Schedule a new job"
       dci_job:
-        components: "{{ dci_components | default([]) }}"
+        components: "{{ dci_components + [ocp_component_id] | default([ocp_component_id]) }}"
         components_by_query: "{{ dci_components_by_query | default([]) }}"
         topic: "{{ dci_topic }}"
         comment: "{{ dci_comment | default('') }}"
