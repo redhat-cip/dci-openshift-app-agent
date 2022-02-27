@@ -67,8 +67,10 @@ function finish ()
                 junit_filename=$(basename ${junit_file} .xml)
                 dcictl job-upload-file --name ${junit_filename} --path ${junit_file} --mime application/junit ${JOB_ID}
             done
+            if [ -r ${OUTPUT_DIR}/ansible.log ]; then
+               dcictl job-upload-file --name ansible.log --path ${OUTPUT_DIR}/ansible.log  --mime text/plain ${JOB_ID}
+            fi
         fi
-
         echo "removing output dir: ${OUTPUT_DIR}"
         rm -rf "${OUTPUT_DIR}"
     fi
@@ -187,6 +189,7 @@ if [ "$start" -eq 1 ]; then
     OUTPUT_DIR="$(mktemp -d /tmp/dci-openshift-app-agent.XXXXX)"
     cd "${OUTPUT_DIR}" || exit 1
     JOB_ID_FILE="$OUTPUT_DIR/dci-openshift-app-agent.job"
+    export ANSIBLE_LOG_PATH=${OUTPUT_DIR}/ansible.log
     export JUNIT_OUTPUT_DIR=${OUTPUT_DIR}
     export JUNIT_TEST_CASE_PREFIX=test_
     export JUNIT_TASK_CLASS=yes
