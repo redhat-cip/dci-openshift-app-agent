@@ -55,7 +55,14 @@
         dci_ui_url="{{ lookup('env','DCI_UI_URL') | default('https://www.distributed-ci.io', True) }}"
       no_log: true
 
-    # Schedule a new job only if not passed via pipeline
+    # Add the ocp component when called from dci-pipeline
+    - name: Attach ocp component to the job
+      dci_job_component:
+        job_id: "{{ job_info.job.id }}"
+        component_id: "{{ ocp_component_id }}"
+      when: job_info is defined
+
+    # Schedule a new job only if not passed via dci-pipeline
     - name: "Schedule a new job"
       dci_job:
         components: "{{ dci_components + [ocp_component_id] | default([ocp_component_id]) }}"
