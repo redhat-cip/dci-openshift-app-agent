@@ -1,1 +1,6 @@
 ---
+- name: Delete temporary file for saving pullsecret content
+  file:
+    path: "{{ pullsecret_tmp_file }}"
+    state: absent
+  when: pullsecret_tmp_file is defined

@@ -9,7 +9,7 @@
         cmd: >
           skopeo copy
           --remove-signatures
-          --authfile {{ all_registries_creds }}
+          --authfile {{ pullsecret_tmp_file }}
           --dest-tls-verify=false
           docker://{{ image }}
           docker://{{ local_image_location }}
