@@ -8,3 +8,71 @@
     - python3-openshift
     - python3-pyyaml
   become: true
+
+# Following the same scope than in preflight for preparing the operator in disconnected environments
+- name: Preparing the operator in disconnected environments
+  block:
+  - name: Copy operator bundle image
+    shell: |
+      set -ex
+      skopeo copy --authfile {{ partner_creds }} --remove-signatures \
+      docker://{{ tnf_operator_to_install.operator_bundle }} \
+      docker://{{ provisionhost_registry }}/{{ '/'.join(tnf_operator_to_install.operator_bundle.split('@')[0].split('/')[1:]) }}
+
+  - name: Create temporary directory
+    tempfile:
+      state: directory
+      prefix: tnf_test_example_prerun_tmp_dir.
+    register: tnf_test_example_prerun_tmp_dir
+
+  - name: Create a common catalog image for simple-demo-operator bundle to be tested in disconnected environment
+    block:
+      - name: Build catalog image in temporary directory
+        environment:
+          - REGISTRY_AUTH_FILE: "{{ partner_creds }}"
+        shell: |
+          {{ opm_tool_path }} index add --pull-tool podman \
+          --bundles {{ tnf_operator_to_install.operator_bundle }} \
+          --tag {{ tnf_operator_to_install.operator_catalog }}
+        args:
+          chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+
+      - name: Push catalog image into local registry
+        shell: |
+          podman push --authfile {{ partner_creds }} {{ tnf_operator_to_install.operator_catalog }}
+        args:
+          chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+
+  - name: Manage imageContentSourcePolicy update
+    block:
+      - name: Save catalog mirror into temporary directory
+        shell: |
+          {{ oc_tool_path }} adm catalog mirror -a {{ partner_creds }} \
+          {{ tnf_operator_to_install.operator_catalog }} {{ provisionhost_registry }} --to-manifests={{ tnf_test_example_prerun_tmp_dir.path }}/tmp_oc
+
+      - name: Apply ImageContentSourcePolicy
+        k8s:
+          definition: "{{ lookup('file', tnf_test_example_prerun_tmp_dir.path + '/tmp_oc/imageContentSourcePolicy.yaml') }}"
+
+      # kubeconfig and oc are referenced by dci_cluster_configs_dir variable on
+      # dci-openshift-agent, and both are saved under kubeconfig_path (removing "/kubeconfig")
+      - name: Wait for MCP status
+        include_role: 
+          name: wait-mcp
+        vars:
+          mcp_wait_retries: 60
+          mcp_wait_delay: 60
+
+  - name: Remove temporary directory
+    file:
+      path: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+      state: absent
+  when:
+    - dci_disconnected | default(false) | bool
+    - provisionhost_registry|length
+    - partner_creds|length
+    - tnf_operator_to_install is defined
+    - tnf_operator_to_install.operator_bundle is defined
+    - tnf_operator_to_install.operator_bundle|length
+    - tnf_operator_to_install.operator_catalog is defined
+    - tnf_operator_to_install.operator_catalog|length

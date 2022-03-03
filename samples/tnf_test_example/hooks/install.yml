@@ -19,3 +19,97 @@
   loop: "{{ tnf_config }}"
   loop_control:
     loop_var: pods_in_same_ns
+
+# Install the operator in test-cnf namespace
+- name: Set operator_ns variable
+  set_fact:
+    operator_ns: "{{ tnf_config[0].namespace|default('test-cnf') }}"
+
+- name: Create CatalogSource for simple-demo-operator
+  k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: simple-demo-operator-catalog
+        namespace: openshift-marketplace
+      spec:
+        sourceType: grpc
+        image: "{{ tnf_operator_to_install.operator_catalog | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.3') }}"
+        displayName: Simple Demo Operator
+        updateStrategy:
+          registryPoll:
+            interval: 30m
+
+- name: Create OperatorGroup for simple-demo-operator
+  k8s:
+    api_version: operators.coreos.com/v1
+    name: simple-demo-operator-group
+    kind: OperatorGroup
+    namespace: "{{ operator_ns }}"
+    definition:
+      spec:
+        targetNamespaces:
+          - "{{ operator_ns }}"
+
+- name: Create Subscription for simple-demo-operator
+  k8s:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: simple-demo-operator-subscription
+    namespace: "{{ operator_ns }}"
+    definition:
+      spec:
+        name: simple-demo-operator
+        source: simple-demo-operator-catalog
+        sourceNamespace: openshift-marketplace
+
+- name: Wait until simple-demo-operator CSV is succeeded
+  vars:
+    operator_csv_name: "{{ tnf_operator_to_install.operator_name|default('simple_demo_operator') }}.v{{ tnf_operator_to_install.operator_version|default('0.0.3') }}"
+  k8s_info:
+    api: operators.coreos.com/v1alpha1
+    namespace: "{{ operator_ns }}"
+    kind: ClusterServiceVersion
+    name: "{{ operator_csv_name }}"
+  register: csv
+  retries: 30
+  delay: 5
+  until:
+    - "csv.resources|length == 1"
+    - "'status' in csv.resources[0]"
+    - "'phase' in csv.resources[0].status"
+    - "csv.resources[0].status.phase == 'Succeeded'"
+
+# Label/Annotate operators (same procedure used in example-cnf)
+- name: "Get CSVs from {{ operator_ns }} namespace"
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: "{{ operator_ns }}"
+  register: tnf_test_example_csv_list
+
+# Subscription names are retrieved from the install plan that corresponds to the CSV.
+- name: Tag CSVs with autodiscovery labels/annotations to execute test suites
+  vars:
+    operators_regexp: "{{ tnf_config[0].operators_regexp|default('simple-demo-operator') }}"
+  shell: |
+    set -ex
+
+    {{ oc_tool_path }} label csv -n "{{ operator_ns }}" "{{ item.metadata.name }}" test-network-function.com/operator=target --overwrite
+    {{ oc_tool_path }} annotate csv -n "{{ operator_ns }}" "{{ item.metadata.name }}" test-network-function.com/operator_tests='["OPERATOR_STATUS"]' --overwrite
+
+    INSTALL_PLAN_NAMES=($({{ oc_tool_path }} get installplan -n "{{ operator_ns }}" | grep "{{ item.metadata.name }}" | awk '{ print $1 }'))
+    INSTALL_PLAN_NUMBER=$(echo -n ${INSTALL_PLAN_NAMES[@]} | wc -w)
+
+    if [ $INSTALL_PLAN_NUMBER -ne 0 ]; then
+      SUBSCRIPTION_NAMES=()
+      for INSTALL_PLAN_NAME in "${INSTALL_PLAN_NAMES[@]}"; do
+        SUBSCRIPTION_NAMES+=( $({{ oc_tool_path }} get installplan "${INSTALL_PLAN_NAME}" -n "{{ operator_ns }}" -o json | jq -r ".metadata.ownerReferences[].name") )
+      done
+      SUBSCRIPTION_NAMES_JSON=$(echo ${SUBSCRIPTION_NAMES[@]} | jq -R 'split (" ")| unique')
+      {{ oc_tool_path }} annotate csv -n "{{ operator_ns }}" "{{ item.metadata.name }}" test-network-function.com/subscription_name="$SUBSCRIPTION_NAMES_JSON" --overwrite
+    fi
+  when: item.metadata.name|regex_search(operators_regexp)
+  loop: "{{ tnf_test_example_csv_list.resources }}"

@@ -16,3 +16,11 @@
     - item.namespace|length
     - item.namespace != dci_openshift_app_ns
   loop: "{{ tnf_config }}"
+
+- name: Delete simple-demo-operator-catalog
+  k8s:
+    state: absent
+    api_version: operators.coreos.com/v1alpha1
+    name: simple-demo-operator-catalog
+    namespace: openshift-marketplace
+    kind: CatalogSource
