@@ -178,6 +178,7 @@ set -x
 if [ -z "$dev" ]; then
     [ -e /etc/dci-openshift-app-agent/dcirc.sh ] && . /etc/dci-openshift-app-agent/dcirc.sh
     DCI_OPENSHIFT_APP_AGENT_DIR=${DCI_OPENSHIFT_APP_AGENT_DIR:-/usr/share/dci-openshift-app-agent}
+    export ANSIBLE_CONFIG=${DCI_OPENSHIFT_APP_AGENT_DIR}/ansible.cfg
     [ -d ${DCI_OPENSHIFT_APP_AGENT_DIR} ] && cd ${DCI_OPENSHIFT_APP_AGENT_DIR}
 else
     [ -e $DIR/dcirc.sh ] && . $DIR/dcirc.sh
@@ -193,7 +194,6 @@ if [ "$start" -eq 1 ]; then
     export JUNIT_OUTPUT_DIR=${OUTPUT_DIR}
     export JUNIT_TEST_CASE_PREFIX=test_
     export JUNIT_TASK_CLASS=yes
-    export ANSIBLE_CONFIG=${DCI_OPENSHIFT_APP_AGENT_DIR}/ansible.cfg
     setsid ansible-playbook ${extra_args} ${DCI_OPENSHIFT_APP_AGENT_DIR}/dci-openshift-app-agent.yml -e JOB_ID_FILE="${JOB_ID_FILE}" ${settings_args} ${hosts_args} "$@" &
     ANSIBLE_PID=$!
     wait ${ANSIBLE_PID}
