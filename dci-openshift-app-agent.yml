@@ -31,16 +31,20 @@
         - name: "Execute the error process"
           include_tasks: plays/error.yml
 
-        # The error may happen before creating the job_info variable, so we have to set a different error message in that case
+        # The error may happen before creating the job_info variable, or it may happen in a
+        # job where dci tag is not enabled (so job_info variable is not created). Then, 
+        # we have to set a different error message in that case
         - name: Fail properly
           fail:
-            msg: "Error: Something went wrong before creating the job"
+            msg: "Error: Something went wrong"
           when: job_info is not defined
 
+        # Use dci tag to avoid problems with job_info.job.id, which would not be defined
+        # if dci tag is not enabled
         - name: Fail properly
           fail:
             msg: "Error: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
-          when: job_info is defined
+          tags: [dci]
 
 # Step 0b : initial step
 - name: "Execute initial step"
@@ -184,9 +188,20 @@
         - name: "Execute the failure process"
           include_tasks: plays/failure.yml
 
+        # The error may happen before creating the job_info variable, or it may happen in a
+        # job where dci tag is not enabled (so job_info variable is not created). Then, 
+        # we have to set a different error message in that case
+        - name: Fail properly
+          fail:
+            msg: "Failure: Something went wrong"
+          when: job_info is not defined
+
+        # Use dci tag to avoid problems with job_info.job.id, which would not be defined
+        # if dci tag is not enabled
         - name: Fail properly
           fail:
             msg: "Failure: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
+          tags: [dci]
 
 # Step 3 : "testing" step
 - name: "Execute Red Hat tests step"
