@@ -36,7 +36,7 @@
         namespace: openshift-marketplace
       spec:
         sourceType: grpc
-        image: "{{ tnf_operator_to_install.operator_catalog | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.3') }}"
+        image: "{{ catalog_path | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.3') }}"
         displayName: Simple Demo Operator
         updateStrategy:
           registryPoll:
