@@ -37,7 +37,6 @@
   when:
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
-    - all_registries_creds|length
 
 - name: "Copy helm to /usr/local/bin/"
   get_url:

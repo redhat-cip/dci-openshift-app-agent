@@ -27,16 +27,14 @@
     block:
 
       - name: Create a catalog for simple-demo-operator < 4.9
-        block:
-          - name: Build catalog image in temporary directory
-            environment:
-              - REGISTRY_AUTH_FILE: "{{ partner_creds }}"
-            shell: |
-              {{ opm_tool_path }} index add --pull-tool podman \
-              --bundles {{ tnf_operator_to_install.operator_bundle }} \
-              --tag {{ catalog_path }}:{{ tnf_operator_to_install.operator_version }}
-            args:
-              chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+        environment:
+          - REGISTRY_AUTH_FILE: "{{ pullsecret_tmp_file}}"
+        shell: |
+          {{ opm_tool_path }} index add --pull-tool podman \
+          --bundles {{ tnf_operator_to_install.operator_bundle }} \
+          --tag {{ catalog_path }}:{{ tnf_operator_to_install.operator_version }}
+        args:
+          chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
         when: ocp_version_min | int < 9
 
       - name: Create a catalog for simple-demo-operator >= 4.9 (FBC)
@@ -49,16 +47,20 @@
               mode: 0755
 
           - name: "Initialize index"
+            environment:
+              - REGISTRY_AUTH_FILE: "{{ pullsecret_tmp_file}}"
             shell: |
-              REGISTRY_AUTH_FILE={{ partner_creds }} {{ opm_tool_path }} init {{ tnf_operator_to_install.operator_name }} \
+              {{ opm_tool_path }} init {{ tnf_operator_to_install.operator_name }} \
               --default-channel=stable \
               --output=yaml > {{ tnf_operator_to_install.operator_name }}-index/index.yml
             args:
               chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
 
           - name: "Render Operator bundle"
+            environment:
+              - REGISTRY_AUTH_FILE: "{{ pullsecret_tmp_file}}"
             shell: |
-              REGISTRY_AUTH_FILE={{ partner_creds }} {{ opm_tool_path }} render {{ tnf_operator_to_install.operator_bundle }} \
+              {{ opm_tool_path }} render {{ tnf_operator_to_install.operator_bundle }} \
               --output=yaml >> {{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index/index.yml
 
           - name: "Add Operator channel"
@@ -81,7 +83,7 @@
             failed_when: catalog_validation.rc != 0
 
           - name: "Render Dockerfile"
-            ansible.builtin.template:
+            template:
               src: dockerfile.j2
               dest: "{{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index.Dockerfile"
 
@@ -97,7 +99,7 @@
 
   - name: Push catalog image into local registry
     shell: |
-      podman push --authfile {{ partner_creds }} \
+      podman push --authfile {{ pullsecret_tmp_file }} \
       {{ catalog_path }}:{{ tnf_operator_to_install.operator_version }}
     args:
       chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
@@ -108,7 +110,7 @@
       - name: "Get catalog SHA256"
         shell:
           cmd: |
-            skopeo inspect --authfile {{ partner_creds }} \
+            skopeo inspect --authfile {{ pullsecret_tmp_file }} \
             docker://{{ catalog_path }}:{{ tnf_operator_to_install.operator_version }} | jq -r '.Digest'
         register: catalog_sha
         retries: 5
@@ -118,7 +120,7 @@
 
       - name: Mirror images and save manifests into a temporary directory
         shell: |
-          {{ oc_tool_path }} adm catalog mirror -a {{ partner_creds }} \
+          {{ oc_tool_path }} adm catalog mirror -a {{ pullsecret_tmp_file }} \
           {{ catalog_path }}@{{ catalog_sha.stdout }} \
           {{ provisionhost_registry }} \
           --to-manifests={{ tnf_test_example_prerun_tmp_dir.path }}/tmp_oc
@@ -151,7 +153,7 @@
   when:
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
-    - partner_creds|length
+    - pullsecret_tmp_file|length
     - tnf_operator_to_install is defined
     - tnf_operator_to_install.operator_bundle is defined
     - tnf_operator_to_install.operator_bundle|length
