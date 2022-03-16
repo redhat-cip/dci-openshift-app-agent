@@ -19,10 +19,12 @@ dci_openshift_app_ns: "myns"
 do_cnf_cert: false
 do_chart_verifier: false
 do_preflight_tests: false
+# please think to define this variable
+# if you deal with private registries
+partner_creds: ""
 submit_preflight_to_pyxis: false
 provisionhost_registry: "{% if dci_disconnected is defined and dci_disconnected|bool and local_registry_host is defined and local_registry_port is defined %}{{ local_registry_host }}:{{ local_registry_port }}{% else %}{% endif %}"
 provision_cache_store: "/opt/cache"
-partner_creds: ""
 dci_workarounds: []
 dci_local_log_dir: /var/tmp
 
