@@ -20,7 +20,7 @@
   include_role:
     name: preflight
     tasks_from: tests.yml
-  when: preflight_operators_to_check is defined
+  when: do_preflight_tests|bool 
 
 - name: Submit Preflight results to Pyxis
   include_role:
