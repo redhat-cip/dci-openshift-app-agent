@@ -72,7 +72,7 @@
                  package: simple-demo-operator
                  name: stable
                  entries:
-                    - name: {{ tnf_operator_to_install.operator_name }}.v{{ tnf_operator_to_install.operator_version }}
+                    - name: {{ tnf_operator_to_install.operator_name }}.{{ tnf_operator_to_install.operator_version }}
 
           - name: "Validate operator catalog"
             shell: |
