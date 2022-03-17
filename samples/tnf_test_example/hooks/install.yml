@@ -67,7 +67,7 @@
 
 - name: Wait until simple-demo-operator CSV is succeeded
   vars:
-    operator_csv_name: "{{ tnf_operator_to_install.operator_name|default('simple_demo_operator') }}.v{{ tnf_operator_to_install.operator_version|default('0.0.3') }}"
+    operator_csv_name: "{{ tnf_operator_to_install.operator_name|default('simple-demo-operator') }}.{{ tnf_operator_to_install.operator_version|default('v0.0.3') }}"
   k8s_info:
     api: operators.coreos.com/v1alpha1
     namespace: "{{ operator_ns }}"
