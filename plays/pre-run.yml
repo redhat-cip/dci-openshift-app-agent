@@ -6,10 +6,6 @@
     status: "pre-run"
   tags: [dci]
 
-# Prepare host
-- name: "Configure DCI jumphost"
-  include_tasks: configure.yml
-
 - include_tasks: track_git_repo.yml
   with_items:
     - "{{ dci_gits_to_components }}"
