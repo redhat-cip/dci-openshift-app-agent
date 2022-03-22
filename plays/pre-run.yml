@@ -46,9 +46,4 @@
   become: true
   when: do_chart_verifier|bool
 
-- name: Preflight tests
-  include_role:
-    name: preflight
-    tasks_from: pre-run.yml
-  when: do_preflight_tests|bool
 ...
