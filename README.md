@@ -6,7 +6,6 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
 ## Table of Contents
 
 - [DCI OpenShift App Agent](#dci-openshift-app-agent)
-  - [Table of Contents](#table-of-contents)
   - [Requirements](#requirements)
   - [Installation](#installation)
   - [Configuration](#configuration)
@@ -26,6 +25,8 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
     - [Post-run](#post-run)
     - [Teardown](#teardown)
   - [Examples](#examples)
+  - [Overloading settings and hooks directories](#overloading-settings-and-hooks-directories)
+  - [Storing secrets](#storing-secrets)
   - [Development mode](#development-mode)
   - [Known issues](#known-issues)
     - [Libvirt Considerations](#libvirt-considerations)
@@ -418,6 +419,28 @@ tnf_config:
   - namespace: testns
     targetpodlabels: [test-network-function/environment=testing]
 ```
+
+## Overloading settings and hooks directories
+
+To allow storing the settings and the hooks in a different directory,
+you can set `/etc/dci-openshift-agent/config` like this:
+
+```console
+CONFIG_DIR=/var/lib/dci-openshift-app-agent/config
+```
+
+This will allow you to use a version control system for all your settings.
+
+If you want to also store the hooks in the same directory, you have to specify `dci_config_dir` in your `settings.yml`. Example:
+
+```YAML
+---
+dci_config_dir: [/var/lib/dci-openshift-app-agent/config]
+```
+
+## Storing secrets
+
+You can store secrets in an encrypted manner in your `settings.yml` and YAML inventories by using `dci-vault` to generate your encrypted secrets. Details in the [python-dciclient documentation](/python-dciclient/).
 
 ## Development mode
 
