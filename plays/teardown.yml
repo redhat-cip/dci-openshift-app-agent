@@ -4,3 +4,8 @@
     path: "{{ pullsecret_tmp_file }}"
     state: absent
   when: pullsecret_tmp_file is defined
+
+- name: "Remove opm tmp directory"
+  file:
+    path: "{{ opm_tmp_dir.path }}"
+    state: absent
