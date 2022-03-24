@@ -1,9 +1,0 @@
----
-
-- name: "cnf-cert pre-run"
-  include_role:
-    name: cnf-cert
-    tasks_from: pre-run.yml
-  when: do_cnf_cert|bool
-
-...
