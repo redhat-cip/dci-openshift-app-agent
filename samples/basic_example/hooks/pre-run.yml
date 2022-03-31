@@ -13,12 +13,14 @@
   set_fact:
     app_ns: "{{ dci_openshift_app_ns|default('myns') }}"
 
-- name: Copy nginx image
-  shell: |
-    set -ex
-    skopeo copy --authfile {{ pullsecret_tmp_file }} --remove-signatures \
-    docker://docker.io/library/nginx \
-    docker://{{ provisionhost_registry }}/library/nginx
+- name: "basic_example : Mirror nginx image"
+  include_role:
+    name: mirror_images
+  vars:
+    images:
+      - docker.io/library/nginx
+    local_registry: "{{ provisionhost_registry }}"
+    authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length

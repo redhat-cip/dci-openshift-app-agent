@@ -25,11 +25,13 @@
 
  ### Mirror must-gather images
 
-- name: "dci-openshift-agent : Mirror must gather images"
-  include_tasks: mirror-image.yml
-  loop: "{{ dci_must_gather_images | default(['registry.redhat.io/openshift4/ose-must-gather']) }}"
-  loop_control:
-    loop_var: image
+- name: "dci-openshift-app-agent : Mirror must gather images"
+  include_role:
+    name: mirror_images
+  vars:
+    images: "{{ dci_must_gather_images | default(['registry.redhat.io/openshift4/ose-must-gather']) }}"
+    local_registry: "{{ provisionhost_registry }}"
+    authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
