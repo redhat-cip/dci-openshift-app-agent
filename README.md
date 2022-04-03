@@ -234,25 +234,6 @@ The variables that control the tests execution can be added as part or the `sett
 ### Operator Certification tests
 This test suite will run the command line interface for validating if OpenShift Operator Bundles and images meet minimum requirements for Red Hat [Operator Certification](https://github.com/redhat-openshift-ecosystem/openshift-preflight).
 
-An example of how to run the Operator Certifications tests:
-
-```console
-$ dci-openshift-app-agent-ctl -s -- -v \
--e kubeconfig_path=path/to/kubeconfig \
--e @preflight_config.yaml
-```
-where bare minimal config is a list of operators to test:
-
-```yaml
----
-# preflight-config.yaml
-preflight_operators_to_check:
-  - name: "simple-demo-operator"
-    version: "v0.0.3"
-    bundle_image: "quay.io/opdev/simple-demo-operator-bundle@sha256:eff7f86a54ef2a340dbf739ef955ab50397bef70f26147ed999e989cfc116b79"
-    index_image: "quay.io/opdev/simple-demo-operator-catalog:v0.0.3"
-```
-
 For specific details about the features and variables for this test suite see: [Preflight role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) documentation.
 
 The test results for each operator can be submitted to the [Red Hat connect Site](https://connect.redhat.com/). Please see [Pyxis Role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/pyxis/README.md) documentation about how to enable this feature.
