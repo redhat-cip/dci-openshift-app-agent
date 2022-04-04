@@ -15,6 +15,15 @@
       path: "{{ job_logs.path }}"
   when: do_cnf_cert|bool
 
+# We need to do this at this point because we will not have
+# claim.json file from CNF Cert Suite before this point.
+- name: Retrieve Preflight operators from CNF Cert Suite claim.json output
+  include_role:
+    name: sync-cnf-cert-and-preflight
+  when:
+    - do_preflight_tests|bool
+    - sync_cnf_cert_and_preflight|bool
+
 - name: Preflight tests
   include_role:
     name: preflight

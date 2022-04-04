@@ -139,6 +139,8 @@ provisioner\_name                  |                                            
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
+do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
+sync\_cnf\_cert\_and\_preflight    | false                                                | If true, CNF Cert Suite output (claim.json file) would be used to create the `preflight_operators_to_check` variable needed for preflight tests.
 |See [Operator Certification (preflight)](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
 |See [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
 |See [chart-verifier role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
