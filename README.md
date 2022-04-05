@@ -244,7 +244,7 @@ The [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/m
 An example of how to run the CNF certification tests:
 
 ```console
-$ dci-openshift-app-agent-ctl -s -- -v \
+$ dci-openshift-app-agent-ctl -s -v -- \
 -e kubeconfig_path=path/to/kubeconfig \
 -e do_tnf_tests=true \
 -e @cnf_config.yaml
@@ -277,7 +277,7 @@ The [chart-verifier role](https://github.com/redhat-cip/dci-openshift-app-agent/
 An example of how to run the Helm chart verifier tests:
 
 ```console
-$ dci-openshift-app-agent-ctl -s -- -v \
+$ dci-openshift-app-agent-ctl -s -v -- \
 -e kubeconfig_path=path/to/kubeconfig \
 -e do_chart_verifier=true \
 -e @helm_config.yml
