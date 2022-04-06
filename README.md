@@ -246,7 +246,7 @@ An example of how to run the CNF certification tests:
 ```console
 $ dci-openshift-app-agent-ctl -s -v -- \
 -e kubeconfig_path=path/to/kubeconfig \
--e do_tnf_tests=true \
+-e do_cnf_cert=true \
 -e @cnf_config.yaml
 ```
 where the configs file looks like this:
