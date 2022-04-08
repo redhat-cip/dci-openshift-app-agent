@@ -36,7 +36,7 @@
         namespace: openshift-marketplace
       spec:
         sourceType: grpc
-        image: "{{ catalog_path | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.3') }}"
+        image: "{{ catalog_path | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.5') }}"
         displayName: Simple Demo Operator
         updateStrategy:
           registryPoll:
@@ -67,7 +67,7 @@
 
 - name: Wait until simple-demo-operator CSV is succeeded
   vars:
-    operator_csv_name: "{{ tnf_operator_to_install.operator_name|default('simple-demo-operator') }}.{{ tnf_operator_to_install.operator_version|default('v0.0.3') }}"
+    operator_csv_name: "{{ tnf_operator_to_install.operator_name|default('simple-demo-operator') }}.{{ tnf_operator_to_install.operator_version|default('v0.0.5') }}"
   k8s_info:
     api: operators.coreos.com/v1alpha1
     namespace: "{{ operator_ns }}"
