@@ -19,9 +19,10 @@
       prefix: tnf_test_example_prerun_tmp_dir.
     register: tnf_test_example_prerun_tmp_dir
 
-  - name: Define catalog path
+  - name: Define catalog path and version
     set_fact:
       catalog_path: "{{ provisionhost_registry }}/testnetworkfunction/{{ tnf_operator_to_install.operator_name }}-disconnected-catalog"
+      catalog_version: "{{ tnf_operator_to_install.operator_version }}_{{ lookup('password', '/dev/null length=16 chars=ascii_lowercase,digits') }}"
 
   - name: Create a common catalog image for simple-demo-operator bundle to be tested in disconnected environment
     block:
@@ -32,7 +33,7 @@
         shell: |
           {{ opm_tool_path }} index add --pull-tool podman \
           --bundles {{ tnf_operator_to_install.operator_bundle }} \
-          --tag {{ catalog_path }}:{{ tnf_operator_to_install.operator_version }}
+          --tag {{ catalog_path }}:{{ catalog_version }}
         args:
           chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
         when: ocp_version_min | int < 9
@@ -101,7 +102,7 @@
             shell: |
               podman build . \
               -f {{ tnf_operator_to_install.operator_name }}-index.Dockerfile \
-              -t {{ catalog_path }}:{{ tnf_operator_to_install.operator_version }}
+              -t {{ catalog_path }}:{{ catalog_version }}
             args:
               chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
 
@@ -110,7 +111,7 @@
   - name: Push catalog image into local registry
     shell: |
       podman push --authfile {{ pullsecret_tmp_file }} \
-      {{ catalog_path }}:{{ tnf_operator_to_install.operator_version }}
+      {{ catalog_path }}:{{ catalog_version }}
     args:
       chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
 
@@ -121,7 +122,7 @@
         shell:
           cmd: |
             skopeo inspect --authfile {{ pullsecret_tmp_file }} \
-            docker://{{ catalog_path }}:{{ tnf_operator_to_install.operator_version }} | jq -r '.Digest'
+            docker://{{ catalog_path }}:{{ catalog_version }} | jq -r '.Digest'
         register: catalog_sha
         retries: 5
         delay: 5
@@ -139,7 +140,7 @@
 
       - name: "Remove local catalog image"
         shell: |
-          podman rmi "{{ catalog_path }}:{{ tnf_operator_to_install.operator_version }}"
+          podman rmi "{{ catalog_path }}:{{ catalog_version }}"
 
       - name: Re-define catalog path + sha
         set_fact:
