@@ -61,7 +61,7 @@ function finish ()
         RET=$?
     fi
 
-    if [ -n "${JOB_ID_FILE}" -a -n "${OUTPUT_DIR}" ]; then
+    if [ -f "${JOB_ID_FILE}" ] && [ -d "${OUTPUT_DIR}" ]; then
         JOB_ID=$(cat ${JOB_ID_FILE})
         if [ -n "$JOB_ID" ]; then
             find "$OUTPUT_DIR" -maxdepth 1 -name "*.xml" -type f -exec sh -c ' \
