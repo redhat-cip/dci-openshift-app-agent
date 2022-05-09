@@ -7,7 +7,4 @@
   tags: [dci]
   when: job_id is defined
 
-- name: "Run common logging process"
-  include_tasks: common_logging.yml
-
 ...
