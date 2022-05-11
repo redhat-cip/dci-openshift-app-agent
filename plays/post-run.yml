@@ -6,22 +6,10 @@
     status: "post-run"
   tags: [dci]
 
-- name: "Run common logging process"
-  include_tasks: "common_logging.yml"
-
 - name: "cnf-cert post-run"
   include_role:
     name: cnf-cert
     tasks_from: post-run.yml
   when: do_cnf_cert|bool
-
-- name: Delete namespace
-  k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ dci_openshift_app_ns }}"
-    state: absent
-  when:
-    - dci_teardown_on_success
 
 ...
