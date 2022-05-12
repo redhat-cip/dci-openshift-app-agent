@@ -21,20 +21,12 @@
   include_role:
     name: sync-cnf-cert-and-preflight
   when:
-    - do_preflight_tests|bool
-    - sync_cnf_cert_and_preflight|bool
+    - do_preflight_tests | bool
+    - sync_cnf_cert_and_preflight | bool
 
 - name: Preflight tests
   include_role:
     name: preflight
-  when: do_preflight_tests|bool
-
-- name: Submit Preflight results to Pyxis
-  include_role:
-    name: pyxis
-    tasks_from: submit.yml
-  when:
-    - preflight_operators_to_check is defined
-    - submit_preflight_to_pyxis | bool
+  when: do_preflight_tests | bool
 
 ...
