@@ -137,7 +137,7 @@ dci\_openshift\_app\_ns            | "myns"                                     
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
-do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (https://github.com/test-network-function/test-network-function)
+do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (https://github.com/test-network-function/cnf-certification-test)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
 do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
 sync\_cnf\_cert\_and\_preflight    | false                                                | If true, CNF Cert Suite output (claim.json file) would be used to create the `preflight_operators_to_check` variable needed for preflight tests.
@@ -241,7 +241,7 @@ For specific details about the features and variables for this test suite see: [
 The test results for each operator can be submitted to the [Red Hat connect Site](https://connect.redhat.com/). Please see [Preflight Role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) documentation about how to enable this feature.
 
 ### Cloud Native Functions (CNF) Certification tests
-The [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/test-network-function) in the order to meet minimum requirements for Red Hat OpenShift Certification.
+The [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/cnf-certification-test) in the order to meet minimum requirements for Red Hat OpenShift Certification.
 
 An example of how to run the CNF certification tests:
 
@@ -526,7 +526,7 @@ Under these conditions, the error presented is the following (there may be other
 
 ```
 Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
- Error: unable to pull quay.io/testnetworkfunction/test-network-function:unstable: unable to pull image: Error committing the finished image: error adding layer with blob "sha256:0a3cf4c29951bdca5c283957249a78290fb441c4ef2ce74f51815056e4be7e7f": Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
+ Error: unable to pull quay.io/testnetworkfunction/cnf-certification-test:unstable: unable to pull image: Error committing the finished image: error adding layer with blob "sha256:0a3cf4c29951bdca5c283957249a78290fb441c4ef2ce74f51815056e4be7e7f": Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
 ```
 
 The problem seems to be related to the subordinate user and group mapping applied for the dci-openshift-app-agent user, a feature that is needed to run rootless containers in podman, or to isolate containers with a user namespace.
