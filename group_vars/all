@@ -14,6 +14,11 @@ dci_gits_to_components: "{{ dci_config_dir }}"
 dev_gits_to_components: []
 dci_rpms_to_components:
   - dci-openshift-app-agent
+  - python3-dciclient
+  - python3-kubernetes
+  - python3-openshift
+  - ansible
+  - podman
 dci_openshift_app_ns: "myns"
 do_cnf_cert: false
 do_chart_verifier: false

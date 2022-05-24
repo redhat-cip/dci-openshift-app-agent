@@ -145,6 +145,8 @@ sync\_cnf\_cert\_and\_preflight    | false                                      
 |See [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
 |See [chart-verifier role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
 
+NOTE: Component variables can be passed during the execution of a job, see the following [README](https://github.com/redhat-cip/dci-openshift-agent/tree/master/common-roles/include-components/README.md) for more details, these variables help to track what software was used to run a job, for example, the version of ansible, podman, or python packages.
+
 A minimal configuration is required for the DCI OpenShift App Agent to run, before launching the agent, make sure you have the following:
 
 1. In /etc/dci-openshift-app-agent/settings.yml these variables are required, see their definitions in the table above. You can also define this variables in a different form, see section [Using customized tags](#using-customized-tags) below where a fake `job_info` is created.
