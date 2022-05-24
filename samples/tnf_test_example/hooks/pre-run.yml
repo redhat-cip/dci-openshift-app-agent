@@ -158,6 +158,7 @@
         vars:
           mcp_wait_retries: 60
           mcp_wait_delay: 60
+          mcp_reason: "TNF test example"
 
   - name: Remove temporary directory
     file:
