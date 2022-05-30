@@ -18,6 +18,7 @@ spec:
 {% endfor %}
 {% if exclude_connectivity_regexp|length and ( "test" | regex_search(exclude_connectivity_regexp) ) %}
         test-network-function.com/skip_connectivity_tests: 'true'
+        test-network-function.com/skip_multus_connectivity_tests: 'true'
 {% endif %}
 {% endif %}
       annotations:
