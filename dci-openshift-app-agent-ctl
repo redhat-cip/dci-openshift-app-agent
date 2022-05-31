@@ -130,7 +130,7 @@ do
         ;;
         -c|--config)
             shift
-            config=$1
+            config="$1"
             shift
         ;;
         -p|--prefix)
@@ -155,10 +155,10 @@ done
 if [ -n "$prefix" ]; then
     settings="$config_dir/${prefix}-settings.yml"
     if [ -r "$settings" ]; then
-        settings_args="-e @$settings"
+        settings_args="$settings"
     else
         echo "Missing $settings, will only use $config."
-        settings_args="-e @$config"
+        settings_args="$config"
     fi
 
     hosts="$config_dir/${prefix}-hosts"
@@ -179,7 +179,7 @@ else
     else
         echo "Missing ${config_dir}/hosts(.yml)"
     fi
-    settings_args="-e @$config"
+    settings_args="$config"
 fi
 
 if [ "$start" != 1 ]; then
@@ -207,7 +207,14 @@ if [ "$start" -eq 1 ]; then
     export JUNIT_OUTPUT_DIR=${OUTPUT_DIR}
     export JUNIT_TEST_CASE_PREFIX=test_
     export JUNIT_TASK_CLASS=yes
-    setsid ansible-playbook --vault-id "$DCI_VAULT_CLIENT" ${extra_args} ${DCI_OPENSHIFT_APP_AGENT_DIR}/dci-openshift-app-agent.yml -e JOB_ID_FILE="${JOB_ID_FILE}" ${settings_args} ${hosts_args} "$@" &
+    setsid ansible-playbook \
+        --vault-id "$DCI_VAULT_CLIENT" \
+        ${extra_args} \
+        ${DCI_OPENSHIFT_APP_AGENT_DIR}/dci-openshift-app-agent.yml \
+        -e JOB_ID_FILE="${JOB_ID_FILE}" \
+        -e @"${settings_args}" \
+        ${hosts_args} \
+        "$@" &
     ANSIBLE_PID=$!
     wait ${ANSIBLE_PID}
     RET=$?
