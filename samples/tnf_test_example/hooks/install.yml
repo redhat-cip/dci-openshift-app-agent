@@ -42,74 +42,45 @@
           registryPoll:
             interval: 30m
 
-- name: Create OperatorGroup for simple-demo-operator
-  k8s:
-    api_version: operators.coreos.com/v1
-    name: simple-demo-operator-group
-    kind: OperatorGroup
-    namespace: "{{ operator_ns }}"
-    definition:
-      spec:
-        targetNamespaces:
-          - "{{ operator_ns }}"
-
-- name: Create Subscription for simple-demo-operator
-  k8s:
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: simple-demo-operator-subscription
-    namespace: "{{ operator_ns }}"
-    definition:
-      spec:
-        name: simple-demo-operator
-        source: simple-demo-operator-catalog
-        sourceNamespace: openshift-marketplace
-
-- name: Wait until simple-demo-operator CSV is succeeded
+- name: "deploy-operators : Install simple-demo-operator"
+  include_role:
+    name: olm-operator
   vars:
-    operator_csv_name: "{{ tnf_operator_to_install.operator_name|default('simple-demo-operator') }}.{{ tnf_operator_to_install.operator_version|default('v0.0.5') }}"
-  k8s_info:
+    operator: simple-demo-operator
+    source: "simple-demo-operator-catalog"
+    namespace: "{{ operator_ns }}"
+    operator_group_spec:
+      targetNamespaces:
+        - "{{ operator_ns }}"
+
+- name: "Get current subscription"
+  community.kubernetes.k8s_info:
     api: operators.coreos.com/v1alpha1
+    kind: Subscription
     namespace: "{{ operator_ns }}"
-    kind: ClusterServiceVersion
-    name: "{{ operator_csv_name }}"
-  register: csv
-  retries: 30
-  delay: 5
-  until:
-    - "csv.resources|length == 1"
-    - "'status' in csv.resources[0]"
-    - "'phase' in csv.resources[0].status"
-    - "csv.resources[0].status.phase == 'Succeeded'"
+    name: "simple-demo-operator"
+  register: current_subscription
 
-# Label/Annotate operators (same procedure used in example-cnf)
-- name: "Get CSVs from {{ operator_ns }} namespace"
-  k8s_info:
-    api_version: operators.coreos.com/v1alpha1
-    kind: ClusterServiceVersion
-    namespace: "{{ operator_ns }}"
-  register: tnf_test_example_csv_list
-
-# Subscription names are retrieved from the install plan that corresponds to the CSV.
-- name: Tag CSVs with autodiscovery labels/annotations to execute test suites
+- name: "Get Installed CSV and subscription name"
   vars:
-    operators_regexp: "{{ tnf_config[0].operators_regexp|default('simple-demo-operator') }}"
-  shell: |
-    set -ex
+    subs_details: >
+      resources[*].{ subscriptionName: metadata.name,
+        installedCSV: status.installedCSV
+      }
+  set_fact:
+    subscription: "{{ current_subscription | json_query(subs_details) | first }}"
 
-    {{ oc_tool_path }} label csv -n "{{ operator_ns }}" "{{ item.metadata.name }}" test-network-function.com/operator=target --overwrite
-    {{ oc_tool_path }} annotate csv -n "{{ operator_ns }}" "{{ item.metadata.name }}" test-network-function.com/operator_tests='["OPERATOR_STATUS"]' --overwrite
-
-    INSTALL_PLAN_NAMES=($({{ oc_tool_path }} get installplan -n "{{ operator_ns }}" | grep "{{ item.metadata.name }}" | awk '{ print $1 }'))
-    INSTALL_PLAN_NUMBER=$(echo -n ${INSTALL_PLAN_NAMES[@]} | wc -w)
-
-    if [ $INSTALL_PLAN_NUMBER -ne 0 ]; then
-      SUBSCRIPTION_NAMES=()
-      for INSTALL_PLAN_NAME in "${INSTALL_PLAN_NAMES[@]}"; do
-        SUBSCRIPTION_NAMES+=( $({{ oc_tool_path }} get installplan "${INSTALL_PLAN_NAME}" -n "{{ operator_ns }}" -o json | jq -r ".metadata.ownerReferences[].name") )
-      done
-      SUBSCRIPTION_NAMES_JSON=$(echo ${SUBSCRIPTION_NAMES[@]} | jq -R 'split (" ")| unique')
-      {{ oc_tool_path }} annotate csv -n "{{ operator_ns }}" "{{ item.metadata.name }}" test-network-function.com/subscription_name="$SUBSCRIPTION_NAMES_JSON" --overwrite
-    fi
-  when: item.metadata.name|regex_search(operators_regexp)
-  loop: "{{ tnf_test_example_csv_list.resources }}"
+- name: "Update CSVs with autodiscovery labels/annotations to execute test suites"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: ClusterServiceVersion
+      metadata:
+        name: "{{ subscription.installedCSV }}"
+        namespace:  "{{ operator_ns }}"
+        labels:
+          test-network-function.com/operator: target
+        annotations:
+          test-network-function.com/operator_tests: "['OPERATOR_STATUS']"
+          test-network-function.com/subscription_name: "{{ subscription.subscriptionName }}"
+...
