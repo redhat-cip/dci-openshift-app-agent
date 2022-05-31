@@ -1,10 +1,9 @@
 ---
-
 # if the namespace is dci_openshift_app_ns,
 # its deletion is handled in d-o-a-a plays, so
 # we do not need to do that here
 - name: Delete namespaces if not done before
-  k8s:
+  community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ item.namespace }}"
@@ -18,7 +17,7 @@
   loop: "{{ tnf_config }}"
 
 - name: Delete simple-demo-operator-catalog
-  k8s:
+  community.kubernetes.k8s:
     state: absent
     api_version: operators.coreos.com/v1alpha1
     name: simple-demo-operator-catalog

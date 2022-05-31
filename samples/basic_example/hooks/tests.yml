@@ -4,7 +4,7 @@
     seconds: 40
 
 - name: Search for all running pods
-  k8s_info:
+  community.kubernetes.k8s_info:
     namespace: "{{ app_ns }}"
     kind: Pod
     name: webserver
@@ -16,4 +16,3 @@
   fail:
     msg: "webserver is not running"
   when: web_service == False
-

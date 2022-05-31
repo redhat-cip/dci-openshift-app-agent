@@ -54,7 +54,7 @@ Before starting make sure the next list of items are covered in the Jumpbox serv
   - baseos-rpms
   - appstream-rpms
 - Podman 3.0 (See section [Old Podman versions](#old-podman-versions) for older Podman versions)
-- kubernetes python module (Optional, but most use cases will probably require it to use k8s ansible module)
+- kubernetes python module
 
 In an already registered server with RHEL you can fullfil the repositories requirements with the following commands:
 
@@ -66,9 +66,11 @@ In an already registered server with RHEL you can fullfil the repositories requi
 ```
 
 Then install kubernetes module
+
 ```ShellSession
 # dnf install python3-kubernetes
 ```
+
 > NOTE: Another option is to use pip3, and you can use a more recent version of the module
 
 ## Installation
@@ -482,9 +484,11 @@ After installing the agent, login as dci-openshift-app-agent user and install th
 $ ansible-galaxy collection install community.kubernetes
 $ ansible-galaxy collection install community.general
 ```
+
 Also the use of newer Ansible versions requires a recent version of the kubernetes python module ( >= 12.0.0), as today only available through pip3
 
 You can upgrade the current version for the dci-openshift-app-agent user only or install a specific version like this:
+
 ```ShellSession
 $ python3 -m pip install -U kubernetes --user
 # or

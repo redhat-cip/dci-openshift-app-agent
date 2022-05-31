@@ -12,7 +12,6 @@
 # Following the same scope than in preflight for preparing the operator in disconnected environments
 - name: Preparing the operator in disconnected environments
   block:
-
   - name: Create temporary directory
     tempfile:
       state: directory
@@ -26,7 +25,6 @@
 
   - name: Create a common catalog image for simple-demo-operator bundle to be tested in disconnected environment
     block:
-
       - name: Create a catalog for simple-demo-operator < 4.9
         environment:
           - REGISTRY_AUTH_FILE: "{{ pullsecret_tmp_file}}"
@@ -40,7 +38,6 @@
 
       - name: Create a catalog for simple-demo-operator >= 4.9 (FBC)
         block:
-
           - name: "Create index directory"
             file:
               path: "{{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index"
@@ -117,7 +114,6 @@
 
   - name: Manage imageContentSourcePolicy update
     block:
-
       - name: "Get catalog SHA256"
         shell:
           cmd: |
@@ -147,7 +143,7 @@
           catalog_path: "{{ catalog_path }}@{{ catalog_sha.stdout }}"
 
       - name: Apply ImageContentSourcePolicy
-        k8s:
+        community.kubernetes.k8s:
           definition: "{{ lookup('file', tnf_test_example_prerun_tmp_dir.path + '/tmp_oc/imageContentSourcePolicy.yaml') }}"
 
       # kubeconfig and oc are referenced by dci_cluster_configs_dir variable on
