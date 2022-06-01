@@ -401,7 +401,7 @@ To use these samples, you need to include the variable `dci_config_dir` with the
 File: settings.yml
 ```YAML
 dci_topic: OCP-4.8
-dci_components_by_query: ['4.8.13']
+dci_components_by_query: ['name:4.8.13']
 dci_comment: "Test webserver"
 dci_openshift_app_ns: testns
 dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
@@ -412,7 +412,7 @@ dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
 File: settings.yml
 ```YAML
 dci_topic: OCP-4.8
-dci_components_by_query: ['4.8.13']
+dci_components_by_query: ['name:4.8.13']
 dci_comment: "Test CNF suite"
 dci_openshift_app_ns: testns
 dci_config_dir: /var/lib/dci-openshift-app-agent/samples/tnf_test_example
