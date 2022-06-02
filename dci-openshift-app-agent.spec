@@ -17,8 +17,6 @@ Requires: python2-dciclient >= 2.3.0
 %else
 Requires: python3-dciclient >= 2.3.0
 %endif
-Requires: ansible-role-dci-import-keys
-Requires: ansible-role-dci-retrieve-component
 Requires: ansible-role-dci-cvp
 Requires: ansible-collection-community-kubernetes
 Requires(pre): shadow-utils
