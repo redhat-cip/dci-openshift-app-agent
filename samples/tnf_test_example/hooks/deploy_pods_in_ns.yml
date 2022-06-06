@@ -1,20 +1,20 @@
 ---
-# If the namespace is already present, the existing object will be patched if its attributes 
+# If the namespace is already present, the existing object will be patched if its attributes
 # differ from those specified using resource_definition or src, according to Ansible docs.
 - name: Create namespace
-  k8s:
+  community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ app_ns }}"
     state: present
 
 - name: Create a Deployment with 2 replicas of the testing pod
-  k8s:
+  community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/test_deployment.yml.j2') | from_yaml }}"
 
 - name: Wait until all test pods are running
-  k8s_info:
+  community.kubernetes.k8s_info:
     namespace: "{{ app_ns }}"
     kind: Pod
     label_selectors:

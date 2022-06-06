@@ -1,7 +1,6 @@
 ---
-
 - name: Create a simple pod
-  k8s:
+  community.kubernetes.k8s:
     state: present
     definition:
       apiVersion: v1

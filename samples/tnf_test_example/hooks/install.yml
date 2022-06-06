@@ -1,6 +1,5 @@
 ---
-
-# If the namespace is dci_openshift_app_ns, its creation is handled in 
+# If the namespace is dci_openshift_app_ns, its creation is handled in
 # d-o-a-a plays, so we do not need to do that here.
 # exclude_connectivity_regexp is not checked because it is optional.
 - name: Create namespaces and deploy test pods on each namespace if not done before
@@ -26,7 +25,7 @@
     operator_ns: "{{ tnf_config[0].namespace|default('test-cnf') }}"
 
 - name: Create CatalogSource for simple-demo-operator
-  k8s:
+  community.kubernetes.k8s:
     state: present
     definition:
       apiVersion: operators.coreos.com/v1alpha1
@@ -77,10 +76,9 @@
       kind: ClusterServiceVersion
       metadata:
         name: "{{ subscription.installedCSV }}"
-        namespace:  "{{ operator_ns }}"
+        namespace: "{{ operator_ns }}"
         labels:
           test-network-function.com/operator: target
         annotations:
           test-network-function.com/operator_tests: "['OPERATOR_STATUS']"
           test-network-function.com/subscription_name: "{{ subscription.subscriptionName }}"
-...
