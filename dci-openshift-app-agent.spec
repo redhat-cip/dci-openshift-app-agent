@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.5.0
+Version:       0.5.1
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -37,7 +37,6 @@ DCI OpenShift App Agent
 %install
 install -p -D -m 644 ansible.cfg %{buildroot}%{_datadir}/dci-openshift-app-agent/ansible.cfg
 install -p -D -m 644 dci-openshift-app-agent.yml  %{buildroot}%{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
-install -p -D -m 644 requirements.yml  %{buildroot}%{_datadir}/dci-openshift-app-agent/requirements.yml
 
 for hook in hooks/*.yml; do
     install -p -D -m 644 $hook  %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/$hook
@@ -101,7 +100,6 @@ exit 0
 
 %{_datadir}/dci-openshift-app-agent/ansible.cfg
 %{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
-%{_datadir}/dci-openshift-app-agent/requirements.yml
 %{_datadir}/dci-openshift-app-agent/plays/*.yml
 %{_datadir}/dci-openshift-app-agent/plays/scripts/*
 %{_datadir}/dci-openshift-app-agent/roles/*
@@ -114,6 +112,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Mon Jun  6 2022 Tony Garcia <tonyg@redhat.com> 0.5.1-1
+- Remove requirements.yml
+
 * Thu Mar 24 2022 Frederic Lepied <flepied@redhat.com> 0.5.0-1
 - use dci-vault-client
 

@@ -66,9 +66,11 @@ In an already registered server with RHEL you can fullfil the repositories requi
 ```
 
 Then install kubernetes module
+
 ```ShellSession
 # dnf install python3-kubernetes
 ```
+
 > NOTE: Another option is to use pip3, and you can use a more recent version of the module
 
 ## Installation
@@ -394,7 +396,7 @@ It's included either when there's a failure, error or at the end of all the step
 Some examples of hooks are provided in the $HOME directory of the `dci-openshift-app-agent` user (/var/lib/dci-openshift-app-agent/samples/). You can use those to initialize the agent tests.
 To use these samples, you need to include the variable `dci_config_dir` with the path of the sample to use in the settings.yml.
 
-> NOTE: Please check the README.md and requirements.txt files for more information of how to use the examples.
+> NOTE: Please check the README.md for more information of how to use the examples.
 
 1. To create a namespace and webserver pod, validate is running, and delete it, the settings.yml file will look like this:
 
@@ -482,9 +484,11 @@ After installing the agent, login as dci-openshift-app-agent user and install th
 $ ansible-galaxy collection install community.kubernetes
 $ ansible-galaxy collection install community.general
 ```
+
 Also the use of newer Ansible versions requires a recent version of the kubernetes python module ( >= 12.0.0), as today only available through pip3
 
 You can upgrade the current version for the dci-openshift-app-agent user only or install a specific version like this:
+
 ```ShellSession
 $ python3 -m pip install -U kubernetes --user
 # or
