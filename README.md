@@ -396,7 +396,7 @@ It's included either when there's a failure, error or at the end of all the step
 Some examples of hooks are provided in the $HOME directory of the `dci-openshift-app-agent` user (/var/lib/dci-openshift-app-agent/samples/). You can use those to initialize the agent tests.
 To use these samples, you need to include the variable `dci_config_dir` with the path of the sample to use in the settings.yml.
 
-> NOTE: Please check the README.md and requirements.txt files for more information of how to use the examples.
+> NOTE: Please check the README.md for more information of how to use the examples.
 
 1. To create a namespace and webserver pod, validate is running, and delete it, the settings.yml file will look like this:
 
