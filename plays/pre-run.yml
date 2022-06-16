@@ -28,12 +28,4 @@
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
 
-- name: "Copy helm to /usr/local/bin/"
-  get_url:
-    url: "https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-amd64"
-    dest: "/usr/local/bin/helm"
-    mode: u=rwx,g=rx,o=rx
-  become: true
-  when: do_chart_verifier|bool
-
 ...
