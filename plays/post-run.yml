@@ -12,4 +12,11 @@
     tasks_from: post-run.yml
   when: do_cnf_cert|bool
 
+- name: Verify mandatory tests
+  include_role:
+    name: verify-tests
+  when:
+    - tests_to_verify is defined
+    - tests_to_verify | length > 0
+
 ...
