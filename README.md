@@ -249,67 +249,13 @@ The test results for each operator can be submitted to the [Red Hat connect Site
 
 The [CNF-cert role](roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/cnf-certification-test) in the order to meet minimum requirements for Red Hat OpenShift Certification.
 
-An example of how to run the CNF certification tests:
-
-```console
-$ dci-openshift-app-agent-ctl -s -v -- \
--e kubeconfig_path=path/to/kubeconfig \
--e do_cnf_cert=true \
--e @cnf_config.yaml
-```
-
-where the configs file looks like this:
-
-Example:
-
-```yaml
----
-# cnf-config.yaml
-tnf_suites: "diagnostic access-control networking lifecycle observability platform-alteration operator"
-tnf_config:
-  - namespace: "test-cnf"
-    targetpodlabels: [environment=test]
-    operators_regexp: ""
-    exclude_connectivity_regexp: ""
-  - namespace: "production-cnf"
-    targetpodlabels: [environment=production]
-    operators_regexp: ""
-    exclude_connectivity_regexp: "*"
-```
-
 For specific details about the features and variables for this test suite see: [CNF-cert role](roles/cnf-cert/README.md) documentation.
 
 ### Helm Chart Verifier
 
 [Helm Chart Verifier](https://github.com/redhat-certification/chart-verifier) is a test tool that validates Helm charts based on Red Hat recommendations.
 
-The [chart-verifier role](roles/chart-verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details.
-
-An example of how to run the Helm chart verifier tests:
-
-```console
-$ dci-openshift-app-agent-ctl -s -v -- \
--e kubeconfig_path=path/to/kubeconfig \
--e do_chart_verifier=true \
--e @helm_config.yml
-```
-
-where the config file looks like this:
-
-```yaml
----
-dci_charts:
-  -
-    name: mychart1
-    chart_file: http://xyz/pub/projects/mychart1.tgz
-    values_file: http://xyz/pub/projects/mychart1.yml
-    install: true
-  -
-    name: mychart2
-    chart_file: http://xyz/pub/projects/mychart2.tgz
-    values_file: http://xyz/pub/projects/mychart2.yml
-    install: false
-```
+The [chart-verifier role](roles/chart-verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details about how to run tests using via the app agent or using a pipeline.
 
 ## General workflow
 
