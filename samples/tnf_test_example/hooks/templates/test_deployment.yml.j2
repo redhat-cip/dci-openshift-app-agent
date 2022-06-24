@@ -26,12 +26,15 @@ spec:
         test-network-function.com/defaultnetworkinterface: '"eth0"' # optional
       name: test
     spec:
+      terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
       containers:
-        - command: [ "/bin/bash", "-c", "echo 'logs' && tail -f /dev/null" ]
-          image: {{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
+        - image: {{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
           imagePullPolicy: IfNotPresent
           name: test
+          ports:
+            - name: "http-probe"
+              containerPort: 8080
           resources:
             requests:
               memory: 256Mi
@@ -41,15 +44,35 @@ spec:
               cpu: 0.25
           lifecycle:
             preStop:
-               exec:
-                 command: ["/bin/sh","-c","killall -0 tail"]
+              exec:
+                command: ["/bin/sh", "-c", "killall -0 tail"]
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+              httpHeaders:
+                - name: health-check
+                  value: liveness
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+              httpHeaders:
+                - name: health-check
+                  value: readiness
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          command: ["./bin/app"]
+          terminationMessagePolicy: FallbackToLogsOnError
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - test
-            topologyKey: "kubernetes.io/hostname"
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - test
+              topologyKey: "kubernetes.io/hostname"
