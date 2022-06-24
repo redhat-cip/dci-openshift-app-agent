@@ -143,12 +143,10 @@ do\_cnf\_cert                      |false                                       
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
 do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
 sync\_cnf\_cert\_and\_preflight    | false                                                | If true, CNF Cert Suite output (claim.json file) would be used to create the `preflight_operators_to_check` variable needed for preflight tests.
-tests\_to\_verify                  | undefined                                                | List of expected test results. When defined, it triggers the validation of actual test results against the expectations. Please check [verify-tests readme](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/verify-tests/README.md) to get more details and an example of the configuration.
-|See [Operator Certification (preflight)](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
-|See [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
-|See [chart-verifier role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
-
-NOTE: Component variables can be passed during the execution of a job, see the following [README](https://github.com/redhat-cip/dci-openshift-app-agent/tree/master/roles/include-components/README.md) for more details, these variables help to track what software was used to run a job, for example, the version of ansible, podman, or python packages.
+tests\_to\_verify                  | undefined                                                | List of expected test results. When defined, it triggers the validation of actual test results against the expectations. Please check [verify-tests readme](roles/verify-tests/README.md) to get more details and an example of the configuration.
+|See [Operator Certification (preflight)](roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
+|See [CNF-cert role](roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
+|See [chart-verifier role](roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
 
 A minimal configuration is required for the DCI OpenShift App Agent to run, before launching the agent, make sure you have the following:
 
@@ -241,12 +239,12 @@ The variables that control the tests execution can be added as part or the `sett
 ### Operator Certification tests
 This test suite will run the command line interface for validating if OpenShift Operator Bundles and images meet minimum requirements for Red Hat [Operator Certification](https://github.com/redhat-openshift-ecosystem/openshift-preflight).
 
-For specific details about the features and variables for this test suite see: [Preflight role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) documentation.
+For specific details about the features and variables for this test suite see: [Preflight role](roles/preflight/README.md) documentation.
 
-The test results for each operator can be submitted to the [Red Hat connect Site](https://connect.redhat.com/). Please see [Preflight Role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/preflight/README.md) documentation about how to enable this feature.
+The test results for each operator can be submitted to the [Red Hat connect Site](https://connect.redhat.com/). Please see [Preflight Role](roles/preflight/README.md) documentation about how to enable this feature.
 
 ### Cloud Native Functions (CNF) Certification tests
-The [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/cnf-certification-test) in the order to meet minimum requirements for Red Hat OpenShift Certification.
+The [CNF-cert role](roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/cnf-certification-test) in the order to meet minimum requirements for Red Hat OpenShift Certification.
 
 An example of how to run the CNF certification tests:
 
@@ -274,12 +272,12 @@ tnf_config:
     exclude_connectivity_regexp: "*"
 ```
 
-For specific details about the features and variables for this test suite see: [CNF-cert role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/cnf-cert/README.md) documentation.
+For specific details about the features and variables for this test suite see: [CNF-cert role](roles/cnf-cert/README.md) documentation.
 
 ### Helm Chart Verifier
 [Helm Chart Verifier](https://github.com/redhat-certification/chart-verifier) is a test tool that validates Helm charts based on Red Hat recommendations.
 
-The [chart-verifier role](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/roles/chart-verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details.
+The [chart-verifier role](roles/chart-verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details.
 
 An example of how to run the Helm chart verifier tests:
 
@@ -635,7 +633,7 @@ All the other arguments will be passed to `dci-openshift-app-agent-ctl`.
 
 ## License
 
-Apache License, Version 2.0 (see [LICENSE](https://github.com/redhat-cip/dci-openshift-app-agent/blob/master/LICENSE) file)
+Apache License, Version 2.0 (see [LICENSE](LICENSE) file)
 
 ## Contact
 
