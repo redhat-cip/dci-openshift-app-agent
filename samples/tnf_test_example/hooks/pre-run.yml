@@ -150,11 +150,12 @@
       # dci-openshift-agent, and both are saved under kubeconfig_path (removing "/kubeconfig")
       - name: Wait for MCP status
         include_role:
-          name: wait-mcp
+          name: check-resource
         vars:
-          mcp_wait_retries: 60
-          mcp_wait_delay: 60
-          mcp_reason: "TNF test example"
+          resource_to_check: "MachineConfigPool"
+          check_wait_retries: 60
+          check_wait_delay: 60
+          check_reason: "TNF test example"
 
   - name: Remove temporary directory
     file:
