@@ -35,7 +35,7 @@
         namespace: openshift-marketplace
       spec:
         sourceType: grpc
-        image: "{{ catalog_path | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.5') }}"
+        image: "{{ catalog_path | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.6') }}"
         displayName: Simple Demo Operator
         updateStrategy:
           registryPoll:
@@ -45,8 +45,8 @@
   include_role:
     name: olm-operator
   vars:
-    operator: simple-demo-operator
-    source: "simple-demo-operator-catalog"
+    operator: "{{ tnf_operator_to_install.operator_name | default('simple-demo-operator') }}"
+    source: "{{ tnf_operator_to_install.operator_name | default('simple-demo-operator') }}-catalog"
     namespace: "{{ operator_ns }}"
     operator_group_spec:
       targetNamespaces:
@@ -57,7 +57,7 @@
     api: operators.coreos.com/v1alpha1
     kind: Subscription
     namespace: "{{ operator_ns }}"
-    name: "simple-demo-operator"
+    name: "{{ tnf_operator_to_install.operator_name | default('simple-demo-operator') }}"
   register: current_subscription
 
 - name: "Get Installed CSV and subscription name"

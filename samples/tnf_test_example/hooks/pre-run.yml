@@ -77,7 +77,7 @@
               content: |
                  ---
                  schema: olm.channel
-                 package: simple-demo-operator
+                 package: {{ tnf_operator_to_install.operator_name }}
                  name: {{ default_channel.stdout }}
                  entries:
                     - name: {{ tnf_operator_to_install.operator_name }}.{{ tnf_operator_to_install.operator_version }}
