@@ -24,6 +24,12 @@
     - do_preflight_tests | bool
     - sync_cnf_cert_and_preflight | bool
 
+- name: Preflight container-only tests
+  include_role:
+    name: preflight
+    tasks_from: tests_containers_only
+  when: preflight_containers_to_certify is defined
+
 - name: Preflight tests
   include_role:
     name: preflight
