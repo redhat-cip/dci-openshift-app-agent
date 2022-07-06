@@ -27,5 +27,4 @@
   when:
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
-
 ...
