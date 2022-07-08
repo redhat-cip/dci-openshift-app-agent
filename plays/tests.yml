@@ -27,7 +27,7 @@
 - name: Preflight container-only tests
   include_role:
     name: preflight
-    tasks_from: tests_containers_only
+    tasks_from: main_standalone_containers_certification
   when: preflight_containers_to_certify is defined
 
 - name: Preflight tests
