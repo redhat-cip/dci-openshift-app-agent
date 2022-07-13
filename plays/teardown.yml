@@ -5,10 +5,11 @@
     state: absent
   when: pullsecret_tmp_file is defined
 
-- name: "Remove opm tmp directory"
+- name: "Remove client tmp directory"
   file:
-    path: "{{ opm_tmp_dir.path }}"
+    path: "{{ client_tmp_dir.path }}"
     state: absent
+  when: client_tmp_dir is defined
 
 - name: Delete namespace
   community.kubernetes.k8s:
