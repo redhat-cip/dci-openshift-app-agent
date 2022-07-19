@@ -1,0 +1,52 @@
+---
+- name: Enable/Disable the internal OCP image registry
+  hosts: localhost
+
+  tasks:
+
+    - name: "Read KUBECONFIG path from env vars"
+      set_fact:
+        kubeconfig_path: "{{ lookup('env','KUBECONFIG') }}"
+      when: kubeconfig_path is not defined
+
+    - name: "Check if KUBECONFIG exists"
+      stat:
+        path: "{{ kubeconfig_path }}"
+      register: kubeconfig
+
+    - name: "Fail if kubeconfig NOT found"
+      fail:
+        msg: "kubeconfig not found at {{ kubeconfig_path }}"
+      when: not kubeconfig.stat.exists
+
+    - name: "Get the current OCP registry details"
+      community.kubernetes.k8s_info:
+        api: imageregistry.operator.openshift.io/v1
+        kind: Config
+        name: cluster
+      register: registry_status
+
+    - name: "Get registry state"
+      set_fact:
+        registry_status: "{{ registry_status.resources[0].spec.managementState }}"
+
+    - name: "The internal registry is already configured"
+      fail:
+        msg: "The internal registry is already configured, refusing to configure it again"
+      when:
+        - registry_status == "Managed"
+        - enable_ocp_registry | default(false) | bool
+
+    - name: "Enable the OCP internal Registry"
+      include_tasks: enable-ocp-registry.yml
+      when:
+        - enable_ocp_registry | default(false) | bool
+        - registry_status == "Removed"
+
+    - name: "Disable OCP internal Registry"
+      include_tasks: disable-ocp-registry.yml
+      when:
+        - disable_ocp_registry | default(false) | bool
+        - registry_status == "Managed"
+...
+

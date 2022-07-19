@@ -1,0 +1,16 @@
+- name: "Wait for changes applied to the nodes"
+  block:
+    - name: Get Machine config pools status
+      community.kubernetes.k8s_info:
+        api_version: machineconfiguration.openshift.io/v1
+        kind: MachineConfigPool
+      register: reg_mcpool_status
+      vars:
+        status_query: "resources[*].status.conditions[?type=='Updated'].status"
+        update_status: "{{ reg_mcpool_status | json_query(status_query) | flatten | unique }}"
+      until:
+        - reg_mcpool_status.resources is defined
+        - update_status == ['True']
+      retries: 540
+      delay: 15
+...

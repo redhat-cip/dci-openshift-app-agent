@@ -1,0 +1,83 @@
+---
+
+- name: "Logout from the registry"
+  shell: |
+    podman logout {{ registry_route.resources[0].status.ingress[0].host }}
+  when:
+    - registry_route is defined
+  ignore_errors: true
+
+- name: "Rollback storage and disable the image-registry"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: imageregistry.operator.openshift.io/v1
+      kind: Config
+      metadata:
+        name: cluster
+      spec:
+        storage:
+          emptyDir: null
+        managementState: "Removed"
+
+- name: "Get the DCI registry IdP provider index"
+  shell: >
+    set -o pipefail &&
+    oc get oauth cluster -o json
+    | jq '.spec.identityProviders
+    | map(.name == "dci-http-idp") | index(true)'
+  register: idp_index
+
+- name: "Remove the DCI registry IdP provider"
+  shell: >
+    oc patch oauth cluster
+    --type=json
+    -p="[{'op': 'remove', 'path': '/spec/identityProviders/{{ idp_index.stdout }}'}]"
+  when:
+    - idp_index.stdout | length > 0
+    - idp_index.stdout != "null"
+
+- name: "Remove the backend dci-registry-secret"
+  community.kubernetes.k8s:
+    state: absent
+    kind: Secret
+    name: dci-registry-secret
+    namespace: openshift-config
+
+- name: "Revoke registry-editor permissions to ocp_registry_user"
+  community.kubernetes.k8s:
+    api_version: rbac.authorization.k8s.io/v1
+    state: absent
+    kind: ClusterRoleBinding
+    name: editor-ocp_registry_user
+
+- name: "Remove the ocp_registry_user"
+  community.kubernetes.k8s:
+    state: absent
+    kind: User
+    name: ocp_registry_user
+
+- name: "Remove the ocp_registry_user identity"
+  community.kubernetes.k8s:
+    api_version: user.openshift.io/v1
+    state: absent
+    kind: Identity
+    name: "dci-http-idp:ocp_registry_user"
+
+- name: "Remove the insecure registries entries"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: config.openshift.io/v1
+      kind: Image
+      metadata:
+        name: cluster
+      spec:
+        registrySources: null
+  ignore_errors: true
+
+- name: "Pause for Machine Config to be rendered"
+  pause:
+    seconds: 60
+
+- name: "Wait for MCPs"
+  include_tasks: wait-mcp.yml
+...
