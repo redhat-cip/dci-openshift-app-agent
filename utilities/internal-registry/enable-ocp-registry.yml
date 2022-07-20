@@ -1,0 +1,274 @@
+---
+
+- name: "Enable ephemeral storage for OCP registry"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: imageregistry.operator.openshift.io/v1
+      kind: Config
+      metadata:
+        name: cluster
+      spec:
+        storage:
+          emptyDir: {}
+
+- name: "Enable the OCP registry"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: imageregistry.operator.openshift.io/v1
+      kind: Config
+      metadata:
+        name: cluster
+      spec:
+        managementState: "Managed"
+
+- name: "Wait for image-registry pods to be Running"
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Pod
+    wait: yes
+    namespace: openshift-image-registry
+    label_selectors:
+      - "docker-registry = default"
+    wait_sleep: 5
+    wait_timeout: 120
+  no_log: true
+
+- name: "Expose the registry via default route"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: imageregistry.operator.openshift.io/v1
+      kind: Config
+      metadata:
+        name: cluster
+      spec:
+        defaultRoute: true
+
+- name: "Get the registry route"
+  community.kubernetes.k8s_info:
+    api: route.openshift.io/v1
+    kind: Route
+    name: default-route
+    namespace: openshift-image-registry
+  register: registry_route
+
+- name: "Patch OAuth to add a new httpd provider"
+  vars:
+    dci_http_registry_idp:
+      name: dci-http-idp
+      challenge: true
+      login: true
+      mappingMethod: claim
+      type: HTPasswd
+      htpasswd:
+        fileData:
+          name: dci-registry-secret
+  shell: >
+    set -o pipefail &&
+    oc get oauth cluster -o json
+    | jq '.spec.identityProviders += [ {{ dci_http_registry_idp | to_json }} ] '
+    | oc apply -f -
+
+- name: "Create working directory"
+  tempfile:
+    state: directory
+    path: "{{ playbook_dir }}"
+  register: creds_dir
+
+- name: "Set working directory path"
+  set_fact:
+    creds_dir: "{{ creds_dir.path }}"
+
+- name: "Set ocp_registry_user name"
+  set_fact:
+    ocp_registry_user: ocp_registry_user
+
+- name: "Generate Random password for ocp_registry_user"
+  set_fact:
+    ocp_user_pass: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
+
+- name: "Create an http password for ocp_registry_user"
+  shell: |
+    htpasswd -cbB {{ creds_dir }}/htpasswd "{{ ocp_registry_user }}" '{{ ocp_user_pass }}'
+
+- name: "Encoding secrets file"
+  slurp:
+    src: "{{ creds_dir }}/htpasswd"
+  register: encoded_secret
+
+- name: "Create dci-registry-secret backend secret"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: dci-registry-secret
+        namespace: openshift-config
+      type: Opaque
+      data:
+        htpasswd: "{{ encoded_secret.content }}"
+
+- name: "Grant registry-editor permissions to ocp_registry_user"
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: editor-ocp_registry_user
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: registry-editor
+      subjects:
+        - kind: User
+          name: "{{ ocp_registry_user }}"
+
+- name: "Pause for credentials to be applied"
+  pause:
+    seconds: 60
+
+- name: "Get the OCP registry details"
+  community.kubernetes.k8s_info:
+    api_version: config.openshift.io/v1
+    kind: Infrastructure
+    name: cluster
+  register: infra_info
+
+- name: "Set cluster_api"
+  set_fact:
+    cluster_api: "{{ infra_info.resources[0].status.apiServerURL }}"
+
+- name: "Login to the cluster using the ocp_registry_user"
+  shell: >
+    KUBECONFIG={{ creds_dir }}/kubeconfig_ocp_registry oc login
+    --insecure-skip-tls-verify=true
+    -u ocp_registry_user
+    -p '{{ ocp_user_pass }}' {{ cluster_api }}
+  register: login_cmd
+  retries: 30
+  delay: 10
+  until: not login_cmd.failed
+
+- name: "Set the kubeconfig_ocp_registry"
+  set_fact:
+    kubeconfig_ocp_registry: "{{ creds_dir }}/kubeconfig_ocp_registry"
+
+- name: "Get ocp_registry_user token"
+  set_fact:
+    ocp_kubeconfig: "{{ lookup('template', kubeconfig_ocp_registry) | from_yaml }}"
+
+- name: "Set the ocp_registry_user token"
+  set_fact:
+    ocp_registry_user_token: "{{ ocp_kubeconfig.users[0].user.token }}"
+
+- name: "Set ocp_registry route"
+  set_fact:
+    ocp_registry_endpoint: "{{ registry_route.resources[0].status.ingress[0].host }}"
+
+- name: "Login to the registry using the ocp_registry_user"
+  shell: >
+    podman login
+    -u ocp_registry_user
+    -p {{ ocp_registry_user_token }}
+    --tls-verify=false {{ ocp_registry_endpoint }}
+  register: login_cmd
+  retries: 5
+  delay: 5
+  until: not login_cmd.failed
+
+- name: "Get dci-registry-secret details"
+  community.kubernetes.k8s_info:
+    api: v1
+    kind: Secret
+    name: "pull-secret"
+    namespace: openshift-config
+  register: ocp_pull_secret
+
+- name: "Get the pull-secret content"
+  set_fact:
+    ocp_pull_secret: '{{ ocp_pull_secret.resources[0].data[".dockerconfigjson"] | b64decode }}'
+
+- name: "Save the pullsecret to a file"
+  copy:
+    content: "{{ ocp_pull_secret }}"
+    dest: "{{ creds_dir }}/pull_secret"
+    mode: 0600
+  delegate_to: localhost
+
+- name: "Get and backup current global pullsecret"
+  shell: >
+    cp {{ creds_dir }}/pull_secret {{ creds_dir }}/pull_secret.bak
+
+- name: "Append image registry credentials to pull secret (external)"
+  shell: >
+    oc registry login
+    --registry="{{ ocp_registry_endpoint }}"
+    --skip-check
+    --auth-basic="ocp_registry_user:{{ ocp_registry_user_token }}"
+    --to={{ creds_dir }}/pull_secret
+
+- name: "Append image registry credentials to pull secret (internal)"
+  shell: >
+    oc registry login
+    --registry="image-registry.openshift-image-registry.svc:5000"
+    --skip-check
+    --auth-basic="ocp_registry_user:{{ ocp_registry_user_token }}"
+    --to={{ creds_dir }}/pull_secret
+
+- name: "Encoding the pull_secrets file"
+  slurp:
+    src: "{{ creds_dir }}/pull_secret"
+  register: dci_pull_secret
+
+- name: "Update the general pullsecret"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: pull-secret
+        namespace: openshift-config
+      data:
+        .dockerconfigjson: "{{ dci_pull_secret.content }}"
+      type: kubernetes.io/dockerconfigjson
+
+- name: "Save registry details to the working directory"
+  copy:
+    content: "OCP image registry details\n
+              ---\n
+              ocp_registry_endpoint: {{ ocp_registry_endpoint }}\n
+              ocp_registry_user: {{ ocp_registry_user }}\n
+              ocp_user_pass: {{ ocp_user_pass }}\n
+              ocp_registry_user_token: {{ ocp_registry_user_token }}\n"
+    dest: "{{ creds_dir }}/ocp_registry.txt"
+    mode: '0640'
+
+- name: "Print internal registry details"
+  debug:
+    msg:
+      - "Registry endpoint: {{ ocp_registry_endpoint }}"
+      - "Registry user: {{ ocp_registry_user }}"
+      - "Registry user's password: {{ ocp_user_pass }}"
+      - "Registry user's token: {{ ocp_registry_user_token }}"
+      - "Work directory: {{ creds_dir }}"
+
+- name: "Allow insecure registries on nodes"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: config.openshift.io/v1
+      kind: Image
+      metadata:
+        name: cluster
+      spec:
+        registrySources:
+          insecureRegistries:
+            - "{{ ocp_registry_endpoint }}"
+            - "image-registry.openshift-image-registry.svc:5000"
+
+- name: "Pause for Machine Config to be rendered"
+  pause:
+    seconds: 60
+
+- name: "Wait for MCPs"
+  include_tasks: wait-mcp.yml
+...
