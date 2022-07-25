@@ -217,7 +217,7 @@
             msg: "Failure: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
           tags: [dci]
 
-# Step 3 : "testing" step
+# Step 3a : "testing" step
 - name: "Execute Red Hat tests step"
   hosts: jumphost
   tags:
@@ -257,6 +257,22 @@
         - name: "Execute tests hook"
           include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
           when: check_tests.stat.exists
+
+      rescue: *failure_with_upload_logs
+
+# Step 3c : "testing" step
+- name: "Check test results step"
+  hosts: jumphost
+  tags:
+    - running
+    - testing
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  tasks:
+    - block:
+
+        - name: "Check test results"
+          include_tasks: plays/check-test-results.yml
 
       rescue: *failure_with_upload_logs
 
