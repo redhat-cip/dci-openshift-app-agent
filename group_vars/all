@@ -22,7 +22,6 @@ dci_rpms_to_components:
 dci_openshift_app_ns: "myns"
 do_cnf_cert: false
 do_chart_verifier: false
-do_preflight_tests: false
 # please think to define this variable
 # if you deal with private registries
 partner_creds: ""
