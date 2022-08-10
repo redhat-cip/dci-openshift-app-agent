@@ -64,6 +64,15 @@ spec:
                   value: readiness
             initialDelaySeconds: 10
             periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+              httpHeaders:
+                - name: health-check
+                  value: startup
+            failureThreshold: 10
+            periodSeconds: 5
           command: ["./bin/app"]
           terminationMessagePolicy: FallbackToLogsOnError
       affinity:

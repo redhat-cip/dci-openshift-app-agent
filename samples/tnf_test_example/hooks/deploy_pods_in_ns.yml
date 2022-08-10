@@ -8,6 +8,11 @@
     name: "{{ app_ns }}"
     state: present
 
+- name: Create ResourceQuotas for namespace
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/resource_quota.yml.j2') | from_yaml }}"
+
 - name: Create a Deployment with 2 replicas of the testing pod
   community.kubernetes.k8s:
     state: present
