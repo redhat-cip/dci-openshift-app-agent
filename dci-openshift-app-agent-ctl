@@ -168,6 +168,8 @@ if [ -n "$prefix" ]; then
         hosts_args="-i ${hosts}.yml"
     elif [ -r "${config_dir}/hosts" ]; then
         hosts_args="-i ${config_dir}/hosts"
+    elif [ -r "${config_dir}/hosts.yml" ]; then
+        hosts_args="-i ${config_dir}/hosts.yml"
     else
         echo "Missing $hosts(.yml) or ${config_dir}/hosts"
     fi
