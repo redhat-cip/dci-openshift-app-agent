@@ -114,6 +114,13 @@
         tags: '{{ dci_tags + dci_workarounds }}'
       when: dci_tags[0] is defined
 
+    - name: Add cluster tag to the current job
+      dci_job:
+        id: '{{ job_id }}'
+        tags:
+          - cluster:{{ cluster_name }}
+      when: cluster_name is defined
+
     - name: Set pullsecret file for disconnected environments
       include_tasks: 'plays/pullsecrets.yml'
       when: dci_disconnected | default(false) | bool
