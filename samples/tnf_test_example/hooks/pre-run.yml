@@ -50,16 +50,16 @@
                 skopeo inspect
                 docker://{{ tnf_operator_to_install.operator_bundle }} |
                 jq -r '.Labels."operators.operatorframework.io.bundle.channel.default.v1"'
-            register: default_channel
+            register: def_channel
             retries: 5
             delay: 5
             until:
-              - default_channel is not failed
+              - def_channel is not failed
 
           - name: "Initialize index"
             shell: |
               {{ opm_tool_path }} init {{ tnf_operator_to_install.operator_name }} \
-              --default-channel={{ default_channel.stdout }} \
+              --default-channel={{ def_channel.stdout }} \
               --output=yaml > {{ tnf_operator_to_install.operator_name }}-index/index.yml
             args:
               chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
@@ -78,7 +78,7 @@
                  ---
                  schema: olm.channel
                  package: {{ tnf_operator_to_install.operator_name }}
-                 name: {{ default_channel.stdout }}
+                 name: {{ def_channel.stdout }}
                  entries:
                     - name: {{ tnf_operator_to_install.operator_name }}.{{ tnf_operator_to_install.operator_version }}
 
