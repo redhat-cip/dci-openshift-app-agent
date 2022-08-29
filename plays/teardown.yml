@@ -1,4 +1,10 @@
 ---
+- name: "cnf-cert teardown"
+  include_role:
+    name: cnf-cert
+    tasks_from: teardown.yml
+  when: do_cnf_cert|bool
+
 - name: Delete temporary file for saving pullsecret content
   file:
     path: "{{ pullsecret_tmp_file }}"
