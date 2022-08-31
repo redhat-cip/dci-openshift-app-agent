@@ -35,3 +35,8 @@
     - "'status' in test_result.resources[1]"
     - "'phase' in test_result.resources[1].status"
     - "test_result.resources[1].status.phase == 'Running'"
+
+- name: Create NetworkPolicies for the pods deployed to deny traffic by default
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/network_policies_deny_traffic.yml.j2') | from_yaml }}"

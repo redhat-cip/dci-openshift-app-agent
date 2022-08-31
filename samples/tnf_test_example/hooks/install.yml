@@ -19,6 +19,14 @@
   loop_control:
     loop_var: pods_in_same_ns
 
+- name: Create NetworkPolicies for the pods deployed to allow inter-intra namespaces traffic
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/network_policies_allow_traffic.yml.j2') | from_yaml }}"
+  when:
+    - tnf_config is defined
+    - tnf_config|length
+
 # Install the operator in test-cnf namespace
 - name: Set operator_ns variable
   set_fact:
