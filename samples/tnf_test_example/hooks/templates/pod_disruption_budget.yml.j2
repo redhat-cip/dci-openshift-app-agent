@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: test-pdb-min
+      namespace: {{ app_ns }}
+    spec:
+      minAvailable: 1
+      selector:
+        matchLabels:
+          app: test
+  - apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: test-pdb-max
+      namespace: {{ app_ns }}
+    spec:
+      maxUnavailable: 1
+      selector:
+        matchLabels:
+          app: test

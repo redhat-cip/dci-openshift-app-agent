@@ -40,3 +40,17 @@
   community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/network_policies_deny_traffic.yml.j2') | from_yaml }}"
+
+- name: Create CRD under test
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/test_crd.yml.j2') | from_yaml }}"
+  when: pods_in_same_ns.target_crds|length
+  loop: "{{ pods_in_same_ns.target_crds }}"
+  loop_control:
+    loop_var: target_crd
+
+- name: Create PodDisruptionBudget for the pods deployed
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/pod_disruption_budget.yml.j2') | from_yaml }}"

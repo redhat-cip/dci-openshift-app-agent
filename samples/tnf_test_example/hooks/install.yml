@@ -2,11 +2,12 @@
 # If the namespace is dci_openshift_app_ns, its creation is handled in
 # d-o-a-a plays, so we do not need to do that here.
 # exclude_connectivity_regexp is not checked because it is optional.
-- name: Create namespaces and deploy test pods on each namespace if not done before
-  include_tasks: deploy_pods_in_ns.yml
+- name: Create namespaces and deploy test resources on each namespace if not done before
+  include_tasks: deploy_resources_in_ns.yml
   vars:
     app_ns: "{{ pods_in_same_ns.namespace }}"
     targetpodlabels: "{{ pods_in_same_ns.targetpodlabels }}"
+    target_crds: "{{ pods_in_same_ns.target_crds }}"
     exclude_connectivity_regexp: "{{ pods_in_same_ns.exclude_connectivity_regexp|default('') }}"
   when:
     - tnf_config is defined
@@ -15,6 +16,8 @@
     - pods_in_same_ns.namespace|length
     - pods_in_same_ns.targetpodlabels is defined
     - pods_in_same_ns.targetpodlabels is iterable
+    - pods_in_same_ns.target_crds is defined
+    - pods_in_same_ns.target_crds is iterable
   loop: "{{ tnf_config }}"
   loop_control:
     loop_var: pods_in_same_ns
