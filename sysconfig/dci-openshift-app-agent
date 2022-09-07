@@ -1,2 +1,10 @@
-# Specify any options to pass to the ansible-playbook when run via systemd
-OPTIONS="-e @/etc/dci-openshift-app-agent/settings.yml"
+# Configuration file for the systemd unit file
+
+# Options passed to the agent ctl call
+# AGENT_OPTIONS="-p MYPROFILE"
+
+# Options passed to ansible-playbook
+# ANSIBLE_OPTIONS="-v"
+
+# Path to the kubeconfig file needed to run the agent
+# KUBECONFIG=/path/to/your/existing/kubeconfig
