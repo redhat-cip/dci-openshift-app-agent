@@ -15,7 +15,13 @@
   include_role:
     name: include-components
 
- ### Mirror must-gather images
+- name: Compute if all needed components are ga
+  vars:
+    ga_components: "{{ job_info['job']['components'] | selectattr('tags', 'issuperset', ['build:ga']) | map(attribute='type') | list }}"
+  set_fact:
+    dci_all_components_are_ga: "{{ dci_ga_components_for_certification | difference(ga_components) | length == 0 }}"
+
+### Mirror must-gather images
 
 - name: "dci-openshift-app-agent : Mirror must gather images"
   include_role:
@@ -27,4 +33,5 @@
   when:
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
+
 ...
