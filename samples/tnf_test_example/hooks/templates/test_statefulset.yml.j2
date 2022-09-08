@@ -24,10 +24,17 @@ spec:
       annotations:
         test-network-function.com/container_tests: '["PRIVILEGED_POD","PRIVILEGED_ROLE"]' # optional
         test-network-function.com/defaultnetworkinterface: '"eth0"' # optional
+{% if app_ns == 'production-cnf' %}
+        cpu-load-balancing.crio.io: disable
+        irq-load-balancing.crio.io: disable
+{% endif %}
       name: test
     spec:
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
+{% if runtime_class_name is defined and runtime_class_name|length and app_ns == 'production-cnf' %}
+      runtimeClassName: {{ runtime_class_name }}
+{% endif %}
       containers:
         - image: {{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
           imagePullPolicy: IfNotPresent
@@ -36,12 +43,21 @@ spec:
             - name: "http-probe"
               containerPort: 8080
           resources:
+{% if app_ns == 'production-cnf' %}
+            requests:
+              memory: 512Mi
+              cpu: 2000m
+            limits:
+              memory: 512Mi
+              cpu: 2000m
+{% else %}
             requests:
               memory: 256Mi
               cpu: 0.10
             limits:
               memory: 512Mi
               cpu: 0.25
+{% endif %}
           lifecycle:
             preStop:
               exec:
