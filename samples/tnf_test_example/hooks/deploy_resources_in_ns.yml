@@ -13,6 +13,14 @@
     state: present
     definition: "{{ lookup('template', 'templates/resource_quota.yml.j2') | from_yaml }}"
 
+- name: Create local volumes
+  include_tasks: create_local_volumes.yml
+  loop:
+    - "{{ app_ns }}-test-0"
+    - "{{ app_ns }}-test-1"
+  loop_control:
+    loop_var: volume_name_suffix
+
 - name: Create a StatefulSet with 2 replicas of the testing pod
   community.kubernetes.k8s:
     state: present
@@ -35,6 +43,22 @@
     - "'status' in test_result.resources[1]"
     - "'phase' in test_result.resources[1].status"
     - "test_result.resources[1].status.phase == 'Running'"
+
+- name: Wait until PVCs move to Bound status
+  community.kubernetes.k8s_info:
+    namespace: "{{ app_ns }}"
+    kind: PersistentVolumeClaim
+  register: pvc_check
+  retries: 6
+  delay: 10
+  until:
+    - "pvc_check.resources|length == 2"
+    - "'status' in pvc_check.resources[0]"
+    - "'phase' in pvc_check.resources[0].status"
+    - "pvc_check.resources[0].status.phase == 'Bound'"
+    - "'status' in pvc_check.resources[1]"
+    - "'phase' in pvc_check.resources[1].status"
+    - "pvc_check.resources[1].status.phase == 'Bound'"
 
 - name: Create NetworkPolicies for the pods deployed to deny traffic by default
   community.kubernetes.k8s:

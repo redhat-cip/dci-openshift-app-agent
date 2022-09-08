@@ -10,6 +10,18 @@
     runtime_class_name: "{{ runtime_class_check.resources[0].metadata.name }}"
   when: runtime_class_check.resources|length
 
+# We are going to use local volumes without using local storage operator just for simplicity
+- name: Create local-storage StorageClass
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: local-storage
+      provisioner: kubernetes.io/no-provisioner
+      volumeBindingMode: WaitForFirstConsumer
+
 # If the namespace is dci_openshift_app_ns, its creation is handled in
 # d-o-a-a plays, so we do not need to do that here.
 # exclude_connectivity_regexp is not checked because it is optional.

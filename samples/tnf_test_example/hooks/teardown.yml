@@ -1,20 +1,47 @@
 ---
-# if the namespace is dci_openshift_app_ns,
-# its deletion is handled in d-o-a-a plays, so
-# we do not need to do that here
+# Despite dci_openshift_app_ns is deleted in agent's
+# teardown, it will be removed here in order to delete
+# the local volumes without issues.
 - name: Delete namespaces if not done before
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
-    name: "{{ item.namespace }}"
+    name: "{{ pods_in_same_ns.namespace }}"
     state: absent
+    wait: yes
+    wait_sleep: 5
+    wait_timeout: 120
   when:
     - tnf_config is defined
     - tnf_config|length
-    - item.namespace is defined
-    - item.namespace|length
-    - item.namespace != dci_openshift_app_ns
+    - pods_in_same_ns.namespace is defined
+    - pods_in_same_ns.namespace|length
   loop: "{{ tnf_config }}"
+  loop_control:
+    loop_var: pods_in_same_ns
+
+- name: Delete local volumes created
+  include_tasks: delete_local_volumes.yml
+  vars:
+    app_ns: "{{ pods_in_same_ns.namespace }}"
+  when:
+    - tnf_config is defined
+    - tnf_config|length
+    - pods_in_same_ns.namespace is defined
+    - pods_in_same_ns.namespace|length
+  loop: "{{ tnf_config }}"
+  loop_control:
+    loop_var: pods_in_same_ns
+
+- name: Delete local-storage StorageClass
+  community.kubernetes.k8s:
+    api_version: storage.k8s.io/v1
+    name: local-storage
+    kind: StorageClass
+    state: absent
+    wait: yes
+    wait_sleep: 5
+    wait_timeout: 120
 
 - name: Delete simple-demo-operator-catalog
   community.kubernetes.k8s:
