@@ -1,0 +1,33 @@
+---
+- name: Check if istio-system namespace exists
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: istio-system
+  register: istio_system_namespace
+
+- name: Check Aspenmesh resources
+  block:
+    - name: Check Aspenmesh Helm charts
+      community.kubernetes.helm_info:
+        name: "{{ am_chart }}"
+        release_namespace: "{{ (am_chart == 'istio-cni') | ternary('kube-system', 'istio-system') }}"
+      loop:
+        - "istio-cni"
+        - "istio-egress"
+        - "istio-ingress"
+        - "istio-init"
+        - "istiod"
+      loop_control:
+        loop_var: am_chart
+      register: am_chart_check
+
+    - name: Set am_installed variable
+      vars:
+        status_query: "results[*].status.status"
+      set_fact:
+        am_installed: "{{ (am_chart_check | json_query(status_query) | flatten | unique) == ['deployed'] }}"
+
+  when: istio_system_namespace.resources|length > 0
+
+...

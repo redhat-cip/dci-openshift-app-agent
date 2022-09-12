@@ -8,6 +8,12 @@
     name: "{{ app_ns }}"
     state: present
 
+- name: Configure Aspenmesh for namespace
+  include_tasks: configure_aspenmesh_for_ns.yml
+  when:
+    - tnf_enable_service_mesh | default(false) | bool
+    - am_installed | default(false) | bool
+
 - name: Create ResourceQuotas for namespace
   community.kubernetes.k8s:
     state: present
@@ -63,6 +69,23 @@
     - "'phase' in pvc_check.resources[1].status"
     - "pvc_check.resources[1].status.phase == 'Bound'"
   when: app_ns == 'production-cnf'
+
+- name: (With Aspenmesh installed) Check if istio-proxy sidecar container is present in test pod
+  block:
+    - name: (With Aspenmesh installed) Fail if istio-proxy sidecar container is not found
+      vars:
+        query_containers_name: "spec.containers[*].name"
+        query_results: "{{ test_pod | json_query(query_containers_name) | flatten }}"
+      fail:
+        msg: "istio-proxy sidecar not found in pod"
+      when:
+        - "not('istio-proxy' in query_results)"
+      loop: "{{ test_result.resources }}"
+      loop_control:
+        loop_var: test_pod
+  when:
+    - tnf_enable_service_mesh | default(false) | bool
+    - am_installed | default(false) | bool
 
 - name: Create NetworkPolicies for the pods deployed to deny traffic by default
   community.kubernetes.k8s:
