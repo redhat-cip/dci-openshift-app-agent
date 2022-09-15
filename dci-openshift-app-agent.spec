@@ -11,7 +11,7 @@ BuildRequires: systemd
 BuildRequires: systemd-units
 Requires: sudo
 Requires: dci-openshift-agent >= 0.4.0
-Requires: dci-ansible
+Requires: dci-ansible >= 0.3.0
 %if 0%{?rhel} && 0%{?rhel} < 8
 Requires: python2-dciclient >= 2.3.0
 %else
