@@ -47,6 +47,6 @@
   community.kubernetes.k8s:
     state: absent
     api_version: operators.coreos.com/v1alpha1
-    name: "{{ tnf_operator_to_install.operator_name | default('simple-demo-operator') }}-catalog"
+    name: "{{ tnf_operator_to_install.operator_name }}-catalog"
     namespace: openshift-marketplace
     kind: CatalogSource
