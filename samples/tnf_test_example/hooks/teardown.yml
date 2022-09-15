@@ -32,6 +32,7 @@
   loop: "{{ tnf_config }}"
   loop_control:
     loop_var: pods_in_same_ns
+  when: app_ns == 'production-cnf'
 
 - name: Delete local-storage StorageClass
   community.kubernetes.k8s:

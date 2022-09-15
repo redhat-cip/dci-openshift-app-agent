@@ -20,11 +20,14 @@
     - "{{ app_ns }}-test-1"
   loop_control:
     loop_var: volume_name_suffix
+  when: app_ns == 'production-cnf'
 
-- name: Create a StatefulSet with 2 replicas of the testing pod
+# In test-cnf namespace, a Deployment will be used.
+# In production-cnf namespace, a StatefulSet will be used.
+- name: Create two replicated testing pods
   community.kubernetes.k8s:
     state: present
-    definition: "{{ lookup('template', 'templates/test_statefulset.yml.j2') | from_yaml }}"
+    definition: "{{ lookup('template', 'templates/test_pods.yml.j2') | from_yaml }}"
 
 - name: Wait until all test pods are running
   community.kubernetes.k8s_info:
@@ -59,6 +62,7 @@
     - "'status' in pvc_check.resources[1]"
     - "'phase' in pvc_check.resources[1].status"
     - "pvc_check.resources[1].status.phase == 'Bound'"
+  when: app_ns == 'production-cnf'
 
 - name: Create NetworkPolicies for the pods deployed to deny traffic by default
   community.kubernetes.k8s:

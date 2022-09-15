@@ -2,7 +2,9 @@
 
 This example deploys a couple of pods in two different namespaces, to be used with the CNF Test Suite provided by [test-network-function](https://github.com/test-network-function/cnf-certification-test) in a multi-namespace scenario.
 
-The StatefulSet specification of this pod, obtained from [this repository](https://github.com/test-network-function/cnf-certification-test-partner), is a suitable one for passing all the test suites from the CNF Test Suite.
+The specification of this pod, obtained from [this repository](https://github.com/test-network-function/cnf-certification-test-partner), is a suitable one for passing all the test suites from the CNF Test Suite.
+
+In particular, two namespaces are created, called `test-cnf` and `production-cnf`, mimic-ing the two typical environments we can find to deploy application workloads. In the first case, a Deployment is used to create the pods, and in the second case, it is used a StatefulSet.
 
 Other resources related to the pods under test are also deployed:
 
