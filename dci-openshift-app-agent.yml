@@ -111,8 +111,7 @@
     - name: 'Set DCI tags for the current job'
       dci_job:
         id: '{{ job_id }}'
-        tags: '{{ dci_tags + dci_workarounds }}'
-      when: dci_tags[0] is defined
+        tags: '{{ ["agent:openshift-app"] + dci_tags + dci_workarounds }}'
 
     - name: Add cluster tag to the current job
       dci_job:
