@@ -1,0 +1,22 @@
+---
+
+# Define the variables only if they have not been defined elsewhere, just not
+# to override their values.
+- name: Set tnf_operator_to_install variable
+  set_fact:
+    tnf_operator_to_install:
+      operator_name: simple-demo-operator
+      operator_version: "v0.0.6"
+      operator_bundle: "quay.io/telcoci/simple-demo-operator-bundle@sha256:6cfbca9b14a51143cfc5d0d56494e7f26ad1cd3e662eedd2bcbebf207af59c86"
+  when: tnf_operator_to_install is not defined
+
+# Helm chart obtained from https://charts.openshift.io/index.yaml
+- name: Set tnf_helm_chart_to_install variable
+  set_fact:
+    tnf_helm_chart_to_install:
+      chart_url: https://github.com/openshift-helm-charts/charts/releases/download/fredco-samplechart-0.1.3/fredco-samplechart-0.1.3.tgz
+      image_repository: registry.access.redhat.com/ubi8/nginx-118
+      app_version: 1-42
+  when: tnf_helm_chart_to_install is not defined
+
+...

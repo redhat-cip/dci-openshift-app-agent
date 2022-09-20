@@ -53,66 +53,15 @@
     - tnf_config is defined
     - tnf_config|length
 
-# Install the operator in test-cnf namespace
-- name: Set operator_ns variable
+# Install the Helm chart and the operator in test-cnf namespace
+- name: Set target_ns variable
   set_fact:
-    operator_ns: "{{ tnf_config[0].namespace|default('test-cnf') }}"
+    target_ns: "{{ tnf_config[0].namespace|default('test-cnf') }}"
 
-- name: Create CatalogSource for simple-demo-operator
-  community.kubernetes.k8s:
-    state: present
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: CatalogSource
-      metadata:
-        name: simple-demo-operator-catalog
-        namespace: openshift-marketplace
-      spec:
-        sourceType: grpc
-        image: "{{ catalog_path | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.6') }}"
-        displayName: Simple Demo Operator
-        updateStrategy:
-          registryPoll:
-            interval: 30m
+- name: Deploy operator
+  include_tasks: deploy_operator.yml
 
-- name: "deploy-operators : Install simple-demo-operator"
-  include_role:
-    name: olm-operator
-  vars:
-    operator: "{{ tnf_operator_to_install.operator_name | default('simple-demo-operator') }}"
-    source: "{{ tnf_operator_to_install.operator_name | default('simple-demo-operator') }}-catalog"
-    namespace: "{{ operator_ns }}"
-    operator_group_spec:
-      targetNamespaces:
-        - "{{ operator_ns }}"
+- name: Deploy Helm chart
+  include_tasks: deploy_helm_chart.yml
 
-- name: "Get current subscription"
-  community.kubernetes.k8s_info:
-    api: operators.coreos.com/v1alpha1
-    kind: Subscription
-    namespace: "{{ operator_ns }}"
-    name: "{{ tnf_operator_to_install.operator_name | default('simple-demo-operator') }}"
-  register: current_subscription
-
-- name: "Get Installed CSV and subscription name"
-  vars:
-    subs_details: >
-      resources[*].{ subscriptionName: metadata.name,
-        installedCSV: status.installedCSV
-      }
-  set_fact:
-    subscription: "{{ current_subscription | json_query(subs_details) | first }}"
-
-- name: "Update CSVs with autodiscovery labels/annotations to execute test suites"
-  community.kubernetes.k8s:
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: ClusterServiceVersion
-      metadata:
-        name: "{{ subscription.installedCSV }}"
-        namespace: "{{ operator_ns }}"
-        labels:
-          test-network-function.com/operator: target
-        annotations:
-          test-network-function.com/operator_tests: "['OPERATOR_STATUS']"
-          test-network-function.com/subscription_name: "{{ subscription.subscriptionName }}"
+...

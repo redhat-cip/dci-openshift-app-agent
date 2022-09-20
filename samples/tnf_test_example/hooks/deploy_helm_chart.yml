@@ -1,0 +1,64 @@
+---
+
+- name: Create temporary directory
+  tempfile:
+    state: directory
+    prefix: tnf_test_example_helm_chart.
+  register: tnf_test_example_helm_chart
+
+- name: Download Helm binary
+  vars:
+    helm_ver: "{{ helm_version | default('3.9.0') }}"
+  unarchive:
+    src: https://get.helm.sh/helm-v{{ helm_ver }}-linux-amd64.tar.gz
+    dest: "{{ tnf_test_example_helm_chart.path }}"
+    extra_opts:
+      - linux-amd64/helm
+      - --strip-components=1
+    remote_src: true
+
+- name: Set helm_tool_path
+  set_fact:
+    helm_tool_path: "{{ tnf_test_example_helm_chart.path }}/helm"
+
+- name: Download Helm chart file
+  get_url:
+    url: "{{ tnf_helm_chart_to_install.chart_url }}"
+    dest: "{{ tnf_test_example_helm_chart.path }}/tnf_test_example.tgz"
+    mode: 0644
+
+- name: Set image to be used
+  vars:
+    image_name: "{{ tnf_helm_chart_to_install.image_repository | regex_replace('^[^/]*/', '') }}"
+  set_fact:
+    image_repository: "{{ ( dci_disconnected|default(false)|bool and provisionhost_registry|length ) | ternary(provisionhost_registry + '/' + image_name, tnf_helm_chart_to_install.image_repository) }}"
+
+- name: Deploy Helm chart
+  community.kubernetes.helm:
+    name: tnf-test-example
+    chart_ref: "{{ tnf_test_example_helm_chart.path }}/tnf_test_example.tgz"
+    release_namespace: "{{ target_ns }}"
+    binary_path: "{{ helm_tool_path }}"
+    values:
+      image:
+        repository: "{{ image_repository }}"
+
+- name: Wait until Helm chart is deployed
+  community.kubernetes.helm_info:
+    name: tnf-test-example
+    release_namespace: "{{ target_ns }}"
+    binary_path: "{{ helm_tool_path }}"
+  register: chart_check
+  retries: 60
+  delay: 5
+  until:
+    - "'status' in chart_check"
+    - "'status' in chart_check.status"
+    - "chart_check.status.status == 'deployed'"
+
+- name: Remove temporary directory
+  file:
+    path: "{{ tnf_test_example_helm_chart.path }}"
+    state: absent
+
+...
