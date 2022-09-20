@@ -7,6 +7,10 @@ kind: StatefulSet
 metadata:
   name: test
   namespace: {{ app_ns }}
+{% if app_ns == 'test-cnf' %}
+  labels:
+    AffinityRequired: "true"
+{% endif %}
 spec:
   replicas: 2
   selector:
@@ -16,6 +20,9 @@ spec:
     metadata:
       labels:
         app: test
+{% if app_ns == 'test-cnf' %}
+        AffinityRequired: "true"
+{% endif %}
 {% if targetpodlabels|length %}
 {% for label in targetpodlabels %}
         {{ label|regex_replace('=', ': ') }}
@@ -52,6 +59,9 @@ spec:
               memory: 512Mi
               cpu: 2000m
             limits:
+{% if tnf_enable_hugepages | default(false) | bool %}
+              hugepages-2Mi: 100Mi
+{% endif %}
               memory: 512Mi
               cpu: 2000m
 {% else %}
@@ -59,6 +69,9 @@ spec:
               memory: 256Mi
               cpu: 0.10
             limits:
+{% if tnf_enable_hugepages | default(false) | bool %}
+              hugepages-2Mi: 100Mi
+{% endif %}
               memory: 512Mi
               cpu: 0.25
 {% endif %}
@@ -95,13 +108,27 @@ spec:
             periodSeconds: 5
           command: ["./bin/app"]
           terminationMessagePolicy: FallbackToLogsOnError
-{% if app_ns == 'production-cnf' %}
+{% if app_ns == 'production-cnf' or tnf_enable_hugepages | default(false) | bool %}
           volumeMounts:
+{% endif %}
+{% if app_ns == 'production-cnf' %}
           - mountPath: /data
             name: volume-claim-{{ app_ns }}
 {% endif %}
+{% if tnf_enable_hugepages | default(false) | bool %}
+          - mountPath: /hugepages-2Mi
+            name: hugepage-2mi
+      volumes:
+        - name: hugepage-2mi
+          emptyDir:
+            medium: HugePages-2Mi
+{% endif %}
       affinity:
+{% if app_ns == 'test-cnf' %}
+        podAffinity:
+{% else %}
         podAntiAffinity:
+{% endif %}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
