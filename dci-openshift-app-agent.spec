@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.5.1
+Version:       0.5.2
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -17,7 +17,6 @@ Requires: python2-dciclient >= 2.3.0
 %else
 Requires: python3-dciclient >= 2.3.0
 %endif
-Requires: ansible-role-dci-cvp
 Requires: ansible-collection-community-kubernetes
 Requires(pre): shadow-utils
 Requires(post): systemd
@@ -35,38 +34,8 @@ DCI OpenShift App Agent
 %clean
 
 %install
-install -p -D -m 644 ansible.cfg %{buildroot}%{_datadir}/dci-openshift-app-agent/ansible.cfg
-install -p -D -m 644 dci-openshift-app-agent.yml  %{buildroot}%{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
 
-for hook in hooks/*.yml; do
-    install -p -D -m 644 $hook  %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/$hook
-done
-
-install -p -D -m 644 dcirc.sh.dist %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/dcirc.sh.dist
-install -p -D -m 644 hosts.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/hosts.yml
-install -p -D -m 644 settings.yml %{buildroot}%{_sysconfdir}/dci-openshift-app-agent/settings.yml
-
-install -p -D -m 644 sysconfig/dci-openshift-app-agent %{buildroot}%{_sysconfdir}/sysconfig/dci-openshift-app-agent
-
-for play in plays/*.yml; do
-    install -p -D -m 644 $play %{buildroot}%{_datadir}/dci-openshift-app-agent/$play
-done
-
-for script in plays/scripts/*; do
-    install -p -D -m 755 $script %{buildroot}%{_datadir}/dci-openshift-app-agent/$script
-done
-
-install -p -D -m 644 group_vars/all %{buildroot}%{_datadir}/dci-openshift-app-agent/group_vars/all
-
-install -p -D -m 644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
-install -p -D -m 644 systemd/%{name}.timer %{buildroot}%{_unitdir}/%{name}.timer
-
-install -p -D -m 440 dci-openshift-app-agent.sudo %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
-install -p -d -m 755 %{buildroot}/%{_sharedstatedir}/%{name}
-find samples -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_sharedstatedir}/dci-openshift-app-agent/{}" \;
-find roles/* -type f -exec install -v -p -D -m 644 "{}" "%{buildroot}%{_datadir}/dci-openshift-app-agent/{}" \;
-
-install -v -p -D -m 755 dci-openshift-app-agent-ctl %{buildroot}%{_bindir}/dci-openshift-app-agent-ctl
+make install BUILDROOT=%{buildroot} DATADIR=%{_datadir} NAME=%{name} SYSCONFDIR=%{_sysconfdir} BINDIR=%{_bindir} SHAREDSTATEDIR=%{_sharedstatedir} UNITDIR=%{_unitdir}
 
 %pre
 getent group dci-openshift-app-agent >/dev/null || groupadd -r dci-openshift-app-agent
@@ -112,6 +81,10 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Thu Sep 22 2022 Frederic Lepied <flepied@redhat.com> 0.5.2-1
+- use make install
+- remove requires on ansible-role-dci-cvp
+
 * Mon Jun  6 2022 Tony Garcia <tonyg@redhat.com> 0.5.1-1
 - Remove requirements.yml
 
