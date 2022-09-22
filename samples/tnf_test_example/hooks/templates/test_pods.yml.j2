@@ -1,5 +1,9 @@
 apiVersion: apps/v1
+{% if app_ns == 'test-cnf' %}
+kind: Deployment
+{% elif app_ns == 'production-cnf' %}
 kind: StatefulSet
+{% endif %}
 metadata:
   name: test
   namespace: {{ app_ns }}
@@ -91,9 +95,11 @@ spec:
             periodSeconds: 5
           command: ["./bin/app"]
           terminationMessagePolicy: FallbackToLogsOnError
+{% if app_ns == 'production-cnf' %}
           volumeMounts:
           - mountPath: /data
             name: volume-claim-{{ app_ns }}
+{% endif %}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -104,6 +110,7 @@ spec:
                     values:
                       - test
               topologyKey: "kubernetes.io/hostname"
+{% if app_ns == 'production-cnf' %}
   volumeClaimTemplates:
   - metadata:
       name: volume-claim-{{ app_ns }}
@@ -115,3 +122,4 @@ spec:
         requests:
           storage: 10Mi
       storageClassName: local-storage
+{% endif %}
