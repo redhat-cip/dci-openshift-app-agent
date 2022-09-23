@@ -5,9 +5,9 @@
 - name: Set tnf_operator_to_install variable
   set_fact:
     tnf_operator_to_install:
-      operator_name: simple-demo-operator
-      operator_version: "v0.0.6"
-      operator_bundle: "quay.io/telcoci/simple-demo-operator-bundle@sha256:6cfbca9b14a51143cfc5d0d56494e7f26ad1cd3e662eedd2bcbebf207af59c86"
+      operator_name: mongodb-enterprise
+      operator_version: v1.17.0
+      operator_bundle: registry.connect.redhat.com/mongodb/enterprise-operator-bundle@sha256:f2127ed11f4fb714f5c35f0cc4561da00181ffb5edb098556df598d3a5a6a691
   when: tnf_operator_to_install is not defined
 
 # Helm chart obtained from https://charts.openshift.io/index.yaml

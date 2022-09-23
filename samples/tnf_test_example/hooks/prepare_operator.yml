@@ -11,7 +11,7 @@
     catalog_path: "{{ provisionhost_registry }}/testnetworkfunction/{{ tnf_operator_to_install.operator_name }}-disconnected-catalog"
     catalog_version: "{{ tnf_operator_to_install.operator_version }}_{{ lookup('password', '/dev/null length=16 chars=ascii_lowercase,digits') }}"
 
-# Create a common catalog image for simple-demo-operator bundle to be tested in disconnected environment
+# Create a common catalog image for operator bundle to be tested in disconnected environment
 - name: "Create index directory"
   file:
     path: "{{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index"
