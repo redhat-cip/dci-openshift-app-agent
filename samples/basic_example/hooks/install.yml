@@ -1,4 +1,18 @@
 ---
+- name: "Labeling namespace to comply with PodSecurity profiles"
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ app_ns }}"
+        labels:
+          security.openshift.io/scc.podSecurityLabelSync: "false"
+          pod-security.kubernetes.io/enforce: "baseline"
+          pod-security.kubernetes.io/warn: "baseline"
+  when:
+    - ocp_version is version("4.12", ">=")
+
 - name: Create a simple pod
   community.kubernetes.k8s:
     state: present
@@ -13,6 +27,8 @@
         containers:
           - name: webserver
             image: "{{ dci_openshift_app_image | default('docker.io/library/nginx') }}"
+            securityContext:
+              capabilities: {}
             ports:
               - containerPort: 80
             livenessProbe:
@@ -24,3 +40,4 @@
             initialDelaySeconds: 30
             periodSeconds: 30
             successThreshold: 1
+...
