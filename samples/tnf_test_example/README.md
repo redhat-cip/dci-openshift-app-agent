@@ -8,11 +8,15 @@ In particular, two namespaces are created, called `test-cnf` and `production-cnf
 
 Other resources related to the pods under test are also deployed:
 
-- Local StorageClass and PersistentVolumes, attached to the pods under test.
+- Local StorageClass and PersistentVolumes, attached to the pods under test in `production-cnf` namespace.
 - Resource quotas, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/resource-quota.yaml).
 - Network policies, extracted from these sources: [(1)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/ingress-deny-all-np.yaml), [(2)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/egress-deny-all-np.yaml) and [(3)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/pod-to-pod-np.yaml).
 - CRD under test, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/local-crd-under-test.yaml).
 - Pod disruption budget, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/pod-disruption-budget.yaml).
+- Hugepages configuration in the pods under test, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/tree/main/examples/platform).
+  - Note that, to use this feature, you need to activate `tnf_enable_hugepages: true` in your code (default to `false`).
+- Affinity rules applied to the pods under test. In the case of `test-cnf` namespace, pods are deployed using `podAffinity` rule to keep the pods in the same worker node, also using `AffinityRequired: 'true'` label, and in `production-cnf` namespace, a `podAntiAffinity` rule is used to deploy the pods in different worker nodes.
+- Pods in `test-cnf` namespace are deployed with non-guaranteed QoS, whereas pods in `production-cnf` are deployed with guaranteed QoS, together with certain CPU allocation constraints and runtime class definition.
 
 Finally, apart from the pods under test, it also deploys, in one of the namespaces:
 
