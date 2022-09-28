@@ -22,6 +22,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 start=0
 params="$(getopt -o hsdp:c:v -l help,start,dev,prefix:,config:,verbose --name "$(basename -- "$0")" -- "$@")"
 DCI_VAULT_CLIENT=${DCI_VAULT_CLIENT:=/usr/bin/dci-vault-client}
+# Capture CONFIG_DIR from the env as it should take precedence from
+# test-runner for example
+INIT_CONFIG_DIR="${CONFIG_DIR:-}"
 
 function usage ()
 {
@@ -96,7 +99,10 @@ if [ -r /etc/dci-openshift-app-agent/config ]; then
     . /etc/dci-openshift-app-agent/config
 fi
 
-config_dir=${CONFIG_DIR:-/etc/dci-openshift-app-agent}
+# If nothing from the env, take the value from config
+INIT_CONFIG_DIR="${INIT_CONFIG_DIR:-$CONFIG_DIR}"
+
+config_dir=${INIT_CONFIG_DIR:-/etc/dci-openshift-app-agent}
 config=$config_dir/settings.yml
 extra_args=--syntax-check
 
