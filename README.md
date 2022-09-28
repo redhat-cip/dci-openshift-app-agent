@@ -139,6 +139,7 @@ dci\_openshift\_app\_ns            | "myns"                                     
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
+dci\_ga\_components\_for\_certification | ["ocp"]                                         | list of components that needs to be ga to submit a certification record
 do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (<https://github.com/test-network-function/cnf-certification-test>)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
 do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
