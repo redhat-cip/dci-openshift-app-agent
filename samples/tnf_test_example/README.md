@@ -35,6 +35,8 @@ These two last resources need the following variables to be declared:
   * `image_repository`: public image used within the Helm chart.
   * `app_version`: (only needed in disconnected environments) version linked to `image_repository` image, so that the image would be `image_repository`:`app_version`.
 
+These resources create services in the namespace that are updated to `PreferDualStack` IP family policy, then obtaining an IPv6 IP address if the OCP cluster is configured in dual-stack mode.
+
 Example of values for these variables are the following (in fact, these are the default values):
 
 ```yaml
