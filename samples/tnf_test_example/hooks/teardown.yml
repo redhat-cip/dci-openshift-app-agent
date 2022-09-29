@@ -44,7 +44,7 @@
     wait_sleep: 5
     wait_timeout: 120
 
-- name: Delete simple-demo-operator-catalog
+- name: Delete operator-catalog
   community.kubernetes.k8s:
     state: absent
     api_version: operators.coreos.com/v1alpha1

@@ -20,7 +20,7 @@ Other resources related to the pods under test are also deployed:
 
 Finally, apart from the pods under test, it also deploys, in one of the namespaces:
 
-- An operator, based on [simple-demo-operator-bundle](https://quay.io/repository/opdev/simple-demo-operator-bundle), in order to execute CNF Cert Suite and Preflight tests over this operator.
+- An operator, based on [mongodb-enterprise](https://catalog.redhat.com/software/operators/detail/5e9872923f398525a0ceafba), in order to execute CNF Cert Suite and Preflight tests over this operator.
 - A Helm chart, based on [fredco samplechart](https://github.com/openshift-helm-charts/charts/tree/main/charts/partners/fredco/samplechart/0.1.3), in order to execute CNF Cert Suite tests over this Helm chart.
 
 These two last resources need the following variables to be declared:
@@ -28,7 +28,7 @@ These two last resources need the following variables to be declared:
 * `tnf_operator_to_install`: information related to the operator to be installed. It must include the following variables within it:
   * `operator_name`: name of the operator.
   * `operator_version`: version of the operator.
-  * `operator_bundle`: bundle Image SHA of the operator to be installed.
+  * `operator_bundle`: bundle Image SHA of the operator to be installed. This is used to create a custom catalog for disconnected environments.
 
 * `tnf_helm_chart_to_install`: information related to the Helm chart to be deployed. It must include the following variables within it:
   * `chart_url`: URL to the chart.tgz file that includes the Helm chart.
@@ -39,9 +39,9 @@ Example of values for these variables are the following (in fact, these are the 
 
 ```yaml
 tnf_operator_to_install:
-  operator_name: simple-demo-operator
-  operator_version: "v0.0.6"
-  operator_bundle: "quay.io/telcoci/simple-demo-operator-bundle@sha256:6cfbca9b14a51143cfc5d0d56494e7f26ad1cd3e662eedd2bcbebf207af59c86"
+  operator_name: mongodb-enterprise
+  operator_version: v1.17.0
+  operator_bundle: registry.connect.redhat.com/mongodb/enterprise-operator-bundle@sha256:f2127ed11f4fb714f5c35f0cc4561da00181ffb5edb098556df598d3a5a6a691
 tnf_helm_chart_to_install:
   chart_url: https://github.com/openshift-helm-charts/charts/releases/download/fredco-samplechart-0.1.3/fredco-samplechart-0.1.3.tgz
   image_repository: registry.access.redhat.com/ubi8/nginx-118

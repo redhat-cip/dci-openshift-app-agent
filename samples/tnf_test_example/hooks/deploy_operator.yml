@@ -1,23 +1,23 @@
 ---
 
-- name: Create CatalogSource for simple-demo-operator
+- name: Create CatalogSource for operator
   community.kubernetes.k8s:
     state: present
     definition:
       apiVersion: operators.coreos.com/v1alpha1
       kind: CatalogSource
       metadata:
-        name: simple-demo-operator-catalog
+        name: "{{ tnf_operator_to_install.operator_name }}-catalog"
         namespace: openshift-marketplace
       spec:
         sourceType: grpc
-        image: "{{ catalog_path | default('quay.io/opdev/simple-demo-operator-catalog:v0.0.6') }}"
-        displayName: Simple Demo Operator
+        image: "{{ catalog_path | default('registry.redhat.io/redhat/certified-operator-index:v' + ocp_version) }}"
+        displayName: Operator
         updateStrategy:
           registryPoll:
             interval: 30m
 
-- name: "deploy-operators : Install simple-demo-operator"
+- name: "deploy-operators : Install operator"
   include_role:
     name: olm-operator
   vars:
