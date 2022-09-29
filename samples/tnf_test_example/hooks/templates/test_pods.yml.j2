@@ -7,7 +7,7 @@ kind: StatefulSet
 metadata:
   name: test
   namespace: {{ app_ns }}
-{% if app_ns == 'test-cnf' %}
+{% if app_ns == 'production-cnf' %}
   labels:
     AffinityRequired: "true"
 {% endif %}
@@ -20,7 +20,7 @@ spec:
     metadata:
       labels:
         app: test
-{% if app_ns == 'test-cnf' %}
+{% if app_ns == 'production-cnf' %}
         AffinityRequired: "true"
 {% endif %}
 {% if targetpodlabels|length %}
@@ -124,7 +124,7 @@ spec:
             medium: HugePages-2Mi
 {% endif %}
       affinity:
-{% if app_ns == 'test-cnf' %}
+{% if app_ns == 'production-cnf' %}
         podAffinity:
 {% else %}
         podAntiAffinity:

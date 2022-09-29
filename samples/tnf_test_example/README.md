@@ -15,7 +15,7 @@ Other resources related to the pods under test are also deployed:
 - Pod disruption budget, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/pod-disruption-budget.yaml).
 - Hugepages configuration in the pods under test, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/tree/main/examples/platform).
   - Note that, to use this feature, you need to activate `tnf_enable_hugepages: true` in your code (default to `false`).
-- Affinity rules applied to the pods under test. In the case of `test-cnf` namespace, pods are deployed using `podAffinity` rule to keep the pods in the same worker node, also using `AffinityRequired: 'true'` label, and in `production-cnf` namespace, a `podAntiAffinity` rule is used to deploy the pods in different worker nodes.
+- Affinity rules applied to the pods under test. In the case of `test-cnf` namespace, pods are deployed using `podAntiAffinity` rule to keep the pods in different worker nodes, and in `production-cnf` namespace, a `podAffinity` rule is used to keep the pods in the same worker node, also using `AffinityRequired: 'true'` label.
 - Pods in `test-cnf` namespace are deployed with non-guaranteed QoS, whereas pods in `production-cnf` are deployed with guaranteed QoS, together with certain CPU allocation constraints and runtime class definition.
 
 Finally, apart from the pods under test, it also deploys, in one of the namespaces:
