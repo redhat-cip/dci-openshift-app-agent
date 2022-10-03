@@ -26,6 +26,10 @@
     url: "{{ tnf_helm_chart_to_install.chart_url }}"
     dest: "{{ tnf_test_example_helm_chart.path }}/tnf_test_example.tgz"
     mode: 0644
+  register: hc_req
+  until: hc_req.changed
+  retries: 3
+  delay: 10
 
 - name: Set image to be used
   vars:
