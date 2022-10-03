@@ -120,7 +120,7 @@
           - cluster:{{ cluster_name }}
       when: cluster_name is defined
 
-    - name: Set pullsecret file for disconnected environments
+    - name: "Merge pull secrets"
       include_tasks: 'plays/pullsecrets.yml'
       when: dci_disconnected | default(false) | bool
 

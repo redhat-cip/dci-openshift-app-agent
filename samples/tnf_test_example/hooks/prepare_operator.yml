@@ -1,90 +1,36 @@
 ---
+- name: Define catalog path and version
+  set_fact:
+    catalog_path: "{{ provisionhost_registry }}/telcoci/testnetworkfunction/{{ tnf_operator_to_install.operator_name }}-disconnected-catalog"
+    catalog_version: "{{ tnf_operator_to_install.operator_version }}_{{ lookup('password', '/dev/null length=16 chars=ascii_lowercase,digits') }}"
 
-- name: Create temporary directory
+- name: Create temporary directory for ICSP
   tempfile:
     state: directory
     prefix: tnf_test_example_prerun_tmp_dir.
   register: tnf_test_example_prerun_tmp_dir
 
-- name: Define catalog path and version
-  set_fact:
-    catalog_path: "{{ provisionhost_registry }}/testnetworkfunction/{{ tnf_operator_to_install.operator_name }}-disconnected-catalog"
-    catalog_version: "{{ tnf_operator_to_install.operator_version }}_{{ lookup('password', '/dev/null length=16 chars=ascii_lowercase,digits') }}"
+- name: Copy authentication config
+  copy:
+    src: "{{ partner_creds }}"
+    dest: "{{ tnf_test_example_prerun_tmp_dir.path }}/config.json"
 
-# Create a common catalog image for operator bundle to be tested in disconnected environment
-- name: "Create index directory"
-  file:
-    path: "{{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index"
-    state: directory
-    mode: 0755
-
-- name: "Get default bundle channel"
-  shell:
-    cmd: >
-      skopeo inspect
-      docker://{{ tnf_operator_to_install.operator_bundle }} |
-      jq -r '.Labels."operators.operatorframework.io.bundle.channel.default.v1"'
-  register: def_channel
-  retries: 5
-  delay: 5
-  until:
-    - def_channel is not failed
-
-- name: "Initialize index"
-  shell: |
-    {{ opm_tool_path }} init {{ tnf_operator_to_install.operator_name }} \
-    --default-channel={{ def_channel.stdout }} \
-    --output=yaml > {{ tnf_operator_to_install.operator_name }}-index/index.yml
-  args:
-    chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
-
-- name: "Render Operator bundle"
-  environment:
-    - REGISTRY_AUTH_FILE: "{{ pullsecret_tmp_file}}"
-  shell: |
-    {{ opm_tool_path }} render {{ tnf_operator_to_install.operator_bundle }} \
-    --output=yaml >> {{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index/index.yml
-
-- name: "Add Operator channel"
-  blockinfile:
-    dest: "{{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index/index.yml"
-    content: |
-        ---
-        schema: olm.channel
-        package: {{ tnf_operator_to_install.operator_name }}
-        name: {{ def_channel.stdout }}
-        entries:
-          - name: {{ tnf_operator_to_install.operator_name }}.{{ tnf_operator_to_install.operator_version }}
-
-- name: "Validate operator catalog"
-  shell: |
-    {{ opm_tool_path }} validate {{ tnf_operator_to_install.operator_name }}-index
-  args:
-    chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
-  register: catalog_validation
-  retries: 6
-  delay: 10
-  until: catalog_validation.rc == 0
-
-- name: "Render Dockerfile"
-  template:
-    src: dockerfile.j2
-    dest: "{{ tnf_test_example_prerun_tmp_dir.path }}/{{ tnf_operator_to_install.operator_name }}-index.Dockerfile"
-
-- name: "Build operator catalog"
-  shell: |
-    podman build . \
-    -f {{ tnf_operator_to_install.operator_name }}-index.Dockerfile \
-    -t {{ catalog_path }}:{{ catalog_version }}
-  args:
-    chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+- name: "Create FBC catalog"
+  include_role:
+    name: fbc-catalog
+    apply:
+      environment:
+        - DOCKER_CONFIG: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+  vars:
+    fbc_index_image:  "{{ catalog_path }}:{{ catalog_version }}"
+    fbc_bundles:
+      - "{{ tnf_operator_to_install.operator_bundle }}"
+    fbc_opm_args: "--skip-tls-verify=false"
 
 - name: Push catalog image into local registry
   shell: |
     podman push --authfile {{ pullsecret_tmp_file }} \
     {{ catalog_path }}:{{ catalog_version }}
-  args:
-    chdir: "{{ tnf_test_example_prerun_tmp_dir.path }}"
 
 - name: Manage imageContentSourcePolicy update
   block:
@@ -119,6 +65,8 @@
     - name: Apply ImageContentSourcePolicy
       community.kubernetes.k8s:
         definition: "{{ lookup('file', tnf_test_example_prerun_tmp_dir.path + '/tmp_oc/imageContentSourcePolicy.yaml') }}"
+      notify:
+        - Remove temporary directory
 
     # kubeconfig and oc are referenced by dci_cluster_configs_dir variable on
     # dci-openshift-agent, and both are saved under kubeconfig_path (removing "/kubeconfig")
@@ -130,10 +78,4 @@
         check_wait_retries: 60
         check_wait_delay: 60
         check_reason: "TNF test example"
-
-- name: Remove temporary directory
-  file:
-    path: "{{ tnf_test_example_prerun_tmp_dir.path }}"
-    state: absent
-
 ...
