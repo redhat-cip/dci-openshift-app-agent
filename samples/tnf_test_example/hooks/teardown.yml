@@ -44,6 +44,21 @@
     wait_sleep: 5
     wait_timeout: 120
 
+- name: Delete anyuid Cluster Role Binding setting sidecar security policy
+  community.kubernetes.k8s:
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    name: "{{ item.namespace }}:scc:anyuid"
+    state: absent
+  when:
+    - tnf_enable_service_mesh | default(false) | bool
+    - am_installed | default(false) | bool
+    - tnf_config is defined
+    - tnf_config|length
+    - item.namespace is defined
+    - item.namespace|length
+  loop: "{{ tnf_config }}"
+
 - name: Delete operator-catalog
   community.kubernetes.k8s:
     state: absent
