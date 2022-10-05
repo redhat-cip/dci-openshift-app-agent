@@ -1,38 +1,15 @@
 ---
-# Despite dci_openshift_app_ns is deleted in agent's
-# teardown, it will be removed here in order to delete
-# the local volumes without issues.
-- name: Delete namespaces if not done before
-  community.kubernetes.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ pods_in_same_ns.namespace }}"
-    state: absent
-    wait: yes
-    wait_sleep: 5
-    wait_timeout: 120
-  when:
-    - tnf_config is defined
-    - tnf_config|length
-    - pods_in_same_ns.namespace is defined
-    - pods_in_same_ns.namespace|length
-  loop: "{{ tnf_config }}"
-  loop_control:
-    loop_var: pods_in_same_ns
 
-- name: Delete local volumes created
-  include_tasks: delete_local_volumes.yml
-  vars:
-    app_ns: "{{ pods_in_same_ns.namespace }}"
+- name: Delete testing resources
+  include_tasks: delete_testing_resources.yml
+  loop: "{{ tnf_config }}"
+  loop_control:
+    loop_var: pods_in_same_ns
   when:
     - tnf_config is defined
     - tnf_config|length
     - pods_in_same_ns.namespace is defined
     - pods_in_same_ns.namespace|length
-  loop: "{{ tnf_config }}"
-  loop_control:
-    loop_var: pods_in_same_ns
-  when: app_ns == 'production-cnf'
 
 - name: Delete local-storage StorageClass
   community.kubernetes.k8s:
@@ -44,21 +21,6 @@
     wait_sleep: 5
     wait_timeout: 120
 
-- name: Delete anyuid Cluster Role Binding setting sidecar security policy
-  community.kubernetes.k8s:
-    api_version: rbac.authorization.k8s.io/v1
-    kind: ClusterRoleBinding
-    name: "{{ item.namespace }}:scc:anyuid"
-    state: absent
-  when:
-    - tnf_enable_service_mesh | default(false) | bool
-    - am_installed | default(false) | bool
-    - tnf_config is defined
-    - tnf_config|length
-    - item.namespace is defined
-    - item.namespace|length
-  loop: "{{ tnf_config }}"
-
 - name: Delete operator-catalog
   community.kubernetes.k8s:
     state: absent
@@ -66,3 +28,5 @@
     name: "{{ tnf_operator_to_install.operator_name }}-catalog"
     namespace: openshift-marketplace
     kind: CatalogSource
+
+...
