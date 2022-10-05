@@ -65,8 +65,11 @@
     - name: Apply ImageContentSourcePolicy
       community.kubernetes.k8s:
         definition: "{{ lookup('file', tnf_test_example_prerun_tmp_dir.path + '/tmp_oc/imageContentSourcePolicy.yaml') }}"
-      notify:
-        - Remove temporary directory
+
+    - name: Remove temporary directory
+      file:
+        path: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+        state: absent
 
     # kubeconfig and oc are referenced by dci_cluster_configs_dir variable on
     # dci-openshift-agent, and both are saved under kubeconfig_path (removing "/kubeconfig")
