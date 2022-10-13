@@ -79,6 +79,9 @@ spec:
               cpu: 0.25
 {% endif %}
           lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo Hello from the postStart handler"]
             preStop:
               exec:
                 command: ["/bin/sh", "-c", "killall -0 tail"]
