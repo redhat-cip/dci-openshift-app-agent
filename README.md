@@ -43,7 +43,7 @@ This agent is expected to be installed in a RHEL8 server (from now on referred a
 
 ## Requirements
 
-Before starting make sure the next list of items are covered in the Jumpbox server.
+Before starting make sure the next list of items are covered in the jumphost server.
 
 - Be running the latest stable RHEL release (**8.4 or higher**) and registered via RHSM
 - Ansible 2.9 (See section [Newer Ansible Versions](#newer-ansible-versions) for newer Ansible versions)
@@ -54,24 +54,25 @@ Before starting make sure the next list of items are covered in the Jumpbox serv
   - baseos-rpms
   - appstream-rpms
 - Podman 3.0 (See section [Old Podman versions](#old-podman-versions) for older Podman versions)
-- kubernetes python module
+- Kubernetes Python module
 
-In an already registered server with RHEL you can fullfil the repositories requirements with the following commands:
+In an already registered server with RHEL you can fullfil the repositories and Ansible 2.9 requirements with the following commands:
 
 ```ShellSession
-# dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-# dnf -y install https://packages.distributed-ci.io/dci-release.el8.noarch.rpm
 # subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms
 # subscription-manager repos --enable=rhel-8-for-x86_64-appstream-rpms
+# subscription-manager repos --enable ansible-2.9-for-rhel-8-x86_64-rpms
+# dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+# dnf -y install https://packages.distributed-ci.io/dci-release.el8.noarch.rpm
 ```
 
-Then install kubernetes module
+Please make sure that you have followed these steps before continuing. Then, install Kubernetes module:
 
 ```ShellSession
 # dnf install python3-kubernetes
 ```
 
-> NOTE: Another option is to use pip3, and you can use a more recent version of the module
+> NOTE: Another option is to use pip3, and you can use a more recent version of the module, however it is not recommended.
 
 ## Installation
 
@@ -81,7 +82,7 @@ The `dci-openshift-app-agent` is packaged and available as a RPM file located in
 # dnf -y install dci-openshift-app-agent
 ```
 
-In order to execute the `dci-openshift-app-agent`, a running OpenShift cluster, together with the credentials needed to make use of the cluster (i.e. through the `KUBECONFIG` environment variable) are needed.
+In order to execute the `dci-openshift-app-agent`, a running OpenShift cluster, together with the credentials needed to make use of the cluster (i.e. through the `KUBECONFIG` environment variable) are needed. Also, make sure that `dci-openshift-agent` has been installed in your system after installing `dci-openshift-app-agent`.
 
 The OpenShift cluster can be built beforehand by running the [DCI OpenShift Agent](https://github.com/redhat-cip/dci-openshift-agent) with the proper configuration to install the desired OCP version.
 
@@ -406,7 +407,7 @@ You can store secrets in an encrypted manner in your `settings.yml` and YAML inv
 You can launch the agent from a local copy by passing the `-d` command line option:
 
 ```ShellSession
-dci-openshift-app-agent-ctl -s -d
+$ dci-openshift-app-agent-ctl -s -d
 ```
 
 `dcirc.sh` is read from the current directory instead of `/etc/dci-openshift-app-agent/dcirc.sh`.
@@ -510,7 +511,7 @@ This issue has already been fixed by removing -r option when creating the dci-op
 1. To conclude, execute the podman system migration command, it will take care of killing the podman "pause" process and restarting the running containers with the new subuid/subgid mapping.
 
     ```bash
-    podman system migrate
+    $ podman system migrate
     ```
 
    If the containers do not restart automatically, then you can try to restart them manually.
@@ -518,7 +519,7 @@ This issue has already been fixed by removing -r option when creating the dci-op
     Make sure of changing the ownership of certain resources (e.g. the ones under /var/lib/dci-openshift-app-agent directory):
 
     ```bash
-    sudo chown \
+    $ sudo chown \
         -R \
         dci-openshift-app-agent:dci-openshift-app-agent \
         /var/lib/dci-openshift-app-agent/
@@ -568,9 +569,9 @@ If you use a proxy to go to the Internet, export the following variables in the 
 Replace PROXY-IP:PORT with your respective settings and 10.X.Y.Z/24 with the cluster subnet of the OCP cluster, and example.com with the base domain of your cluster.
 
 ```ShellSession
-export http_proxy=http://PROXY-IP:PORT
-export https_proxy=http://PROXY-IP:PORT
-export no_proxy=10.X.Y.Z/24,.example.com
+$ export http_proxy=http://PROXY-IP:PORT
+$ export https_proxy=http://PROXY-IP:PORT
+$ export no_proxy=10.X.Y.Z/24,.example.com
 ```
 
 > NOTE: Also consider setting the proxy settings in the /etc/rhsm/rhsm.conf file if you use the Red Hat CDN to pull packages, otherwise the agent might fail to install dependencies required during the execution of the CNF test suite.
@@ -582,7 +583,7 @@ If you want to test a code change from Gerrit, you need to have `dci-check-chang
 Then for example, if you want to test the change from <https://softwarefactory-project.io/r/c/dci-openshift-app-agent/+/22647>, issue the following command:
 
 ```ShellSession
-dci-check-change 22647 /var/lib/dci-openshift-agent/clusterconfigs/kubeconfig
+$ dci-check-change 22647 /var/lib/dci-openshift-agent/clusterconfigs/kubeconfig
 ```
 
 You can omit the kubeconfig file as a second argument if you want `dci-check-change` to re-install OCP using `dci-openshift-agent-ctl` before testing the change.
