@@ -28,8 +28,6 @@
   include_tasks: check_aspenmesh.yml
   when: tnf_enable_service_mesh | default(false) | bool
 
-# If the namespace is dci_openshift_app_ns, its creation is handled in
-# d-o-a-a plays, so we do not need to do that here.
 # exclude_connectivity_regexp is not checked because it is optional.
 - name: Create namespaces and deploy test resources on each namespace if not done before
   include_tasks: deploy_resources_in_ns.yml

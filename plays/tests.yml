@@ -9,10 +9,6 @@
 - name: "cnf-cert tests"
   include_role:
     name: cnf-cert
-  vars:
-    tnf_ns: "{{ dci_openshift_app_ns }}"
-    tnf_tempdir:
-      path: "{{ job_logs.path }}"
   when: do_cnf_cert|bool
 
 # We need to do this at this point because we will not have

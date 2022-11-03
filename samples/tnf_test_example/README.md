@@ -1,8 +1,28 @@
 # TNF Test example
 
-This example deploys a couple of pods in two different namespaces, to be used with the CNF Test Suite provided by [test-network-function](https://github.com/test-network-function/cnf-certification-test) in a multi-namespace scenario.
+This example deploys a couple of pods in different namespaces, to be used with the CNF Test Suite provided by [test-network-function](https://github.com/test-network-function/cnf-certification-test) in a multi-namespace scenario.
 
-The specification of this pod, obtained from [this repository](https://github.com/test-network-function/cnf-certification-test-partner), is a suitable one for passing all the test suites from the CNF Test Suite.
+A possible configuration to deploy this sample is the following (note that variables that are not defined, such as the ones related to `cnf-cert` role, would use default values):
+
+```yaml
+---
+dci_tags: ["debug"]
+dci_config_dir: "/var/lib/dci-openshift-app-agent/samples/tnf_test_example"
+dci_components_by_query: ["type:tnf_test_example"]
+do_cnf_cert: true
+tnf_config:
+  - namespace: "test-cnf"
+    targetpodlabels: [environment=test]
+    target_crds: ["crdexamples.test-network-function.com"]
+    operators_regexp: "mongodb-enterprise"
+    exclude_connectivity_regexp: ""
+  - namespace: "production-cnf"
+    targetpodlabels: [environment=production]
+    target_crds: ["crdexamples.test-network-function.com"]
+    operators_regexp: ""
+    exclude_connectivity_regexp: ""
+...
+```
 
 In particular, two namespaces are created, called `test-cnf` and `production-cnf`, mimic-ing the two typical environments we can find to deploy application workloads. In the first case, a Deployment is used to create the pods, and in the second case, it is used a StatefulSet.
 
@@ -21,16 +41,18 @@ Other resources related to the pods under test are also deployed:
 
 Finally, apart from the pods under test, it also deploys, in one of the namespaces:
 
-- An operator, based on [mongodb-enterprise](https://catalog.redhat.com/software/operators/detail/5e9872923f398525a0ceafba), in order to execute CNF Cert Suite and Preflight tests over this operator.
+- An operator, which can be based on [mongodb-enterprise](https://catalog.redhat.com/software/operators/detail/5e9872923f398525a0ceafba) or in [simple-demo-operator](https://github.com/redhat-openshift-ecosystem/certified-operators/tree/main/operators/simple-demo-operator), in order to execute CNF Cert Suite and Preflight tests over this operator.
 - A Helm chart, based on [fredco samplechart](https://github.com/openshift-helm-charts/charts/tree/main/charts/partners/fredco/samplechart/0.1.3), in order to execute CNF Cert Suite tests over this Helm chart.
 
-These two last resources need the following variables to be declared:
+The specific operator and Helm chart that are deployed depend on the `tnf_test_example` DCI component used. Currently, we support `v0.0.1` (it uses simple-demo-operator is used) and `v0.0.2` (the latest one, where mongodb-enterprise operator is used). By using `dci_components_by_query` variable in your settings file, you can select the component that best suits you.
 
+Note that the component defines some data that is used by the hooks. Here you have an [example](https://www.distributed-ci.io/topics/818491de-8ee6-4ae8-a9bc-2d2ce62ef71c/components/95d2c742-d3a3-4bb5-8b8c-7a9a3243eec7) that you can check. If you click in `Data` > `See content`, you will see a JSON string containing the following variables (which needs to be declared):
+
+* `tnf_app_image`: image to be used in the pods under test. In our case, the specification, obtained from [this repository](https://github.com/test-network-function/cnf-certification-test-partner), is a suitable one for passing all the test suites from the CNF Test Suite.
 * `tnf_operator_to_install`: information related to the operator to be installed. It must include the following variables within it:
   * `operator_name`: name of the operator.
   * `operator_version`: version of the operator.
   * `operator_bundle`: bundle Image SHA of the operator to be installed. This is used to create a custom catalog for disconnected environments.
-
 * `tnf_helm_chart_to_install`: information related to the Helm chart to be deployed. It must include the following variables within it:
   * `chart_url`: URL to the chart.tgz file that includes the Helm chart.
   * `image_repository`: public image used within the Helm chart.
@@ -38,9 +60,10 @@ These two last resources need the following variables to be declared:
 
 These resources create services in the namespace that are updated to `PreferDualStack` IP family policy, then obtaining an IPv6 IP address if the OCP cluster is configured in dual-stack mode.
 
-Example of values for these variables are the following (in fact, these are the default values):
+Example of values for these variables are the following (for connected environments; in disconnected, `tnf_app_image` must point to a private registry):
 
 ```yaml
+tnf_app_image: quay.io/testnetworkfunction/cnf-test-partner:latest
 tnf_operator_to_install:
   operator_name: mongodb-enterprise
   operator_version: v1.17.0
@@ -50,3 +73,8 @@ tnf_helm_chart_to_install:
   image_repository: registry.access.redhat.com/ubi8/nginx-118
   app_version: 1-42
 ```
+
+For further information, you can check the following blog posts:
+
+- [Running CNF Cert Suite certification with dci-openshift-app-agent](https://blog.distributed-ci.io/cnf-cert-suite-with-dci-openshift-app-agent.html)
+- [How to automate DCI components creation](https://blog.distributed-ci.io/automate-dci-components.html)

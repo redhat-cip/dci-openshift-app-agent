@@ -1,8 +1,5 @@
 ---
 
-# Despite dci_openshift_app_ns is deleted in agent's
-# teardown, it will be removed here in order to delete
-# the local volumes without issues.
 - name: Delete namespaces if not done before
   community.kubernetes.k8s:
     api_version: v1
