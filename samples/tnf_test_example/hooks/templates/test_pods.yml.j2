@@ -50,7 +50,7 @@ spec:
       runtimeClassName: {{ runtime_class_name }}
 {% endif %}
       containers:
-        - image: {{ dci_openshift_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
+        - image: {{ tnf_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
           imagePullPolicy: IfNotPresent
           name: test
           ports:

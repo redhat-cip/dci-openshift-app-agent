@@ -135,7 +135,7 @@ provisionhost\_registry            | ""                                         
 provision\_cache\_store            | "/opt/cache"                                         | Directory aimed to share artifacts between dci-openshift-agent and dci-openshift-app-agent.
 partner\_creds                     | ""                                                   | Authfile with registries' creds. This variable must have a value if we are on a disconnected environment. In that case, it must include the creds for the local registry used, and optionally have private registry creds for partners. If it is a connected environment, this variable is optional and, if it has a value, the file would contain just private registry creds for partners. [In this link](https://man.archlinux.org/man/community/containers-common/containers-auth.json.5.en#FORMAT), there are examples about how the files should be formatted.
 dci\_workarounds                   | []                                                   | List of workarounds to be considered in the execution. Each element of the list must be a String with the following format: bz\<id> or gh-org-repo-\<id>
-dci\_openshift\_app\_image         | quay.io/testnetworkfunction/cnf-test-partner:latest  | Image that can be to be used on the agent workloads, it needs to be mirrored to a local registry in disconnected environments. The default value is an "ideal" Cloud Native Function that can be used for testing purposes.
+dci\_openshift\_app\_image         |                                                      | Image that can be to be used on the agent workloads. It needs to be defined in the partner hooks. It needs to be mirrored to a local registry in disconnected environments.
 dci\_openshift\_app\_ns            | "myns"                                               | Default namespace  to deploy workloads in the running cluster.
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
@@ -253,6 +253,8 @@ The [CNF-cert role](roles/cnf-cert/README.md) allows the deployment of CNFs and 
 
 For specific details about the features and variables for this test suite see: [CNF-cert role](roles/cnf-cert/README.md) documentation.
 
+Also, the [tnf_test_example sample](samples/tnf_test_example/README.md) can be followed as a good example of how to deploy a workload to be tested by the CNF Cert Suite.
+
 ### Helm Chart Verifier
 
 [Helm Chart Verifier](https://github.com/redhat-certification/chart-verifier) is a test tool that validates Helm charts based on Red Hat recommendations.
@@ -361,23 +363,6 @@ To use these samples, you need to include the variable `dci_config_dir` with the
     dci_comment: "Test webserver"
     dci_openshift_app_ns: testns
     dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
-    ```
-
-1. To validate the CNF test suite against a example workload, the settings.yml file will look like this:
-
-    File: settings.yml
-
-    ```YAML
-    dci_topic: OCP-4.8
-    dci_components_by_query: ['4.8.13']
-    dci_comment: "Test CNF suite"
-    dci_openshift_app_ns: testns
-    dci_config_dir: /var/lib/dci-openshift-app-agent/samples/tnf_test_example
-    dci_openshift_app_image: quay.io/testnetworkfunction/cnf-test-partner:latest
-    tnf_suites: "diagnostic access-control networking lifecycle observability platform-alteration"
-    tnf_config:
-      - namespace: testns
-        targetpodlabels: [test-network-function/environment=testing]
     ```
 
 ## Overloading settings and hooks directories

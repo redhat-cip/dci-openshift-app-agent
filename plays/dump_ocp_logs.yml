@@ -5,10 +5,9 @@
   # from which logs must be retrieved
   - name: Get OCP logs from namespaces
     block:
-    # tnf_config is defined in cnf-cert with a default value, using only one item where the
-    # namespace is dci_openshift_app_ns
+    # tnf_config is defined in cnf-cert and it may contain dci_openshift_app_ns
     # If no tnf_config is provided externally, ns_list will not be generated here
-    - name: Obtain namespaces from tnf_config variable if exists (excepting dci_openshift_app_ns)
+    - name: Obtain namespaces from tnf_config variable if exists (excepting dci_openshift_app_ns if provided)
       set_fact:
         ns_list: "{{ ns_list|default([]) + [ item.namespace ] }}"
       when:

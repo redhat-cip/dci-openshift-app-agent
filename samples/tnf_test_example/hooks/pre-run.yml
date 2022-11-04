@@ -12,29 +12,6 @@
 - name: Declare tnf variables
   include_tasks: declare_tnf_variables.yml
 
-# Check that the variables have been defined correctly in case
-# they have been defined elsewhere.
-- name: Validate that tnf variables are defined
-  assert:
-    that: "{{ item }} is defined"
-    fail_msg: "The variable {{ item }} is required"
-  with_items:
-      - tnf_operator_to_install
-      - tnf_operator_to_install.operator_name
-      - tnf_operator_to_install.operator_version
-      - tnf_operator_to_install.operator_bundle
-      - tnf_helm_chart_to_install
-      - tnf_helm_chart_to_install.chart_url
-      - tnf_helm_chart_to_install.image_repository
-
-# Needed for doing the mirroring of the image
-- name: Validate that app_version for tnf_helm_chart is provided in disconnected environments
-  assert:
-    that: "tnf_helm_chart_to_install.app_version is defined"
-    fail_msg: "The variable tnf_helm_chart_to_install.app_version is required in disconnected environments"
-  when:
-    - dci_disconnected | default(false) | bool
-
 - name: Mirror images in disconnected environments
   include_role:
     name: mirror_images
