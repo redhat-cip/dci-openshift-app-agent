@@ -41,9 +41,7 @@ spec:
 {% endif %}
       name: test
     spec:
-{% if tnf_enable_service_mesh | default(false) | bool and am_installed | default(false) | bool %}
       serviceAccountName: test
-{% endif %}
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
 {% if runtime_class_name is defined and runtime_class_name|length and app_ns == 'production-cnf' %}

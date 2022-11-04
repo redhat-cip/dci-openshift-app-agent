@@ -27,4 +27,12 @@
     - tnf_enable_service_mesh | default(false) | bool
     - am_installed | default(false) | bool
 
+- name: "Delete use-restricted-cat-1 RoleBinding"
+  community.kubernetes.k8s:
+    api_version: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    name: use-restricted-cat-1
+    namespace: "{{ pods_in_same_ns.namespace }}"
+    state: absent
+
 ...

@@ -1,15 +1,5 @@
 ---
-- name: Create ServiceAccount for test pods
-  community.kubernetes.k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: ServiceAccount
-      metadata:
-        name: test
-        namespace: "{{ app_ns }}"
-
-- name: Add anyuid Cluster Role Binding to set sidecar security policy
+- name: Add ClusterRoleBinding to allow pods running under anyuid
   community.kubernetes.k8s:
     state: present
     definition:

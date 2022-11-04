@@ -28,6 +28,63 @@
   include_tasks: check_aspenmesh.yml
   when: tnf_enable_service_mesh | default(false) | bool
 
+# Obtained from Verizon VCP Webscale Core and Edge Cloud Native Network Function Requirements, v1.4.
+- name: Create SCC Category 1 - CNFs that do not require advanced networking features
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      kind: SecurityContextConstraints
+      apiVersion: security.openshift.io/v1
+      metadata:
+        name: restricted-cat-1
+      users: []
+      groups: []
+      priority: null
+      allowHostDirVolumePlugin: false
+      allowHostIPC: false
+      allowHostNetwork: false
+      allowHostPID: false
+      allowHostPorts: false
+      allowPrivilegeEscalation: true
+      allowPrivilegedContainer: false
+      allowedCapabilities: null
+      defaultAddCapabilities: null
+      requiredDropCapabilities:
+        - KILL
+        - MKNOD
+        - SETUID
+        - SETGID
+      fsGroup:
+        type: MustRunAs
+      readOnlyRootFilesystem: false
+      runAsUser:
+        type: MustRunAsRange
+      seLinuxContext:
+        type: MustRunAs
+      supplementalGroups:
+        type: RunAsAny
+      volumes:
+        - configMap
+        - downwardAPI
+        - emptyDir
+        - persistentVolumeClaim
+        - projected
+        - secret
+
+- name: Adding restricted-cat-1 policy to a cluster role
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      kind: ClusterRole
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: use-restricted-cat-1
+      rules:
+        - apiGroups: ["security.openshift.io"]
+          resources: ["securitycontextconstraints"]
+          resourceNames: ["restricted-cat-1"]
+          verbs: ["use"]
+
 # exclude_connectivity_regexp is not checked because it is optional.
 - name: Create namespaces and deploy test resources on each namespace if not done before
   include_tasks: deploy_resources_in_ns.yml

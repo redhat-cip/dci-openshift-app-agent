@@ -8,6 +8,36 @@
     name: "{{ app_ns }}"
     state: present
 
+# It was done in configure_aspenmesh_for_ns.yml before, but now moved here so that
+# the RoleBinding is applied by default to all pods, as there is a new security
+# context unit test in CNF Cert Suite validating this.
+- name: Create ServiceAccount for test pods
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: test
+        namespace: "{{ app_ns }}"
+
+- name: Create RoleBinding for restricted-cat-1 applications
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: use-restricted-cat-1
+        namespace: "{{ app_ns }}"
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: use-restricted-cat-1
+      subjects:
+        - kind: Group
+          name: system:serviceaccounts:{{ app_ns }}
+
 - name: Configure Aspenmesh for namespace
   include_tasks: configure_aspenmesh_for_ns.yml
   when:
