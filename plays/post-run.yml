@@ -12,4 +12,14 @@
     tasks_from: post-run.yml
   when: do_cnf_cert|bool
 
+- name: Get API request counts after running
+  shell: "{{ oc_tool_path }} get -o json apirequestcounts > {{ job_logs.path }}/apirequestcounts.after.json"
+  when:
+    - ocp_version is version("4.9", ">=")
+
+- name: Compute removed API
+  script: ./scripts/compute_removed_apis "{{ job_logs.path }}/apirequestcounts.before.json" "{{ job_logs.path }}/apirequestcounts.after.json" "{{ job_logs.path }}/removed_api.txt"
+  when:
+    - ocp_version is version("4.9", ">=")
+
 ...
