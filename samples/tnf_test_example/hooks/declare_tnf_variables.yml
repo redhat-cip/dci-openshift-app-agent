@@ -8,28 +8,47 @@
   with_items: "{{ job_info.job.components }}"
   when: item["type"] == "tnf_test_example"
 
-# Check that the variables have been defined correctly in case
-# they have been defined elsewhere.
-- name: Validate that tnf variables are defined
-  assert:
-    that: "{{ item }} is defined"
-    fail_msg: "The variable {{ item }} is required"
-  with_items:
-      - tnf_app_image
-      - tnf_operator_to_install
-      - tnf_operator_to_install.operator_name
-      - tnf_operator_to_install.operator_version
-      - tnf_operator_to_install.operator_bundle
-      - tnf_helm_chart_to_install
-      - tnf_helm_chart_to_install.chart_url
-      - tnf_helm_chart_to_install.image_repository
-
-# Needed for doing the mirroring of the image
-- name: Validate that app_version for tnf_helm_chart is provided in disconnected environments
-  assert:
-    that: "tnf_helm_chart_to_install.app_version is defined"
-    fail_msg: "The variable tnf_helm_chart_to_install.app_version is required in disconnected environments"
+# In this case, previous task would have been skipped and no variables would have been created.
+- name: Tasks in case component was not used
+  block:
+    # Just verify if tnf_app_image is provided in the settings explicitly, else make the job to fail.
+    - name: Validate that tnf variables are defined
+      assert:
+        that: "{{ item }} is defined"
+        fail_msg: "The variable {{ item }} is required"
+      with_items:
+          - tnf_app_image
   when:
-    - dci_disconnected | default(false) | bool
+    - tnf_operator_to_install is not defined
+    - tnf_helm_chart_to_install is not defined
+
+- name: Tasks in case component was used
+  block:
+    # Check that the variables have been defined correctly in case
+    # they have been defined elsewhere.
+    - name: Validate that tnf variables are defined
+      assert:
+        that: "{{ item }} is defined"
+        fail_msg: "The variable {{ item }} is required"
+      with_items:
+          - tnf_app_image
+          - tnf_operator_to_install
+          - tnf_operator_to_install.operator_name
+          - tnf_operator_to_install.operator_version
+          - tnf_operator_to_install.operator_bundle
+          - tnf_helm_chart_to_install
+          - tnf_helm_chart_to_install.chart_url
+          - tnf_helm_chart_to_install.image_repository
+
+    # Needed for doing the mirroring of the image
+    - name: Validate that app_version for tnf_helm_chart is provided in disconnected environments
+      assert:
+        that: "tnf_helm_chart_to_install.app_version is defined"
+        fail_msg: "The variable tnf_helm_chart_to_install.app_version is required in disconnected environments"
+      when:
+        - dci_disconnected | default(false) | bool
+  when:
+    - tnf_operator_to_install is defined
+    - tnf_helm_chart_to_install is defined
 
 ...

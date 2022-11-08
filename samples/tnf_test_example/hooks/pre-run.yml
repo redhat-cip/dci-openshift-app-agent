@@ -1,4 +1,9 @@
 ---
+
+# First task to do: if the variables are not correctly defined, do not continue.
+- name: Declare tnf variables
+  include_tasks: declare_tnf_variables.yml
+
 - name: "Install required rpm packages"
   package:
     name: "{{ item }}"
@@ -9,16 +14,12 @@
     - python3-pyyaml
   become: true
 
-- name: Declare tnf variables
-  include_tasks: declare_tnf_variables.yml
-
 - name: Mirror images in disconnected environments
   include_role:
     name: mirror_images
   vars:
     images:
       - quay.io/testnetworkfunction/cnf-test-partner:latest
-      - "{{ tnf_helm_chart_to_install.image_repository }}:{{ tnf_helm_chart_to_install.app_version }}"
     local_registry: "{{ provisionhost_registry }}"
     authfile: "{{ pullsecret_tmp_file }}"
   when:
@@ -30,6 +31,16 @@
 - name: Preparing the operator in disconnected environments
   include_tasks: prepare_operator.yml
   when:
+    - tnf_operator_to_install is defined
+    - dci_disconnected | default(false) | bool
+    - provisionhost_registry|length
+    - pullsecret_tmp_file|length
+
+# Doing it separately in case no component is provided.
+- name: Preparing the Helm chart in disconnected environments
+  include_tasks: prepare_helm_chart.yml
+  when:
+    - tnf_helm_chart_to_install is defined
     - dci_disconnected | default(false) | bool
     - provisionhost_registry|length
     - pullsecret_tmp_file|length
