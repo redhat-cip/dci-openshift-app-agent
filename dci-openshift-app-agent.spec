@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.5.2
+Version:       0.5.3
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -13,9 +13,9 @@ Requires: sudo
 Requires: dci-openshift-agent >= 0.4.0
 Requires: dci-ansible >= 0.3.0
 %if 0%{?rhel} && 0%{?rhel} < 8
-Requires: python2-dciclient >= 2.3.0
+Requires: python2-dciclient >= 2.6.0
 %else
-Requires: python3-dciclient >= 2.3.0
+Requires: python3-dciclient >= 2.6.0
 %endif
 Requires: ansible-collection-community-kubernetes
 Requires(pre): shadow-utils
@@ -81,6 +81,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Wed Nov  9 2022 Frederic Lepied <flepied@redhat.com> 0.5.3-1
+- bump the requires for python-dciclient to >= 2.6.0 to get dci-diff-jobs
+
 * Thu Sep 22 2022 Frederic Lepied <flepied@redhat.com> 0.5.2-1
 - use make install
 - remove requires on ansible-role-dci-cvp

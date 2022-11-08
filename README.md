@@ -357,6 +357,12 @@ If the agent is ran on an OCP cluster superior or equal to 4.9, it is
 creating a `removed_api.txt` file that is attached to the DCI job. This
 file is listing the removed API in the upcoming OCP releases.
 
+### diff-jobs.txt
+
+The agent generates the `diff-jobs.txt` file in its post-run stage to
+compare the previous job of the same type regarding the components
+used.
+
 ## Development mode
 
 You can launch the agent from a local copy by passing the `-d` command line option:
