@@ -48,5 +48,7 @@
     name: "{{ tnf_operator_to_install.operator_name }}-catalog"
     namespace: openshift-marketplace
     kind: CatalogSource
+  when:
+    - tnf_operator_to_install is defined
 
 ...

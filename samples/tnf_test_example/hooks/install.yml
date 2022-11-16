@@ -121,29 +121,38 @@
 
 - name: Deploy operator
   include_tasks: deploy_operator.yml
+  when:
+    - tnf_operator_to_install is defined
 
 - name: Deploy Helm chart
   include_tasks: deploy_helm_chart.yml
+  when:
+    - tnf_helm_chart_to_install is defined
 
-- name: Get services deployed by operator and Helm chart
-  community.kubernetes.k8s_info:
-    kind: Service
-    namespace: "{{ target_ns }}"
-  register: created_services
+- name: Patch services created by operator and Helm chart
+  block:
+    - name: Get services deployed by operator and Helm chart
+      community.kubernetes.k8s_info:
+        kind: Service
+        namespace: "{{ target_ns }}"
+      register: created_services
 
-# If cluster is dual-stack, services will automatically receive an IPv6 IP address
-# under spec.clusterIPs.
-- name: Patch services to set them up as PreferDualStack ipFamilyPolicy
-  community.kubernetes.k8s:
-    kind: Service
-    name: "{{ service.metadata.name }}"
-    namespace: "{{ target_ns }}"
-    state: present
-    definition:
-      spec:
-        ipFamilyPolicy: "PreferDualStack"
-  loop: "{{ created_services.resources }}"
-  loop_control:
-    loop_var: service
+    # If cluster is dual-stack, services will automatically receive an IPv6 IP address
+    # under spec.clusterIPs.
+    - name: Patch services to set them up as PreferDualStack ipFamilyPolicy
+      community.kubernetes.k8s:
+        kind: Service
+        name: "{{ service.metadata.name }}"
+        namespace: "{{ target_ns }}"
+        state: present
+        definition:
+          spec:
+            ipFamilyPolicy: "PreferDualStack"
+      loop: "{{ created_services.resources }}"
+      loop_control:
+        loop_var: service
+  when:
+    - tnf_operator_to_install is defined
+    - tnf_helm_chart_to_install is defined
 
 ...

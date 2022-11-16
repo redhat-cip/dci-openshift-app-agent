@@ -79,3 +79,5 @@ For further information, you can check the following blog posts:
 
 - [Running CNF Cert Suite certification with dci-openshift-app-agent](https://blog.distributed-ci.io/cnf-cert-suite-with-dci-openshift-app-agent.html)
 - [How to automate DCI components creation](https://blog.distributed-ci.io/automate-dci-components.html)
+
+> Note that, in case you are not using components, operator and Helm chart will not be tested, but you can still run the job. For this, you need to define `tnf_app_image` explicitly in your settings or pipelines, else the job will fail in pre-run stage.
