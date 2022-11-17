@@ -11,10 +11,8 @@
       set_fact:
         ns_list: "{{ ns_list|default([]) + [ item.namespace ] }}"
       when:
-        - tnf_config is defined
-        - tnf_config|length
-        - item.namespace is defined
-        - item.namespace|length
+        - tnf_config | default('') | length
+        - item.namespace | default('') | length
         - item.namespace != dci_openshift_app_ns
       loop: "{{ tnf_config }}"
 
@@ -39,10 +37,8 @@
     script: ./scripts/get-logs "{{ provisioner_user }}@{{ provisioner_name }}" "{{ job_logs.path }}"
     delegate_to: localhost
     when:
-      - provisioner_user is defined
-      - provisioner_user|length
-      - provisioner_name is defined
-      - provisioner_name|length
+      - provisioner_user | default('') | length
+      - provisioner_name | default('') | length
   ignore_errors: true
 
 ...

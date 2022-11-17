@@ -6,10 +6,8 @@
   loop_control:
     loop_var: pods_in_same_ns
   when:
-    - tnf_config is defined
-    - tnf_config|length
-    - pods_in_same_ns.namespace is defined
-    - pods_in_same_ns.namespace|length
+    - tnf_config | default('') | length
+    - pods_in_same_ns.namespace | default('') | length
 
 - name: Delete local-storage StorageClass
   community.kubernetes.k8s:
