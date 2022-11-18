@@ -378,6 +378,28 @@ You can override the location of `dci-ansible` using the `DCI_ANSIBLE_DIR` envir
 You can add extra paths for Ansible roles using the
 `DCI_ANSIBLE_ROLES` environment variable separating paths by `:`.
 
+## Override the default settings file
+
+You can use `-c` command line option to override the default settings file used by the agent.
+
+```ShellSession
+$ dci-openshift-app-agent-ctl -s -c <path/to/settings.yml>
+```
+
+Another way of overriding the settings used by the agent is the prefix mechanism, which can
+be activated with `-p` command line option. In this way, both settings and hosts files will
+be taken from the configuration directory you have configured (if using `CONFIG_DIR` variable,
+both exporting it or including it in `/etc/dci-openshift-app-agent/config` file; else the
+configuration directory will be `/etc/dci-openshift-app-agent` by default). Also, another
+requirement is that settings and hosts file have to be prefixed with `<prefix>-`.
+
+```ShellSession
+$ dci-openshift-app-agent-ctl -s -p <prefix>
+```
+
+In case of using `-c` and `-p` together, `-p` takes precedence (in case the requirements
+commented above are met, else the settings file provided with `-c` would be used).
+
 ## Known issues
 
 ### Libvirt Considerations
