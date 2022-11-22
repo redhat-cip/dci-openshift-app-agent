@@ -64,15 +64,15 @@ There are two configuration files for `dci-openshift-app-agent`:
 
     This file should be edited once:
 
-    ```Shell
-    #!/usr/bin/env bash
-    DCI_CS_URL="https://api.distributed-ci.io/"
-    DCI_CLIENT_ID=remoteci/<remoteci_id>
-    DCI_API_SECRET=<remoteci_api_secret>
-    export DCI_CLIENT_ID
-    export DCI_API_SECRET
-    export DCI_CS_URL
-    ```
+```ShellSession
+#!/usr/bin/env bash
+DCI_CS_URL="https://api.distributed-ci.io/"
+DCI_CLIENT_ID=remoteci/<remoteci_id>
+DCI_API_SECRET=<remoteci_api_secret>
+export DCI_CLIENT_ID
+export DCI_API_SECRET
+export DCI_CS_URL
+```
 
     > NOTE: The initial copy of `dcirc.sh` is shipped as `/etc/dci-openshift-app-agent/dcirc.sh.dist`. You can copy this to `/etc/dci-openshift-app-agent/dcirc.sh` to get started, then replace inline some values with your own credentials.
 
