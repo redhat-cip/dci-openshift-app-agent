@@ -50,7 +50,7 @@ The OpenShift cluster can be built beforehand by running the [DCI OpenShift Agen
 
 Once installed, you need to export the `kubeconfig` from the jumphost to the host in which `dci-openshift-app-agent` is executed. Then, you have set the `KUBECONFIG` environment variable to the path to the kubeconfig file in that host with `export KUBECONFIG=<path_to_kubeconfig>`
 
-NOTE: If you followed the instructions of DCI OpenShift Agent to deploy the cluster, the `kubeconfig` file is on the provisionhost (usually located in `~/clusterconfigs/auth/kubeconfig`)
+> NOTE: If you followed the instructions of DCI OpenShift Agent to deploy the cluster, the `kubeconfig` file is on the provisionhost (usually located in `~/clusterconfigs/auth/kubeconfig`)
 
 These instructions applies when using the `dci-openshift-app-agent` over both baremetal and virtual machines (libvirt) environments.
 
@@ -64,15 +64,13 @@ There are two configuration files for `dci-openshift-app-agent`:
 
     This file should be edited once:
 
-    ```Shell
-    #!/usr/bin/env bash
-    DCI_CS_URL="https://api.distributed-ci.io/"
-    DCI_CLIENT_ID=remoteci/<remoteci_id>
-    DCI_API_SECRET=<remoteci_api_secret>
-    export DCI_CLIENT_ID
-    export DCI_API_SECRET
-    export DCI_CS_URL
-    ```
+        #!/usr/bin/env bash
+        DCI_CS_URL="https://api.distributed-ci.io/"
+        DCI_CLIENT_ID=remoteci/<remoteci_id>
+        DCI_API_SECRET=<remoteci_api_secret>
+        export DCI_CLIENT_ID
+        export DCI_API_SECRET
+        export DCI_CS_URL
 
     > NOTE: The initial copy of `dcirc.sh` is shipped as `/etc/dci-openshift-app-agent/dcirc.sh.dist`. You can copy this to `/etc/dci-openshift-app-agent/dcirc.sh` to get started, then replace inline some values with your own credentials.
 
@@ -116,11 +114,9 @@ A minimal configuration is required for the DCI OpenShift App Agent to run, befo
 
 1. In /etc/dci-openshift-app-agent/settings.yml these variables are required, see their definitions in the table above. You can also define this variables in a different form, see section [Using customized tags](#using-customized-tags) below where a fake `job_info` is created.
 
-    ```YAML
-    dci_topic:
-    dci_components_by_query:
-    dci_comment:
-    ```
+        dci_topic:
+        dci_components_by_query:
+        dci_comment:
 
 1. The DCI OpenShift App Agent by default runs a series of Ansible playbooks called hooks in phases (see section [Hooks](#hooks)). The default files only contain the string `---` and no actions are performed. The install.yml is missing on purpose, and if you run the agent at this point, you will receive an error. In that case you can choose between one of the following options to proceed:
 
@@ -151,7 +147,7 @@ If you prefer to launch a job with systemd, start the dci-openshift-app-agent se
 # systemctl start dci-openshift-app-agent
 ```
 
-> Please note that the service is a systemd `Type=oneshot`. This means that if you need to run a DCI job periodically, you have to configure a `systemd timer` or a `crontab`.
+> NOTE: The service is a systemd `Type=oneshot`. This means that if you need to run a DCI job periodically, you have to configure a `systemd timer` or a `crontab`.
 
 ### Using customized tags
 
@@ -319,13 +315,11 @@ To use these samples, you need to include the variable `dci_config_dir` with the
 
     File: settings.yml
 
-    ```YAML
-    dci_topic: OCP-4.8
-    dci_components_by_query: ['4.8.13']
-    dci_comment: "Test webserver"
-    dci_openshift_app_ns: testns
-    dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
-    ```
+        dci_topic: OCP-4.8
+        dci_components_by_query: ['4.8.13']
+        dci_comment: "Test webserver"
+        dci_openshift_app_ns: testns
+        dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
 
 ## Overloading settings and hooks directories
 
@@ -368,7 +362,7 @@ used.
 You can launch the agent from a local copy by passing the `-d` command line option:
 
 ```ShellSession
-$ dci-openshift-app-agent-ctl -s -d
+dci-openshift-app-agent-ctl -s -d
 ```
 
 `dcirc.sh` is read from the current directory instead of `/etc/dci-openshift-app-agent/dcirc.sh`.
@@ -472,19 +466,17 @@ This issue has already been fixed by removing -r option when creating the dci-op
 1. To conclude, execute the podman system migration command, it will take care of killing the podman "pause" process and restarting the running containers with the new subuid/subgid mapping.
 
     ```bash
-    $ podman system migrate
+    podman system migrate
     ```
 
-   If the containers do not restart automatically, then you can try to restart them manually.
+    If the containers do not restart automatically, then you can try to restart them manually.
 
     Make sure of changing the ownership of certain resources (e.g. the ones under /var/lib/dci-openshift-app-agent directory):
 
-    ```bash
-    $ sudo chown \
-        -R \
-        dci-openshift-app-agent:dci-openshift-app-agent \
-        /var/lib/dci-openshift-app-agent/
-    ```
+        sudo chown \
+            -R \
+            dci-openshift-app-agent:dci-openshift-app-agent \
+            /var/lib/dci-openshift-app-agent/
 
     Then, you can retry to deploy the containers and it should work.
 
@@ -502,26 +494,22 @@ If `sudo dnf update podman` does not work, you may need to follow some of these 
 
 1. Try to clean the cache just in case, and then list the available packages from the upstream repository to confirm if version 3 is listed. For example, for Podman 1.6.4, it is indeed provided by `rhel-8-for-x86_64-appstream-rpms` repo:
 
-    ```ShellSession
-    $ sudo dnf clean all
-    $ sudo dnf --disableexcludes all --disablerepo all --enablerepo rhel-8-for-x86_64-appstream-rpms list --available --showduplicates podman
+        $ sudo dnf clean all
+        $ sudo dnf --disableexcludes all --disablerepo all --enablerepo rhel-8-for-x86_64-appstream-rpms list --available --showduplicates podman
 
-    # If version 3 is listed, then run again:
-    $ sudo dnf update podman
-    ```
+        # If version 3 is listed, then run again:
+        $ sudo dnf update podman
 
 1. Try to find issues related to the Podman version you are using and apply the workarounds proposed. For example, for Podman 1.6.4, there was a [bug](https://github.com/containers/podman/issues/5306) related to the usage of rootless containers, in which it seems that, by removing .config and .local directories and starting from scratch, it fixed the issue.
 
 1. Confirm that the container tools version that corresponds to Podman 3 is enabled or not, and enable it if disabled (as long as it does not impact in other workloads apart from dci-openshift-app-agent running in the server). It can be checked with the following command:
 
-    ```ShellSession
-    $ sudo dnf module list container-tools
+        $ sudo dnf module list container-tools
 
-    # If container-tools rhel8 is not enabled, type the following:
-    $ sudo dnf module reset container-tools
-    $ sudo dnf module enable container-tools:rhel8
-    # And then upgrade podman
-    ```
+        # If container-tools rhel8 is not enabled, type the following:
+        $ sudo dnf module reset container-tools
+        $ sudo dnf module enable container-tools:rhel8
+        # And then upgrade podman
 
 ## Proxy Considerations
 
@@ -530,9 +518,9 @@ If you use a proxy to go to the Internet, export the following variables in the 
 Replace PROXY-IP:PORT with your respective settings and 10.X.Y.Z/24 with the cluster subnet of the OCP cluster, and example.com with the base domain of your cluster.
 
 ```ShellSession
-$ export http_proxy=http://PROXY-IP:PORT
-$ export https_proxy=http://PROXY-IP:PORT
-$ export no_proxy=10.X.Y.Z/24,.example.com
+export http_proxy=http://PROXY-IP:PORT
+export https_proxy=http://PROXY-IP:PORT
+export no_proxy=10.X.Y.Z/24,.example.com
 ```
 
 > NOTE: Also consider setting the proxy settings in the /etc/rhsm/rhsm.conf file if you use the Red Hat CDN to pull packages, otherwise the agent might fail to install dependencies required during the execution of the CNF test suite.
@@ -544,7 +532,7 @@ If you want to test a code change from Gerrit, you need to have `dci-check-chang
 Then for example, if you want to test the change from <https://softwarefactory-project.io/r/c/dci-openshift-app-agent/+/22647>, issue the following command:
 
 ```ShellSession
-$ dci-check-change 22647 /var/lib/dci-openshift-agent/clusterconfigs/kubeconfig
+dci-check-change 22647 /var/lib/dci-openshift-agent/clusterconfigs/kubeconfig
 ```
 
 You can omit the kubeconfig file as a second argument if you want `dci-check-change` to re-install OCP using `dci-openshift-agent-ctl` before testing the change.
