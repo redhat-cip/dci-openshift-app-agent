@@ -129,8 +129,6 @@ do
             if [ -n "$DCI_ANSIBLE_ROLES" ]; then
                 sed -i -e "s@\(roles_path\s*=\s*\)@\1${DCI_ANSIBLE_ROLES}:@" dev-ansible.cfg
             fi
-            config_dir="$DIR"
-            config="$config_dir/settings.yml"
             DCI_OPENSHIFT_APP_AGENT_DIR="$DIR"
             shift
         ;;
