@@ -533,6 +533,37 @@ If `sudo dnf update podman` does not work, you may need to follow some of these 
         $ sudo dnf module enable container-tools:rhel8
         # And then upgrade podman
 
+### HMAC signature errors
+
+When running a job, DCI app agent interacts with the API through a module called `dci-auth`, and it uses HMAC auth v4 to verify data is correct and authentic. First a signature is computed on the client side using the UTC date of the server, then another signature is computed again on DCI server. To avoid a replay attack, the signature is only valid for a few minutes. If you are running a job and see MAC errors, for example: `Hmac2Mechanism failed: signature is expired`, the server clock where the DCI agent is executed may be desynchronised.
+
+A method to confirm this is the issue, it's to execute the command `dcictl topic-list` after sourcing the remote-ci credentials to list the topics, you might see `None` as result:
+
+```ShellSession
+$ source /etc/dci-openshift-app-agent/dcirc.sh
+$ dcictl topic-list
++------+------+-------+-----------------+----------------+------------+
+|  id  | name | state | component_types | export_control | product_id |
++------+------+-------+-----------------+----------------+------------+
+| None | None |  None |       None      |      None      |    None    |
++------+------+-------+-----------------+----------------+------------+
+```
+
+The solution is to sync the system clock to an NTP server, the time zone is not important, use `timedatectl` command to validate if the clock is synchronized with an NTP service and enable accordingly if not.
+
+```ShellSession
+$ timedatectl
+               Local time: Mon 2022-12-05 13:13:00 CST
+           Universal time: Mon 2022-12-05 19:13:00 UTC
+                 RTC time: Mon 2022-12-05 19:13:00
+                Time zone: America/Chicago (CST, -0600)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: no
+```
+
+> NOTE: If you move the system clock around 20 minutes forward you can replicate this issue.
+
 ## Proxy Considerations
 
 If you use a proxy to go to the Internet, export the following variables in the dci-openshift-app-agent user session where you run the agent, if you use the systemd service then it would be a good idea to store these variables in the ~/.bashrc file of the dci-openshift-app-agent user
