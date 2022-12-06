@@ -1,3 +1,11 @@
 ---
+- name: Checking found CalalogSource with opcap
+  include_role:
+    name: opcap-tool
+  vars:
+    opcap_target_catalog_source: "{{ tnf_operator_to_install.operator_name }}-catalog"
+    opcap_catalog_source_namespace: "openshift-marketplace"
+    opcap_output_dir: "{{ job_logs.path }}"
+    opcap_packages: "{{ tnf_operator_to_install.operator_name }}"
 
-# Tests to be executed are the ones from cnf-cert role, and no more tests are intended to be executed
+...
