@@ -20,11 +20,10 @@
   vars:
     images:
       - quay.io/testnetworkfunction/cnf-test-partner:latest
-    local_registry: "{{ provisionhost_registry }}"
     authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool
-    - provisionhost_registry|length
+    - local_registry | length
     - pullsecret_tmp_file|length
 
 # Following the same scope than in preflight for preparing the operator in disconnected environments
@@ -33,7 +32,7 @@
   when:
     - tnf_operator_to_install is defined
     - dci_disconnected | default(false) | bool
-    - provisionhost_registry|length
+    - local_registry | length
     - pullsecret_tmp_file|length
 
 # Doing it separately in case no component is provided.
@@ -42,7 +41,7 @@
   when:
     - tnf_helm_chart_to_install is defined
     - dci_disconnected | default(false) | bool
-    - provisionhost_registry|length
+    - local_registry | length
     - pullsecret_tmp_file|length
 
 ...

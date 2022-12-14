@@ -19,8 +19,7 @@
   vars:
     images:
       - docker.io/library/nginx
-    local_registry: "{{ provisionhost_registry }}"
     authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool
-    - provisionhost_registry|length
+    - local_registry | length

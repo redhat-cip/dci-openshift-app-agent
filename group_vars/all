@@ -20,7 +20,11 @@ do_chart_verifier: false
 # if you deal with private registries
 partner_creds: ""
 sync_cnf_cert_and_preflight: false
-provisionhost_registry: "{% if dci_disconnected is defined and dci_disconnected|bool and local_registry_host is defined and local_registry_port is defined %}{{ local_registry_host }}:{{ local_registry_port }}{% else %}{% endif %}"
+local_registry: |-
+  {{ local_registry_host | default('') }}
+  {%- if local_registry_port is defined %}
+  :{{ local_registry_port }}
+  {%- endif %}
 provision_cache_store: "/opt/cache"
 dci_workarounds: []
 dci_local_log_dir: /var/tmp
