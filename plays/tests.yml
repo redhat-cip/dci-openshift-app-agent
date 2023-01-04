@@ -3,6 +3,8 @@
 - name: "Chart verifier tests"
   include_role:
     name: chart-verifier
+  vars:
+    tnf_stage: "tests"
   when:
     - do_chart_verifier|bool
 

@@ -9,7 +9,8 @@
 - name: "cnf-cert post-run"
   include_role:
     name: cnf-cert
-    tasks_from: post-run.yml
+  vars:
+    tnf_stage: "post-run"
   when: do_cnf_cert|bool
 
 - name: Get API request counts after running

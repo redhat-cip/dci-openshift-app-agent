@@ -2,7 +2,8 @@
 - name: "cnf-cert teardown"
   include_role:
     name: cnf-cert
-    tasks_from: teardown.yml
+  vars:
+    tnf_stage: "teardown"
   when: do_cnf_cert|bool
 
 - name: Delete temporary file for saving pullsecret content
