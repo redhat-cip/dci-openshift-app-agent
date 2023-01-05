@@ -9,16 +9,6 @@
     - tnf_config | default('') | length
     - pods_in_same_ns.namespace | default('') | length
 
-- name: Delete local-storage StorageClass
-  community.kubernetes.k8s:
-    api_version: storage.k8s.io/v1
-    name: local-storage
-    kind: StorageClass
-    state: absent
-    wait: yes
-    wait_sleep: 5
-    wait_timeout: 120
-
 - name: Delete ClusterRole attached to restricted-cat-1 SCC
   community.kubernetes.k8s:
     api_version: rbac.authorization.k8s.io/v1
@@ -34,6 +24,26 @@
     api_version: security.openshift.io/v1
     name: restricted-cat-1
     kind: SecurityContextConstraints
+    state: absent
+    wait: yes
+    wait_sleep: 5
+    wait_timeout: 120
+
+- name: Delete local-storage StorageClass
+  community.kubernetes.k8s:
+    api_version: storage.k8s.io/v1
+    name: local-storage
+    kind: StorageClass
+    state: absent
+    wait: yes
+    wait_sleep: 5
+    wait_timeout: 120
+
+- name: Delete custom RuntimeClass
+  community.kubernetes.k8s:
+    api_version: node.k8s.io/v1
+    name: production-runtime-class
+    kind: RuntimeClass
     state: absent
     wait: yes
     wait_sleep: 5
