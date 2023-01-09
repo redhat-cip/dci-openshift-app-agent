@@ -17,6 +17,7 @@ Before starting make sure the next list of items are covered in the jumphost ser
   - appstream-rpms
 - Podman 3.0 (See section [Old Podman versions](#old-podman-versions) for older Podman versions)
 - Kubernetes Python module
+- An OpensShift cluster already deployed or a process to deploy it before running the `dci-openshift-app-agent`.
 
 In an already registered server with RHEL you can fullfil the repositories and Ansible 2.9 requirements with the following commands:
 
@@ -44,52 +45,32 @@ The `dci-openshift-app-agent` is packaged and available as a RPM file located in
 # dnf -y install dci-openshift-app-agent
 ```
 
-In order to execute the `dci-openshift-app-agent`, a running OpenShift cluster, together with the credentials needed to make use of the cluster (i.e. through the `KUBECONFIG` environment variable) are needed. Also, make sure that `dci-openshift-agent` has been installed in your system after installing `dci-openshift-app-agent`.
+To configure your DCI job pipelines, you need to install `dci-pipeline`. Instructions at [dci-pipeline documentation](../dci-pipeline/).
 
-The OpenShift cluster can be built beforehand by running the [DCI OpenShift Agent](https://github.com/redhat-cip/dci-openshift-agent) with the proper configuration to install the desired OCP version.
-
-Once installed, you need to export the `kubeconfig` from the jumphost to the host in which `dci-openshift-app-agent` is executed. Then, you have set the `KUBECONFIG` environment variable to the path to the kubeconfig file in that host with `export KUBECONFIG=<path_to_kubeconfig>`
-
-> NOTE: If you followed the instructions of DCI OpenShift Agent to deploy the cluster, the `kubeconfig` file is on the provisionhost (usually located in `~/clusterconfigs/auth/kubeconfig`)
-
-These instructions applies when using the `dci-openshift-app-agent` over both baremetal and virtual machines (libvirt) environments.
 
 ## Configuration
 
-There are two configuration files for `dci-openshift-app-agent`:
+The DCI dashboard gives you a view into what jobs you have run in your distributed agent. In order to gain access to it
+you have to:
 
-1. **/etc/dci-openshift-app-agent/dcirc.sh**
-
-    From the [DCI web dashboard](https://www.distributed-ci.io), the partner team administrator has to create a `Remote CI` in the DCI web dashboard. Copy the relative credential and paste it locally on the Jumphost to `/etc/dci-openshift-app-agent/dcirc.sh`.
-
-    This file should be edited once:
-
-        #!/usr/bin/env bash
-        DCI_CS_URL="https://api.distributed-ci.io/"
-        DCI_CLIENT_ID=remoteci/<remoteci_id>
-        DCI_API_SECRET=<remoteci_api_secret>
-        export DCI_CLIENT_ID
-        export DCI_API_SECRET
-        export DCI_CS_URL
-
-    > NOTE: The initial copy of `dcirc.sh` is shipped as `/etc/dci-openshift-app-agent/dcirc.sh.dist`. You can copy this to `/etc/dci-openshift-app-agent/dcirc.sh` to get started, then replace inline some values with your own credentials.
-
-1. **/etc/dci-openshift-app-agent/settings.yml**
+1. Go to https://www.distributed-ci.io/ and click login. You will be redirected to
+   sso.redhat.com so you'll use your RH account credentials.
+2. If you are not part of any team you can contact an admin to get yourself
+   added.
+3. You will have to create a Remote CI for using it later, go on the left navigation bar on the `Remotecis` option and click.
+   on "Create a new remoteci"
+4. Fill out the description and which team it belongs to, then click `Create`.
+5. You should see your newly created remoteci in the list, you can get
+   the credentials in YAML format by click the button in the
+   Authentication column. This should be saved under `~/.config/dci-pipeline/dci_credentials.yml`.
 
     This file allows to provide some variables to the DCI OpenShift App Agent. The table below shows the available variables and their default values.
 
 Name                               | Default                                              | Description
 ---------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------
-dci\_topic                         |                                                      | Name of the topic. `OCP-4.5` and up
-dci\_tags                          | ["debug"]                                            | List of tags to set on the job
-dci\_name                          |                                                      | Name of the job
-dci\_configuration                 |                                                      | String representing the configuration of the job
 dci\_config\_dir                   |                                                      | Path of the desired hooks directory
 dci\_comment                       |                                                      | Comment to associate with the job
 dci\_url                           |                                                      | URL to associate with the job
-dci\_components\_by\_query         | []                                                   | Component by query. ['name:4.5.9']
-dci\_component                     | []                                                   | Component by UUID. ['acaf3f29-22bb-4b9f-b5ac-268958a9a67f']
-dci\_previous\_job\_id             | ""                                                   | Previous job UUID
 dci\_disconnected                  | false                                                | Set it to true if it is a disconnected environment. This variable is not defined in the default values, but all the checks that make use of this variable has a default value (i.e. false) defined.
 provisionhost\_registry            | ""                                                   | Registry to fetch containers that may be used. Mandatory for disconnected environments.
 provision\_cache\_store            | "/opt/cache"                                         | Directory aimed to share artifacts between dci-openshift-agent and dci-openshift-app-agent.
@@ -110,92 +91,35 @@ tests\_to\_verify                  | undefined                                  
 |See [CNF-cert role](roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
 |See [chart-verifier role](roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
 
-A minimal configuration is required for the DCI OpenShift App Agent to run, before launching the agent, make sure you have the following:
 
-1. In /etc/dci-openshift-app-agent/settings.yml these variables are required, see their definitions in the table above. You can also define this variables in a different form, see section [Using customized tags](#using-customized-tags) below where a fake `job_info` is created.
+## Pipeline job definition
 
-        dci_topic:
-        dci_components_by_query:
-        dci_comment:
+Here is an example of a pipeline job definition for `dci-openshift-app-agent`:
 
-1. The DCI OpenShift App Agent by default runs a series of Ansible playbooks called hooks in phases (see section [Hooks](#hooks)). The default files only contain the string `---` and no actions are performed. The install.yml is missing on purpose, and if you run the agent at this point, you will receive an error. In that case you can choose between one of the following options to proceed:
-
-    - Create install.yml file with the string `---` and no actions will be performed at this phase.
-    - Create install.yml with your own tasks. (You might also consider provide tasks for all the phases: pre-run, tests, post-run, teardown)
-    - Include dci_config_dir variable in `settings.yml` with the path where the hooks you want to execute are located.
-
-    > See section [Examples](#examples) for basic configurations of settings.yml to start using the agent.
-
-## Launching the agent
-
-The agent can be executed manually or through systemd, once the agent is configured, you can start it either way.
-
-### Running it manually
-
-If you need to run the `dci-openshift-app-agent` manually in foreground, you can use this command line:
-
-```ShellSession
-# su - dci-openshift-app-agent
-$ dci-openshift-app-agent-ctl -s
+```YAML
+- name: ocp-workload
+  stage: workload
+  prev_stages: [ocp-upgrade, ocp]
+  ansible_playbook: /usr/share/dci-openshift-app-agent/dci-openshift-app-agent.yml
+  ansible_cfg: ~/my-lab-config/pipelines/ansible.cfg
+  ansible_inventory: ~/my-lab-config/inventories/@QUEUE/@RESOURCE-workload.yml
+  dci_credentials: ~/.config/dci-pipeline/dci_credentials.yml
+  ansible_extravars:
+    dci_cache_dir: ~/dci-cache-dir
+    dci_config_dir: ~/my-lab-config/ocp-workload
+    dci_gits_to_components:
+      - ~/my-lab-config
+    dci_local_log_dir: ~/upload-errors
+    dci_tags: []
+  use_previous_topic: true
+  inputs:
+    kubeconfig: kubeconfig_path
 ```
 
-### Running it as a service
-
-If you prefer to launch a job with systemd, start the dci-openshift-app-agent service
-
-```ShellSession
-# systemctl start dci-openshift-app-agent
-```
-
-> NOTE: The service is a systemd `Type=oneshot`. This means that if you need to run a DCI job periodically, you have to configure a `systemd timer` or a `crontab`.
-
-### Using customized tags
-
-To replay any steps, the use of Ansible tags (--tags) is an option. Please refer to [Workflow](#workflow) section to understand the steps that compose the `dci-openshift-app-agent`.
-
-```ShellSession
-# su - dci-openshift-app-agent
-$ dci-openshift-app-agent-ctl -s -- --tags kubeconfig,job,pre-run,running,post-run
-```
-
-or to avoid one or multiple steps, use `--skip-tags`:
-
-```ShellSession
-# su - dci-openshift-app-agent
-$ dci-openshift-app-agent-ctl -s -- --skip-tags testing
-```
-
-Possible tags are:
-
-- `job`
-- `dci`
-- `kubeconfig`
-- `pre-run`
-- `redhat-pre-run`
-- `partner-pre-run`
-- `install`
-- `running`
-- `testing`
-- `redhat-testing`
-- `partner-testing`
-- `post-run`
-- `success`
-
-As the `KUBECONFIG` is read from the `kubeconfig` tasks, this tag should always be included.
-
-The `dci` tag can be used to skip all DCI calls else the `job` tag is mandatory to initialize
-all the DCI specifics. If you cannot do the DCI calls, you just need to call the agent like this:
-
-```ShellSession
-# su - dci-openshift-app-agent
-$ dci-openshift-app-agent-ctl -s -- --skip-tags dci
-```
 
 ## Enabling the Test Suites in DCI App Agent
 
 The DCI App Agent has support to execute multiple test suites to validate containers, virtual functions, Helm charts, and operators. The suites are in the form of Ansible roles executed during the Red Hat testing phases. The suites help the partners on getting prepared for the Red Hat Certifications or actually run the certification process on the the workloads deployed via DCI.
-
-The variables that control the tests execution can be added as part or the `settting.yml` file (see above).
 
 ### Operator Certification tests
 
@@ -307,41 +231,21 @@ It's included either when there's a failure, error or at the end of all the step
 ## Examples
 
 Some examples of hooks are provided in the $HOME directory of the `dci-openshift-app-agent` user (/var/lib/dci-openshift-app-agent/samples/). You can use those to initialize the agent tests.
-To use these samples, you need to include the variable `dci_config_dir` with the path of the sample to use in the settings.yml.
+To use these samples, you need to include the variable `dci_config_dir` with the path of the sample to use in you pipeline job definition.
 
 > NOTE: Please check the README.md for more information of how to use the examples.
 
-1. To create a namespace and webserver pod, validate is running, and delete it, the settings.yml file will look like this:
+1. To create a namespace and a webserver pod, to validate it is running, and to delete it, the pipeline job definition will look like this:
 
-    File: settings.yml
+    workload-pipeline.yml
 
-        dci_topic: OCP-4.8
-        dci_components_by_query: ['4.8.13']
-        dci_comment: "Test webserver"
-        dci_openshift_app_ns: testns
-        dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
-
-## Overloading settings and hooks directories
-
-To allow storing the settings and the hooks in a different directory,
-you can set `/etc/dci-openshift-agent/config` like this:
-
-```console
-CONFIG_DIR=/var/lib/dci-openshift-app-agent/config
-```
-
-This will allow you to use a version control system for all your settings.
-
-If you want to also store the hooks in the same directory, you have to specify `dci_config_dir` in your `settings.yml`. Example:
-
-```YAML
----
-dci_config_dir: [/var/lib/dci-openshift-app-agent/config]
-```
+        ansible_extravars:
+          dci_openshift_app_ns: testns
+          dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
 
 ## Storing secrets
 
-You can store secrets in an encrypted manner in your `settings.yml` and YAML inventories by using `dci-vault` to generate your encrypted secrets. Details in the [python-dciclient documentation](/python-dciclient/).
+You can store secrets in an encrypted manner in your pipeline definition files and YAML inventories by using `dci-vault` to generate your encrypted secrets. Details in the [python-dciclient documentation](../python-dciclient/).
 
 ## Generated files
 
@@ -356,43 +260,6 @@ file is listing the removed API in the upcoming OCP releases.
 The agent generates the `diff-jobs.txt` file in its post-run stage to
 compare the previous job of the same type regarding the components
 used.
-
-## Development mode
-
-You can launch the agent from a local copy by passing the `-d` command line option:
-
-```ShellSession
-dci-openshift-app-agent-ctl -s -d
-```
-
-`dcirc.sh` is read from the current directory instead of `/etc/dci-openshift-app-agent/dcirc.sh`.
-
-You can override the location of `dci-ansible` using the `DCI_ANSIBLE_DIR` environment variable.
-
-You can add extra paths for Ansible roles using the
-`DCI_ANSIBLE_ROLES` environment variable separating paths by `:`.
-
-## Override the default settings file
-
-You can use `-c` command line option to override the default settings file used by the agent.
-
-```ShellSession
-$ dci-openshift-app-agent-ctl -s -c <path/to/settings.yml>
-```
-
-Another way of overriding the settings used by the agent is the prefix mechanism, which can
-be activated with `-p` command line option. In this way, both settings and hosts files will
-be taken from the configuration directory you have configured (if using `CONFIG_DIR` variable,
-both exporting it or including it in `/etc/dci-openshift-app-agent/config` file; else the
-configuration directory will be `/etc/dci-openshift-app-agent` by default). Also, another
-requirement is that settings and hosts file have to be prefixed with `<prefix>-`.
-
-```ShellSession
-$ dci-openshift-app-agent-ctl -s -p <prefix>
-```
-
-In case of using `-c` and `-p` together, `-p` takes precedence (in case the requirements
-commented above are met, else the settings file provided with `-c` would be used).
 
 ## Known issues
 
@@ -452,7 +319,7 @@ You might encounter an error when running the dci-openshift-app-agent for first 
 
 Note that have to add the SSH public key of the user that runs the "dci-openshift-app-agent-ctl" command to SSH `provisioner_name` with `provisioner_user`, in case you want to retrieve logs from the OCP deployment, such as must-gather.
 
-Moreover, you need to define these two variables, `provisioner_name` and `provisioner_user`, in your settings file.
+Moreover, you need to define these two variables, `provisioner_name` and `provisioner_user`, in your pipeline job definition file.
 
 ### Problems related to UIDs while running containers with podman in localhost
 
