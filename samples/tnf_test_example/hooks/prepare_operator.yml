@@ -28,16 +28,16 @@
     fbc_opm_args: "--skip-tls-verify=false"
 
 - name: Push catalog image into local registry
-  shell: |
-    podman push --authfile {{ pullsecret_tmp_file }} \
+  shell: >
+    podman push --authfile {{ pullsecret_tmp_file }}
     {{ catalog_path }}:{{ catalog_version }}
 
 - name: Manage imageContentSourcePolicy update
   block:
     - name: "Get catalog SHA256"
       shell:
-        cmd: |
-          skopeo inspect --authfile {{ pullsecret_tmp_file }} \
+        cmd: >
+          skopeo inspect --authfile {{ pullsecret_tmp_file }}
           docker://{{ catalog_path }}:{{ catalog_version }} | jq -r '.Digest'
       register: catalog_sha
       retries: 5
@@ -46,10 +46,11 @@
         - catalog_sha is not failed
 
     - name: Mirror images and save manifests into a temporary directory
-      shell: |
-        {{ oc_tool_path }} adm catalog mirror -a {{ pullsecret_tmp_file }} \
-        {{ catalog_path }}@{{ catalog_sha.stdout }} \
-        {{ local_registry }} \
+      shell: >
+        {{ oc_tool_path }} adm catalog mirror -a {{ pullsecret_tmp_file }}
+        --max-components=3
+        {{ catalog_path }}@{{ catalog_sha.stdout }}
+        {{ local_registry }}
         --to-manifests={{ tnf_test_example_prerun_tmp_dir.path }}/tmp_oc
       register: catalog_mirror
       retries: 2
