@@ -1,14 +1,14 @@
 ---
-- name: Check if there are RuntimeClass resources installed
-  community.kubernetes.k8s_info:
-    api_version: node.k8s.io/v1
-    kind: RuntimeClass
-  register: runtime_class_check
-
-- name: Take the first RuntimeClass if exists and extract its name
-  set_fact:
-    runtime_class_name: "{{ runtime_class_check.resources[0].metadata.name }}"
-  when: runtime_class_check.resources|length
+# to be used with production-cnf pods
+- name: Create custom RuntimeClass
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: node.k8s.io/v1
+      kind: RuntimeClass
+      metadata:
+        name: production-runtime-class
+      handler: runc
 
 # We are going to use local volumes without using local storage operator just for simplicity
 - name: Create local-storage StorageClass

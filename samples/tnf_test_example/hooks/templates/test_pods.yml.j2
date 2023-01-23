@@ -44,8 +44,8 @@ spec:
       serviceAccountName: test
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
-{% if runtime_class_name is defined and runtime_class_name|length and app_ns == 'production-cnf' %}
-      runtimeClassName: {{ runtime_class_name }}
+{% if app_ns == 'production-cnf' %}
+      runtimeClassName: production-runtime-class
 {% endif %}
       containers:
         - image: {{ tnf_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
