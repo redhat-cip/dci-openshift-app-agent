@@ -4,6 +4,11 @@
 - name: Declare tnf variables
   include_tasks: declare_tnf_variables.yml
 
+# Make sure that we don't have any remaining resources before starting tests, just
+# in case they were not deleted properly in previous executions in the same cluster.
+- name: Run cleaning tasks
+  include_tasks: cleaning_tasks.yml
+
 - name: "Install required rpm packages"
   package:
     name: "{{ item }}"
