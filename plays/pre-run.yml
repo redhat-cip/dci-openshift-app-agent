@@ -43,6 +43,6 @@
     authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool
-    - local_registry | length
+    - dci_local_registry | length
 
 ...

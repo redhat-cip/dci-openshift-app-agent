@@ -1,7 +1,7 @@
 ---
 - name: Define catalog path and version
   set_fact:
-    catalog_path: "{{ local_registry }}/telcoci/testnetworkfunction/{{ tnf_operator_to_install.operator_name }}-disconnected-catalog"
+    catalog_path: "{{ dci_local_registry }}/telcoci/testnetworkfunction/{{ tnf_operator_to_install.operator_name }}-disconnected-catalog"
     catalog_version: "{{ tnf_operator_to_install.operator_version }}_{{ lookup('password', '/dev/null length=16 chars=ascii_lowercase,digits') }}"
 
 - name: Create temporary directory for ICSP
@@ -50,7 +50,7 @@
         {{ oc_tool_path }} adm catalog mirror -a {{ pullsecret_tmp_file }}
         --max-components=3
         {{ catalog_path }}@{{ catalog_sha.stdout }}
-        {{ local_registry }}
+        {{ dci_local_registry }}
         --to-manifests={{ tnf_test_example_prerun_tmp_dir.path }}/tmp_oc
       register: catalog_mirror
       retries: 2

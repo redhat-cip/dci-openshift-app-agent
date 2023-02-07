@@ -20,7 +20,7 @@ do_chart_verifier: false
 # if you deal with private registries
 partner_creds: ""
 sync_cnf_cert_and_preflight: false
-local_registry: |-
+dci_local_registry: |-
   {{ local_registry_host | default('') }}
   {%- if local_registry_port is defined %}
   :{{ local_registry_port }}
