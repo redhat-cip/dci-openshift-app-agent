@@ -35,7 +35,7 @@
   vars:
     image_name: "{{ tnf_helm_chart_to_install.image_repository | regex_replace('^[^/]*/', '') }}"
   set_fact:
-    image_repository: "{{ ( dci_disconnected|default(false)|bool and local_registry|length ) | ternary(local_registry + '/' + image_name, tnf_helm_chart_to_install.image_repository) }}"
+    image_repository: "{{ ( dci_disconnected|default(false)|bool and dci_local_registry|length ) | ternary(dci_local_registry + '/' + image_name, tnf_helm_chart_to_install.image_repository) }}"
 
 - name: Deploy Helm chart
   community.kubernetes.helm:
