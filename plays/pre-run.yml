@@ -28,10 +28,14 @@
   set_fact:
     dci_all_components_are_ga: "{{ dci_ga_components_for_certification | difference(ga_components) | length == 0 }}"
 
-- name: Get API request counts before running
-  shell: "{{ oc_tool_path }} get -o json apirequestcounts > {{ job_logs.path }}/apirequestcounts.before.json"
-  when:
-    - ocp_version is version("4.9", ">=")
+- name: Get deprecated API before running workload
+  shell: >
+    set -o pipefail &&
+    {{ oc_tool_path }} get -o json apirequestcounts
+    | jq -r '.items[] | select(.status.removedInRelease!=null)'
+    | jq -s '.'
+    > {{ job_logs.path }}/apirequestcounts.before.json
+  when: ocp_version is version("4.9", ">=")
 
 ### Mirror must-gather images
 

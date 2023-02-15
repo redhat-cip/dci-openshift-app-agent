@@ -13,15 +13,19 @@
     tnf_stage: "post-run"
   when: do_cnf_cert|bool
 
-- name: Get API request counts after running
-  shell: "{{ oc_tool_path }} get -o json apirequestcounts > {{ job_logs.path }}/apirequestcounts.after.json"
-  when:
-    - ocp_version is version("4.9", ">=")
+- name: Get deprecated API after running workload
+  shell: >
+    set -o pipefail &&
+    {{ oc_tool_path }} get -o json apirequestcounts
+    | jq -r '.items[] | select(.status.removedInRelease!=null)'
+    | jq -s '.'
+    > {{ job_logs.path }}/apirequestcounts.after.json
+  when: ocp_version is version("4.9", ">=")
 
 - name: Compute removed API
-  script: ./scripts/compute_removed_apis "{{ job_logs.path }}/apirequestcounts.before.json" "{{ job_logs.path }}/apirequestcounts.after.json" "{{ job_logs.path }}/removed_api.txt"
-  when:
-    - ocp_version is version("4.9", ">=")
+  include_role:
+    name: deprecated-api
+  when: ocp_version is version("4.9", ">=")
 
 - name: Get the differences from the previous DCI job
   shell: "dci-diff-jobs --job_id_1 {{ job_id }} > {{ job_logs.path }}/diff-jobs.txt"
