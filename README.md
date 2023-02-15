@@ -175,7 +175,7 @@ The hooks that can be defined are the following:
 
 ### Pre-run
 
-This hook is used for preparation steps required in the `jumphost` or anywhere else _outside the cluster_. For example, it could be used to install some packages required in the `jumphost` or to report the state of the cluster before starting.
+This hook is used for preparation steps required in the `jumphost` or inside the cluster. For example, it could be used to install some packages required in the `jumphost` or to prepare workload pre-requisites.
 
 This hook is not required and can be omitted.
 
