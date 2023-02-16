@@ -249,11 +249,9 @@ You can store secrets in an encrypted manner in your pipeline definition files a
 
 ## Generated files
 
-### removed_api.txt
+### removed_api.csv
 
-If the agent is ran on an OCP cluster superior or equal to 4.9, it is
-creating a `removed_api.txt` file that is attached to the DCI job. This
-file is listing the removed API in the upcoming OCP releases.
+If the agent is run on an OCP cluster equal to or superior to version 4.9, it creates a `removed_api.csv` file that is attached to the DCI job. This file lists the APIs that will be removed in the upcoming OCP versions.
 
 ### diff-jobs.txt
 
