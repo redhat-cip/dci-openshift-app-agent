@@ -7,11 +7,11 @@
 - name: "Collect OCP logs"
   include_tasks: dump_ocp_logs.yml
 
-- name: "Find deployment logs (text)"
+- name: "Find files to be uploaded to DCI (log,txt,html,yaml,yml,json,pcap,trace,csv)"
   find:
     paths: "{{ job_logs.path }}"
     recurse: yes
-    patterns: "*.log,*.txt,*.html,*.yaml,*.yml,*.json,*.pcap,*.trace"
+    patterns: "*.log,*.txt,*.html,*.yaml,*.yml,*.json,*.pcap,*.trace,*.csv"
   register: logs_matched
   tags: [dci]
 
