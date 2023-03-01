@@ -15,10 +15,8 @@
 
 # We need to do this at this point because we will not have
 # claim.json file from CNF Cert Suite before this point.
-# This can only be done for CNF Cert Suite <= v4.1.5
-# since HEAD branch now tests preflight on tnf container,
-# so that this feature will be in the next CNF Cert Suite
-# release.
+# This can only be done for CNF Cert Suite <= v4.1.5.
+# Since v4.1.6, tnf container also runs preflight.
 - name: Retrieve Preflight operators from CNF Cert Suite claim.json output
   include_role:
     name: sync-cnf-cert-and-preflight
