@@ -1,0 +1,8 @@
+---
+
+- name: Create components for already deployed Kubernetes resources
+  include_role:
+    name: resources-to-components
+  when: rtc_resources_to_components | length
+
+...
