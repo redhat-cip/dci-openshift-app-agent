@@ -196,6 +196,9 @@
         - name: "Execute install hook"
           include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
 
+        - name: "Execute post-install play"
+          include_tasks: 'plays/post-install.yml'
+
       rescue: &failure_with_upload_logs
         - name: "Run common logging process"
           include_tasks: plays/common_logging.yml

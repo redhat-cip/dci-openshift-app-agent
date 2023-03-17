@@ -90,7 +90,7 @@ tests\_to\_verify                  | undefined                                  
 |See [Operator Certification (preflight)](roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
 |See [CNF-cert role](roles/cnf-cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
 |See [chart-verifier role](roles/chart-verifier/README.md) for details to enable the chart-verifier tests                          ||
-
+|See [resources-to-components role](roles/resources-to-components/README.md) for details to enable the creation of DCI components based on Kubernetes resources deployed in the cluster, making use of `rtc_resources_to_components` variable. ||
 
 ## Pipeline job definition
 
@@ -193,6 +193,8 @@ Tags:
 
 - `install`
 - `running`
+
+> There is one special stage defined between the install and tests stages, called post-install, which is defined to apply configurations that must be done between both stages. This is not an official hook that can be used by users, but it is an internal play for the agent.
 
 ### Tests
 

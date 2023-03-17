@@ -13,6 +13,7 @@ dci_tags: ["debug"]
 dci_gits_to_components: ["{{ dci_config_dir }}"]
 dev_gits_to_components: []
 dci_rpms_to_components: []
+rtc_resources_to_components: []
 dci_openshift_app_ns: "myns"
 do_cnf_cert: false
 do_chart_verifier: false
