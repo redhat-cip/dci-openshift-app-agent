@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.5.4
+Version:       0.5.5
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -11,11 +11,11 @@ BuildRequires: systemd
 BuildRequires: systemd-units
 Requires: sudo
 Requires: dci-openshift-agent >= 0.5.3
-Requires: dci-ansible >= 0.3.0
+Requires: dci-ansible >= 0.3.1
 %if 0%{?rhel} && 0%{?rhel} < 8
-Requires: python2-dciclient >= 2.6.0
+Requires: python2-dciclient >= 3.1.0
 %else
-Requires: python3-dciclient >= 2.6.0
+Requires: python3-dciclient >= 3.1.0
 %endif
 Requires: ansible-collection-community-kubernetes
 Requires(pre): shadow-utils
@@ -81,6 +81,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Fri Apr 28 2023 Frederic Lepied <flepied@redhat.com> 0.5.5-1
+- Requires dci-ansible >= 3.1.0 for the new component fields
+
 * Mon Dec  5 2022 Frederic Lepied <flepied@redhat.com> 0.5.4-1
 - requires doa >= 0.5.3 for new logic regarding rpm and git components
 
