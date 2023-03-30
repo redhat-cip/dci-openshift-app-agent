@@ -56,7 +56,6 @@
         labels:
           test-network-function.com/operator: target
         annotations:
-          test-network-function.com/operator_tests: "['OPERATOR_STATUS']"
           test-network-function.com/subscription_name: "{{ subscription.subscriptionName }}"
 
 ...
