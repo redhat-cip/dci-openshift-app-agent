@@ -3,28 +3,15 @@
 - name: "Chart verifier tests"
   include_role:
     name: chart-verifier
-  vars:
-    tnf_stage: "tests"
   when:
     - do_chart_verifier|bool
 
 - name: "cnf-cert tests"
   include_role:
     name: cnf-cert
+  vars:
+    tnf_stage: "tests"
   when: do_cnf_cert|bool
-
-# We need to do this at this point because we will not have
-# claim.json file from CNF Cert Suite before this point.
-# This can only be done for CNF Cert Suite <= v4.1.5.
-# Since v4.1.6, tnf container also runs preflight.
-- name: Retrieve Preflight operators from CNF Cert Suite claim.json output
-  include_role:
-    name: sync-cnf-cert-and-preflight
-  when:
-    - preflight_operators_to_certify is defined
-    - sync_cnf_cert_and_preflight | bool
-    - test_network_function_version is version("v4.1.5", "<=")
-    - test_network_function_version != "HEAD"
 
 - name: Preflight container-only tests
   include_role:
