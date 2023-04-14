@@ -255,7 +255,6 @@ A DCI job produces a set of relevant configuration files, logs, reports, and tes
 
 | File                                           | Section | Description                                                                               |
 | ---------------------------------------------- | ------- | ----------------------------------------------------------------------------------------- |
-| install-config.yaml.txt                        | Files   | Configuration file used for the cluster deployment                                        |
 | all-nodes.yaml                                 | Files   | The output `oc get get nodes` command                                                     |
 | \<pod_name\>.log                               | Files   | The log entries for a given pod                                                           |
 | \<namespace\>_events.log                       | Files   | The OCP events collected for an specific namespace                                        |
@@ -269,7 +268,6 @@ A DCI job produces a set of relevant configuration files, logs, reports, and tes
 | events.txt                                     | Files   | Output of the `oc get events -A` command                                                   |
 | nodes.txt                                      | Files   | Output of the `oc get nodes -o yaml` command                                                      |
 | must_gather.tar.gz                             | Files   | Debugging information about your cluster, it can be used for support cases or for troubleshooting using the [O Must Gather tool](https://github.com/kxr/o-must-gather)    |
-| openshift_install.log                          | Files   | Openshift installation log file                                                           |
 | pods.txt                                       | Files   | Output of the `oc get pods -A` command                                                    |
 | tnf_config.yml                                 | Files   | The config file passed to tnf test suite (if enabled)                                     |
 | dci-tnf-execution.yml                          | Files   | The output of tnf execution, for troubleshooting purposes                                 |

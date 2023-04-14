@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #
-# Copyright (C) 2021-2022 Red Hat, Inc.
+# Copyright (C) 2021-2023 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,84 +14,61 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-log=$1
-dir="$2"
-
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <provisioner login> <dest dir>" 1>&2
-    exit 1
-fi
-
-rem="timeout -v 20m ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $log"
+# Description: A shell script that collects logs from an OCP cluster
+# It requires access to the a valid KUBECONFIG env variable and a log directory
 
 set -x
 
-domain=$($rem hostname -d)
+oc_path=$(which oc)
 
-# Copy openshift install log and rendered install config
-scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $log:clusterconfigs/.openshift_install.log $dir/openshift_install.log
-scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $log:clusterconfigs/install-config.yaml.bkup $dir/install-config-yaml.txt
+function usage(){
+  printf "Usage: %s <log_dir>\n" "$(basename "$0")"
+  printf "A log directory is required.\n"
+}
 
-remdir=$($rem mktemp -d)
-
-# Get outputs
-if [ -n "$remdir" ]; then
-
-    # Get the output of various oc commands
-    $rem oc version > $dir/version.txt
-    $rem oc get clusterversion/version > $dir/clusterversion.txt
-    $rem oc get clusteroperator > $dir/clusteroperator.txt
-    $rem oc get network cluster -o yaml > $dir/clusternetwork.yaml
-    $rem oc get nodes -o wide > $dir/nodes.txt
-    $rem oc get nodes -o yaml > $dir/all-nodes.yaml
-    $rem oc get events --all-namespaces --sort-by='.metadata.creationTimestamp' > $dir/events.txt
-    $rem oc get pods --all-namespaces -o wide > $dir/pods.txt
-
-    # must-gather
-    # When a policy is defined, use the same mirror (local registry)
-    registry=$($rem oc get imageContentSourcePolicy image-policy-0 -o json 2>/dev/null |
-                        jq -r '.spec.repositoryDigestMirrors[].mirrors[]' |
-                        grep -Pom1 '(\w+[.:])+\d+')
-    for image in ${DCI_MUST_GATHER_IMAGES:-"registry.redhat.io/openshift4/ose-must-gather"}
-    do
-        if [[ -n "${registry}" ]]
-        then
-            image="${registry}/${image#*/}"
-        fi
-
-        must_gather_opts="${must_gather_opts} --image=${image}"
-    done
-
-    must_gather_dir="${remdir}/must_gather"
-    $rem mkdir "${must_gather_dir}"
-    $rem oc adm must-gather \
-         --dest-dir=${must_gather_dir} \
-         ${must_gather_opts}
-
-    # Compress must-gather data, using a friendly name
-    $rem tar \
-        --use-compress-program='"pigz --best --recursive"' \
-        --directory "${remdir}" \
-        --create \
-        --file ${must_gather_dir}.tar.gz must_gather/
-    $rem rm -rf "${must_gather_dir}"
-
-    # Get remote logs
-    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $log:$remdir/* $dir/
-    $rem rm -rf $remdir
-
-    # Post processing
-    cd $dir
-    for f in $(ls *.tar.gz 2> /dev/null); do
-        if grep -q journal <<<$(tar tzf $f); then
-            hostname=$(tar xOf $f journal|grep 'set hostname'|sed -e "s/.*set hostname to '//" -e "s/'.*//")
-            if [ -n "$hostname" ]; then
-                mv $f $hostname-files.tar.gz
-            fi
-        fi
-    done
-else
-    echo "Unable to create a temporary directory on $rem" 1>&2
+if [[ $# != 1 ]]; then
+  printf "Error: missing log directory argument.\n" >&2
+  usage
+  exit 1
 fi
 
-# get-logs ends here
+log_dir="${1}"
+
+# Get the output of various oc commands
+${oc_path} version > "${log_dir}/version.txt"
+${oc_path} get clusterversion/version > "${log_dir}/clusterversion.txt"
+${oc_path} get clusteroperator > "${log_dir}/clusteroperator.txt"
+${oc_path} get network cluster -o yaml > "${log_dir}/clusternetwork.yaml"
+${oc_path} get nodes -o wide > "${log_dir}/nodes.txt"
+${oc_path} get nodes -o yaml > "${log_dir}/all-nodes.yaml"
+${oc_path} get events --all-namespaces --sort-by='.metadata.creationTimestamp' > "${log_dir}/events.txt"
+${oc_path} get pods --all-namespaces -o wide > "${log_dir}/pods.txt"
+
+# must-gather - when a policy is defined, use the same mirror (local registry)
+registry=$(${oc_path} get imageContentSourcePolicy image-policy-0 -o json 2>/dev/null |
+         jq -r '.spec.repositoryDigestMirrors[].mirrors[]' |
+         cut -d/ -f1)
+for image in ${DCI_MUST_GATHER_IMAGES:-"registry.redhat.io/openshift4/ose-must-gather"}
+do
+  if [ -n "${registry}" ];then
+    image="${registry}/${image#*/}"
+  fi
+  MUST_GATHER_OPTS="${MUST_GATHER_OPTS} --image=${image}"
+done
+
+must_gather_dir="${log_dir}/must_gather"
+mkdir -p "${must_gather_dir}"
+
+${oc_path} adm must-gather \
+  --dest-dir="${must_gather_dir}" \
+  ${MUST_GATHER_OPTS} \
+  >/dev/null
+
+# Compress must-gather
+tar \
+  --use-compress-program='pigz --best --recursive' \
+  --directory "${log_dir}" \
+  --create \
+  --file "${must_gather_dir}.tar.gz" must_gather/
+
+rm -Rf "${must_gather_dir}"

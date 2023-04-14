@@ -1,5 +1,4 @@
 ---
-
 - block:
   # If cnf-cert role is used with multiple namespaces, there may be more than one namespace
   # from which logs must be retrieved
@@ -33,12 +32,9 @@
 
   - name: Get logs from OCP deployment
     environment:
-      - DCI_MUST_GATHER_IMAGES: '{{ dci_must_gather_images | default(["registry.redhat.io/openshift4/ose-must-gather"]) | join(" ") }}'
-    script: ./scripts/get-logs "{{ provisioner_user }}@{{ provisioner_name }}" "{{ job_logs.path }}"
-    delegate_to: localhost
-    when:
-      - provisioner_user | default('') | length
-      - provisioner_name | default('') | length
-  ignore_errors: true
-
+      DCI_MUST_GATHER_IMAGES: '{{ dci_must_gather_images | default(["registry.redhat.io/openshift4/ose-must-gather"]) | join(" ") }}'
+      MUST_GATHER_OPTS: "/usr/bin/gather since-time={{ job_info.job.created_at }}"
+      PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin:/usr/local/bin/"
+    script: plays/scripts/get-logs "{{ job_logs.path }}"
+    ignore_errors: true
 ...
