@@ -335,12 +335,6 @@ You might encounter an error when running the dci-openshift-app-agent for first 
 - Incorrect spelling of the Topic. Login to the [DCI web dashboard](https://www.distributed-ci.io) and go to the `Topics` section in the left menu. There you could find the correct names and Topics available to use.
 - If spelling is correct, then this might be a permissions issue. Ask the partner team administrator to verify the permissions on the group your account belongs.
 
-### Remote access to provisioner to retrieve logs
-
-Note that have to add the SSH public key of the user that runs the "dci-openshift-app-agent-ctl" command to SSH `provisioner_name` with `provisioner_user`, in case you want to retrieve logs from the OCP deployment, such as must-gather.
-
-Moreover, you need to define these two variables, `provisioner_name` and `provisioner_user`, in your pipeline job definition file.
-
 ### Problems related to UIDs while running containers with podman in localhost
 
 Conditions in which the issue appeared:
