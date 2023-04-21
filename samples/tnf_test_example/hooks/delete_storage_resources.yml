@@ -1,0 +1,33 @@
+- name: Tasks when using external StorageClass
+  block:
+    - name: "Delete PVCs"
+      community.kubernetes.k8s:
+        state: absent
+        api: v1
+        kind: PersistentVolumeClaim
+        name: "volume-claim-{{ volume_name_suffix }}"
+        namespace: "{{ app_ns }}"
+      loop:
+        - "{{ app_ns }}-test-0"
+        - "{{ app_ns }}-test-1"
+      loop_control:
+        loop_var: volume_name_suffix
+  when: storage_class is defined
+
+- name: Tasks when using local volumes
+  block:
+    - name: Delete local volumes
+      community.kubernetes.k8s:
+        api_version: v1
+        name: "volume-{{ volume_name_suffix }}"
+        kind: PersistentVolume
+        state: absent
+        wait: yes
+        wait_sleep: 5
+        wait_timeout: 120
+      loop:
+        - "{{ app_ns }}-test-0"
+        - "{{ app_ns }}-test-1"
+      loop_control:
+        loop_var: volume_name_suffix
+  when: storage_class is not defined

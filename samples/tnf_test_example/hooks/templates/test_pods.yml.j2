@@ -151,6 +151,6 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 10Mi
-      storageClassName: local-storage
+          storage: 100Mi
+      storageClassName: {{ storage_class is defined | ternary(storage_class, 'local-storage') }}
 {% endif %}

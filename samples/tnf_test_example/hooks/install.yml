@@ -10,7 +10,7 @@
         name: production-runtime-class
       handler: runc
 
-# We are going to use local volumes without using local storage operator just for simplicity
+# Create local-storage StorageClass is no StorageClass is present in the cluster
 - name: Create local-storage StorageClass
   community.kubernetes.k8s:
     state: present
@@ -21,6 +21,7 @@
         name: local-storage
       provisioner: kubernetes.io/no-provisioner
       volumeBindingMode: WaitForFirstConsumer
+  when: storage_class is not defined
 
 # Check if Aspenmesh is currently deployed to check if we can use service-mesh capabilities in
 # the pods under test.
