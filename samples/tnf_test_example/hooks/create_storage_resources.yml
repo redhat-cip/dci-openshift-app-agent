@@ -1,0 +1,87 @@
+- name: Tasks when using external StorageClass
+  block:
+    - name: "Create PVC"
+      community.kubernetes.k8s:
+        definition:
+          kind: PersistentVolumeClaim
+          apiVersion: v1
+          metadata:
+            name: "volume-claim-{{ volume_name_suffix }}"
+            namespace: "{{ app_ns }}"
+            annotations:
+              volume.beta.kubernetes.io/storage-class: "{{ storage_class }}"
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 100Mi
+            persistentVolumeReclaimPolicy: Delete
+            storageClassName: "{{ storage_class }}"
+            nodeAffinity:
+              required:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node-role.kubernetes.io/worker
+                    operator: In
+                    values:
+                    - ""
+
+    - name: "Wait for PVC to be Bound"
+      community.kubernetes.k8s_info:
+        api_version: v1
+        kind: PersistentVolumeClaim
+        namespace: "{{ app_ns }}"
+        name: "volume-claim-{{ volume_name_suffix }}"
+      register: pod_pvc
+      until:
+        - pod_pvc.resources is defined
+        - pod_pvc.resources[0].status.phase == "Bound"
+      retries: 6
+      delay: 10
+  when: storage_class is defined
+
+- name: Tasks when using local volumes
+  block:
+    - name: Create local volume
+      community.kubernetes.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolume
+          metadata:
+            name: "volume-{{ volume_name_suffix }}"
+          spec:
+            capacity:
+              storage: 100Mi
+            volumeMode: Filesystem
+            accessModes:
+            - ReadWriteOnce
+            persistentVolumeReclaimPolicy: Delete
+            storageClassName: local-storage
+            claimRef:
+              namespace: "{{ app_ns }}"
+              name: "volume-claim-{{ volume_name_suffix }}"
+            local:
+              path: /tmp
+            nodeAffinity:
+              required:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node-role.kubernetes.io/worker
+                    operator: In
+                    values:
+                    - ""
+
+    - name: Wait until volume is available
+      community.kubernetes.k8s_info:
+        api_version: v1
+        kind: PersistentVolume
+        name: "volume-{{ volume_name_suffix }}"
+      register: pv_check
+      until:
+        - pv_check.resources is defined
+        - pv_check.resources[0].status.phase == "Available"
+      retries: 6
+      delay: 10
+  when: storage_class is not defined

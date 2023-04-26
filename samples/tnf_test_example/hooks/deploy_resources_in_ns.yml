@@ -56,8 +56,8 @@
     state: present
     definition: "{{ lookup('template', 'templates/resource_quota.yml.j2') | from_yaml }}"
 
-- name: Create local volumes
-  include_tasks: create_local_volumes.yml
+- name: Create storage-related resources
+  include_tasks: create_storage_resources.yml
   loop:
     - "{{ app_ns }}-test-0"
     - "{{ app_ns }}-test-1"

@@ -29,7 +29,7 @@
     wait_sleep: 5
     wait_timeout: 120
 
-- name: Delete local-storage StorageClass
+- name: Delete local-storage StorageClass if present
   community.kubernetes.k8s:
     api_version: storage.k8s.io/v1
     name: local-storage

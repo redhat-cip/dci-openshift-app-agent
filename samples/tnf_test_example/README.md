@@ -31,7 +31,7 @@ In particular, two namespaces are created, called `test-cnf` and `production-cnf
 Other resources related to the pods under test are also deployed:
 
 - Configuration for istio injection, in order to install istio-proxy container on each pod, if istio/Aspenmesh is installed in the cluster. This is only done if `tnf_enable_service_mesh` control flag is set to `true` (`false` by default).
-- Local StorageClass and PersistentVolumes, attached to the pods under test in `production-cnf` namespace.
+- (If no default StorageClass is present in the cluster) Local StorageClass and PersistentVolumes, attached to the pods under test in `production-cnf` namespace.
 - A custom SCC applied to all the pods. This SCC follows the Verizon recommendations to use best practices for deploying pods securely.
 - Resource quotas, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/resource-quota.yaml).
 - Network policies, extracted from these sources: [(1)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/ingress-deny-all-np.yaml), [(2)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/egress-deny-all-np.yaml) and [(3)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/pod-to-pod-np.yaml).

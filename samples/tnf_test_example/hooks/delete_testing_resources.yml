@@ -10,8 +10,8 @@
     wait_sleep: 5
     wait_timeout: 120
 
-- name: Delete local volumes created
-  include_tasks: delete_local_volumes.yml
+- name: Delete storage resources created
+  include_tasks: delete_storage_resources.yml
   vars:
     app_ns: "{{ pods_in_same_ns.namespace }}"
   when:

@@ -49,4 +49,30 @@
     - dci_local_registry | length
     - pullsecret_tmp_file|length
 
+# Retrieve default StorageClass if present in the cluster
+- name: Check cluster StorageClass resources defined
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: StorageClass
+  register: storage_classes
+
+- name: Tasks when at least one StorageClass exists
+  block:
+    - name: Retrieve name of the default StorageClass
+      set_fact:
+        storage_class: "{{ item.metadata.name }}"
+      loop: "{{ storage_classes.resources }}"
+      when:
+        - item.metadata.annotations is defined
+        - item.metadata.annotations["storageclass.kubernetes.io/is-default-class"] is defined
+        - item.metadata.annotations["storageclass.kubernetes.io/is-default-class"] | bool
+
+    - name: Print default StorageClass
+      debug:
+        msg: "Default StorageClass is {{ storage_class }}"
+      when:
+        - storage_class is defined
+  when:
+    - storage_classes is defined
+    - storage_classes.resources | length > 0
 ...
