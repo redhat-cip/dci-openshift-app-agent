@@ -9,16 +9,6 @@
     - tnf_config | default('') | length
     - pods_in_same_ns.namespace | default('') | length
 
-- name: Delete ClusterRole attached to restricted-cat-1 SCC
-  community.kubernetes.k8s:
-    api_version: rbac.authorization.k8s.io/v1
-    name: use-restricted-cat-1
-    kind: ClusterRole
-    state: absent
-    wait: yes
-    wait_sleep: 5
-    wait_timeout: 120
-
 - name: Delete SCC Category 1 - CNFs that require Service Mesh
   community.kubernetes.k8s:
     api_version: security.openshift.io/v1

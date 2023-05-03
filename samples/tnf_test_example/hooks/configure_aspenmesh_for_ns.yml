@@ -1,15 +1,16 @@
 ---
-- name: Add ClusterRoleBinding to allow pods running under anyuid
+- name: Add RoleBinding to allow pods running under anyuid
   community.kubernetes.k8s:
     state: present
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
-      kind: ClusterRoleBinding
+      kind: RoleBinding
       metadata:
         name: "{{ app_ns }}:scc:anyuid"
+        namespace: "{{ app_ns }}"
       roleRef:
         apiGroup: rbac.authorization.k8s.io
-        kind: ClusterRole
+        kind: Role
         name: system:openshift:scc:anyuid
       subjects:
         - kind: Group

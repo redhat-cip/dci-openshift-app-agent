@@ -28,6 +28,21 @@
         name: test
         namespace: "{{ app_ns }}"
 
+- name: Adding restricted-cat-1 policy to a Role
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      kind: Role
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: use-restricted-cat-1
+        namespace: "{{ app_ns }}"
+      rules:
+        - apiGroups: ["security.openshift.io"]
+          resources: ["securitycontextconstraints"]
+          resourceNames: ["restricted-cat-1"]
+          verbs: ["use"]
+
 - name: Create RoleBinding for restricted-cat-1 applications
   community.kubernetes.k8s:
     state: present
@@ -39,7 +54,7 @@
         namespace: "{{ app_ns }}"
       roleRef:
         apiGroup: rbac.authorization.k8s.io
-        kind: ClusterRole
+        kind: Role
         name: use-restricted-cat-1
       subjects:
         - kind: Group
