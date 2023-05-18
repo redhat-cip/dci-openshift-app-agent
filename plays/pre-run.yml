@@ -54,6 +54,7 @@
     name: cnf-cert
   vars:
     tnf_stage: "pre-run"
+    tnf_image_suffix: "{{ job_id }}"
   when: do_cnf_cert|bool
 
 ...
