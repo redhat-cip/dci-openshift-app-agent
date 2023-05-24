@@ -10,7 +10,7 @@
   include_role:
     name: cnf-cert
   vars:
-    tnf_stage: "tests"
+    tnf_image_suffix: "{{ job_id }}"
   when: do_cnf_cert|bool
 
 - name: Preflight container-only tests
