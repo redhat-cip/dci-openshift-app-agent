@@ -48,13 +48,4 @@
   when:
     - dci_disconnected | default(false) | bool
     - dci_local_registry | length
-
-- name: "cnf-cert pre-run"
-  include_role:
-    name: cnf-cert
-  vars:
-    tnf_stage: "pre-run"
-    tnf_image_suffix: "{{ job_id }}"
-  when: do_cnf_cert|bool
-
 ...

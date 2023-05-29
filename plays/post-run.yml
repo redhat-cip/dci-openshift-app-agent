@@ -6,13 +6,6 @@
     status: "post-run"
   tags: [dci]
 
-- name: "cnf-cert post-run"
-  include_role:
-    name: cnf-cert
-  vars:
-    tnf_stage: "post-run"
-  when: do_cnf_cert|bool
-
 - name: Get deprecated API after running workload
   shell: >
     set -o pipefail &&
