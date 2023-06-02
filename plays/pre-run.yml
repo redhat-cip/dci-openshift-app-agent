@@ -6,6 +6,21 @@
     status: "pre-run"
   tags: [dci]
 
+- name: Install packages for deprecated-api feature
+  block:
+    - name: Install junitparser
+      pip:
+        name:
+          - junitparser
+      become: true
+
+    - name: Install semver
+      dnf:
+        name: python3-semver
+        state: present
+      become: true
+  when: ocp_version is version("4.9", ">=")
+
 - name: Include installed software and git repos as components
   vars:
     mandatory_rpms:
