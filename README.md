@@ -84,6 +84,7 @@ provisioner\_user                  |                                            
 dci\_ga\_components\_for\_certification | ["ocp"]                                         | list of components that needs to be ga to submit a certification record
 do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (<https://github.com/test-network-function/cnf-certification-test>)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
+do\_must\_gather                   | true                                                 | Enable/Disable the generation of must_gather
 do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
 sync\_cnf\_cert\_and\_preflight    | false                                                | If true, CNF Cert Suite output (claim.json file) would be used to create the `preflight_operators_to_check` variable needed for preflight tests.
 tests\_to\_verify                  | undefined                                                | List of expected test results. When defined, it triggers the validation of actual test results against the expectations. Please check [verify-tests readme](roles/verify-tests/README.md) to get more details and an example of the configuration.

@@ -63,4 +63,5 @@
   when:
     - dci_disconnected | default(false) | bool
     - dci_local_registry | length
+    - do_must_gather | bool
 ...

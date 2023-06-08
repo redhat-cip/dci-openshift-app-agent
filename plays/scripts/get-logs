@@ -44,31 +44,33 @@ ${oc_path} get nodes -o yaml > "${log_dir}/all-nodes.yaml"
 ${oc_path} get events --all-namespaces --sort-by='.metadata.creationTimestamp' > "${log_dir}/events.txt"
 ${oc_path} get pods --all-namespaces -o wide > "${log_dir}/pods.txt"
 
-# must-gather - when a policy is defined, use the same mirror (local registry)
-registry=$(${oc_path} get imageContentSourcePolicy image-policy-0 -o json 2>/dev/null |
-         jq -r '.spec.repositoryDigestMirrors[].mirrors[]' |
-         cut -d/ -f1)
-for image in ${DCI_MUST_GATHER_IMAGES:-"registry.redhat.io/openshift4/ose-must-gather"}
-do
-  if [ -n "${registry}" ];then
-    image="${registry}/${image#*/}"
-  fi
-  MUST_GATHER_OPTS="${MUST_GATHER_OPTS} --image=${image}"
-done
+if [ "$DO_MUST_GATHER" = true ]; then
+  # must-gather - when a policy is defined, use the same mirror (local registry)
+  registry=$(${oc_path} get imageContentSourcePolicy image-policy-0 -o json 2>/dev/null |
+          jq -r '.spec.repositoryDigestMirrors[].mirrors[]' |
+          cut -d/ -f1)
+  for image in ${DCI_MUST_GATHER_IMAGES:-"registry.redhat.io/openshift4/ose-must-gather"}
+  do
+    if [ -n "${registry}" ];then
+      image="${registry}/${image#*/}"
+    fi
+    MUST_GATHER_OPTS="${MUST_GATHER_OPTS} --image=${image}"
+  done
 
-must_gather_dir="${log_dir}/must_gather"
-mkdir -p "${must_gather_dir}"
+  must_gather_dir="${log_dir}/must_gather"
+  mkdir -p "${must_gather_dir}"
 
-${oc_path} adm must-gather \
-  --dest-dir="${must_gather_dir}" \
-  ${MUST_GATHER_OPTS} \
-  >/dev/null
+  ${oc_path} adm must-gather \
+    --dest-dir="${must_gather_dir}" \
+    ${MUST_GATHER_OPTS} \
+    >/dev/null
 
-# Compress must-gather
-tar \
-  --use-compress-program='pigz --best --recursive' \
-  --directory "${log_dir}" \
-  --create \
-  --file "${must_gather_dir}.tar.gz" must_gather/
+  # Compress must-gather
+  tar \
+    --use-compress-program='pigz --best --recursive' \
+    --directory "${log_dir}" \
+    --create \
+    --file "${must_gather_dir}.tar.gz" must_gather/
 
-rm -Rf "${must_gather_dir}"
+  rm -Rf "${must_gather_dir}"
+fi
