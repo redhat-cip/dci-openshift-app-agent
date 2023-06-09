@@ -12,6 +12,18 @@
           pod-security.kubernetes.io/enforce-version: "latest"
           pod-security.kubernetes.io/warn: "baseline"
 
+- name: Wait until namespace has openshift.io/sa.scc.uid-range annotation
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: "{{ app_ns }}"
+  register: namespace_annotations
+  retries: 15
+  delay: 5
+  until:
+    - namespace_annotations.resources|length == 1
+    - namespace_annotations.resources[0].metadata.annotations["openshift.io/sa.scc.uid-range"] is defined
+
 - name: Create a simple pod
   community.kubernetes.k8s:
     state: present
