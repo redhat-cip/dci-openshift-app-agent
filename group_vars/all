@@ -17,6 +17,7 @@ rtc_resources_to_components: []
 dci_openshift_app_ns: "myns"
 do_cnf_cert: false
 do_chart_verifier: false
+do_must_gather: true
 # please think to define this variable
 # if you deal with private registries
 partner_creds: ""
