@@ -16,12 +16,16 @@ tnf_config:
   - namespace: "test-cnf"
     targetpodlabels: [environment=test]
     targetoperatorlabels: [operators.coreos.com/mongodb-enterprise.test-cnf=]
-    target_crds: ["crdexamples.test-network-function.com"]
+    target_crds:
+      - nameSuffix: "crdexamples.test-network-function.com"
+        scalable: false
     exclude_connectivity_regexp: ""
   - namespace: "production-cnf"
     targetpodlabels: [environment=production]
     targetoperatorlabels: []
-    target_crds: ["crdexamples.test-network-function.com"]
+    target_crds:
+      - nameSuffix: "crdexamples.test-network-function.com"
+        scalable: false
     exclude_connectivity_regexp: ""
 ...
 ```
