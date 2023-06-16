@@ -35,7 +35,7 @@
       DCI_MUST_GATHER_IMAGES: '{{ dci_must_gather_images | default(["registry.redhat.io/openshift4/ose-must-gather"]) | join(" ") }}'
       MUST_GATHER_OPTS: "/usr/bin/gather since-time={{ job_info.job.created_at }}"
       PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin:/usr/local/bin/{% if client_tmp_dir.path is defined %}:{{ client_tmp_dir.path }}{% endif %}"
-      DO_MUST_GATHER: "{{ do_must_gather | bool }}"
+      DO_MUST_GATHER: "{{ do_must_gather | lower }}"
     script: plays/scripts/get-logs "{{ job_logs.path }}"
     ignore_errors: true
 ...
