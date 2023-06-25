@@ -24,4 +24,10 @@
     name: preflight
   when: preflight_operators_to_certify is defined
 
+- name: CNF Project Creation-Only tests for Vendor Validation
+  include_role:
+    name: openshift-cnf
+  vars:
+    project_type: "openshift_cnf"
+  when: cnf_to_certify is defined
 ...
