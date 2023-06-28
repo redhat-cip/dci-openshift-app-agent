@@ -1,21 +1,12 @@
 ---
-
-- name: Create CatalogSource for operator
-  community.kubernetes.k8s:
-    state: present
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: CatalogSource
-      metadata:
-        name: "{{ tnf_operator_to_install.operator_name }}-catalog"
-        namespace: openshift-marketplace
-      spec:
-        sourceType: grpc
-        image: "{{ catalog_path | default('registry.redhat.io/redhat/certified-operator-index:v' + ocp_version) }}"
-        displayName: Operator
-        updateStrategy:
-          registryPoll:
-            interval: 30m
+- name: "Create CatalogSource for operator {{ tnf_operator_to_install.operator_name }}"
+  include_role:
+    name: catalog-source
+  vars:
+    cs_name: "{{ tnf_operator_to_install.operator_name }}-catalog"
+    cs_namespace: "openshift-marketplace"
+    cs_image: "{{ catalog_path | default('registry.redhat.io/redhat/certified-operator-index:v' + ocp_version) }}"
+    cs_publisher: "Red Hat"
 
 - name: "deploy-operators : Install operator"
   include_role:
