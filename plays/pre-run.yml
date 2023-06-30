@@ -19,7 +19,9 @@
         name: python3-semver
         state: present
       become: true
-  when: ocp_version is version("4.9", ">=")
+  when:
+    - ocp_version is version("4.9", ">=")
+    - do_deprecated_api | bool
 
 - name: Include installed software and git repos as components
   vars:
@@ -50,7 +52,9 @@
     | jq -r '.items[] | select(.status.removedInRelease!=null)'
     | jq -s '.'
     > {{ job_logs.path }}/apirequestcounts.before.json
-  when: ocp_version is version("4.9", ">=")
+  when:
+    - ocp_version is version("4.9", ">=")
+    - do_deprecated_api | bool
 
 ### Mirror must-gather images
 

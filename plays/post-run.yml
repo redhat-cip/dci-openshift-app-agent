@@ -6,19 +6,22 @@
     status: "post-run"
   tags: [dci]
 
-- name: Get deprecated API after running workload
-  shell: >
-    set -o pipefail &&
-    {{ oc_tool_path }} get -o json apirequestcounts
-    | jq -r '.items[] | select(.status.removedInRelease!=null)'
-    | jq -s '.'
-    > {{ job_logs.path }}/apirequestcounts.after.json
-  when: ocp_version is version("4.9", ">=")
+- name: Process deprecated-api intel
+  block:
+    - name: Get deprecated API after running workload
+      shell: >
+        set -o pipefail &&
+        {{ oc_tool_path }} get -o json apirequestcounts
+        | jq -r '.items[] | select(.status.removedInRelease!=null)'
+        | jq -s '.'
+        > {{ job_logs.path }}/apirequestcounts.after.json
 
-- name: Compute removed API
-  include_role:
-    name: deprecated-api
-  when: ocp_version is version("4.9", ">=")
+    - name: Compute removed API
+      include_role:
+        name: deprecated-api
+  when:
+    - ocp_version is version("4.9", ">=")
+    - do_deprecated_api | bool
 
 - name: Get the differences from the previous DCI job
   shell: "dci-diff-jobs --job_id_1 {{ job_id }} > {{ job_logs.path }}/diff-jobs.txt"
