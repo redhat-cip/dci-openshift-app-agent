@@ -6,9 +6,9 @@
     status: "post-run"
   tags: [dci]
 
-- name: Process deprecated-api intel
+- name: Dump deprecated API after executing the workload
   block:
-    - name: Get deprecated API after running workload
+    - name: Dump deprecated API after executing the workload
       shell: >
         set -o pipefail &&
         {{ oc_tool_path }} get -o json apirequestcounts
@@ -21,7 +21,7 @@
         name: deprecated-api
   when:
     - ocp_version is version("4.9", ">=")
-    - do_deprecated_api | bool
+    - check_workload_api | bool
 
 - name: Get the differences from the previous DCI job
   shell: "dci-diff-jobs --job_id_1 {{ job_id }} > {{ job_logs.path }}/diff-jobs.txt"

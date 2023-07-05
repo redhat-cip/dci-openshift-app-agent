@@ -6,22 +6,14 @@
     status: "pre-run"
   tags: [dci]
 
-- name: Install packages for deprecated-api feature
-  block:
-    - name: Install junitparser
-      pip:
-        name:
-          - junitparser
-      become: true
-
-    - name: Install semver
-      dnf:
-        name: python3-semver
-        state: present
-      become: true
-  when:
-    - ocp_version is version("4.9", ">=")
-    - do_deprecated_api | bool
+- name: Install packages to check workload compatibility with OCP versions
+  dnf:
+    name:
+      - python3-semver
+      - python3-junit_xml
+    state: present
+  become: true
+  when: check_workload_api | bool
 
 - name: Include installed software and git repos as components
   vars:
@@ -45,7 +37,7 @@
   set_fact:
     dci_all_components_are_ga: "{{ dci_ga_components_for_certification | difference(ga_components) | length == 0 }}"
 
-- name: Get deprecated API before running workload
+- name: Dump deprecated API before executing the workload
   shell: >
     set -o pipefail &&
     {{ oc_tool_path }} get -o json apirequestcounts
@@ -54,7 +46,7 @@
     > {{ job_logs.path }}/apirequestcounts.before.json
   when:
     - ocp_version is version("4.9", ">=")
-    - do_deprecated_api | bool
+    - check_workload_api | bool
 
 ### Mirror must-gather images
 
