@@ -18,7 +18,7 @@
     name: mirror_images
   vars:
     images:
-      - docker.io/library/nginx
+      - mirror.gcr.io/library/nginx:latest
     authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool
