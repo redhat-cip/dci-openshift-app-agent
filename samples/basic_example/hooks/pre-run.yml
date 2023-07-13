@@ -12,13 +12,14 @@
 - name: "Configure the namespace variable"
   set_fact:
     app_ns: "{{ dci_openshift_app_ns|default('myns') }}"
+    dci_openshift_app_image: mirror.gcr.io/library/nginx:latest
 
 - name: "basic_example : Mirror nginx image"
   include_role:
     name: mirror_images
   vars:
     images:
-      - mirror.gcr.io/library/nginx:latest
+      - "{{ dci_openshift_app_image }}"
     authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool

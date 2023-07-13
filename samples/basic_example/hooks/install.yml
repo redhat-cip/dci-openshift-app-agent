@@ -1,5 +1,12 @@
 ---
 - name: Create a simple pod
+  vars:
+    app_img: |-
+      {%- if dci_disconnected | default(false) | bool %}
+      {{ dci_local_registry }}/{{ '/'.join(dci_openshift_app_image.split('/')[1:]) }}
+      {%- else %}
+      {{ dci_openshift_app_image }}
+      {%- endif %}
   community.kubernetes.k8s:
     state: present
     definition:
@@ -12,7 +19,7 @@
       spec:
         containers:
           - name: webserver
-            image: "{{ dci_openshift_app_image | default('mirror.gcr.io/library/nginx:latest') }}"
+            image: "{{ app_img }}"
             securityContext:
               capabilities: {}
             ports:
