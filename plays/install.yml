@@ -11,5 +11,6 @@
           security.openshift.io/scc.podSecurityLabelSync: "false"
           pod-security.kubernetes.io/enforce: baseline
           pod-security.kubernetes.io/enforce-version: latest
+    wait: yes
 
 ...
