@@ -11,6 +11,12 @@
           security.openshift.io/scc.podSecurityLabelSync: "false"
           pod-security.kubernetes.io/enforce: baseline
           pod-security.kubernetes.io/enforce-version: latest
-    wait: yes
+  register: app_namespace
+  retries: 12
+  delay: 10
+  until:
+    - app_namespace.result is defined
+    - app_namespace.result.metadata.annotations is defined
+    - app_namespace.result.metadata.annotations["openshift.io/sa.scc.uid-range"] is defined
 
 ...
