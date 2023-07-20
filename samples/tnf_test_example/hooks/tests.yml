@@ -7,5 +7,6 @@
     opcap_catalog_source_namespace: "openshift-marketplace"
     opcap_output_dir: "{{ job_logs.path }}"
     opcap_packages: "{{ tnf_operator_to_install.operator_name }}"
+  when: tnf_run_opcap_tests | default(true) | bool
 
 ...
