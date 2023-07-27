@@ -24,6 +24,19 @@
     name: preflight
   when: preflight_operators_to_certify is defined
 
+- name: Operator-SDK Scorecard tests
+  vars:
+    scorecard_oc_tool_path: "{{ oc_tool_path }}"
+    scorecard_partner_creds: "{{ partner_creds }}"
+    scorecard_kubeconfig_path: "{{ kubeconfig_path }}"
+    scorecard_pullsecret_tmp_file: "{{ pullsecret_tmp_file }}"
+    scorecard_job_logs: "{{ job_logs }}"
+    scorecard_dci_local_registry: "{{ dci_local_registry }}"
+    scorecard_dci_disconnected: "{{ dci_disconnected }}"
+  include_role:
+    name: operator-sdk
+  when: scorecard_operators is defined
+
 - name: CNF Project Creation-Only tests for Vendor Validation
   include_role:
     name: openshift-cnf
