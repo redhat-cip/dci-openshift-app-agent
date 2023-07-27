@@ -23,6 +23,19 @@
     - ocp_version is version("4.9", ">=")
     - check_workload_api | bool
 
+- name: Set outputs to be copied
+  set_fact:
+    outputs:
+      kubeconfig: "{{ kubeconfig_path }}"
+
+- name: Copy outputs if defined
+  copy:
+    src: "{{ outputs[item.key] }}"
+    dest: "{{ item.value }}"
+    mode: "0644"
+  with_dict: "{{ job_info.outputs }}"
+  when: job_info.outputs is defined and job_info.outputs != None
+
 - name: Get the differences from the previous DCI job
   shell: "dci-diff-jobs --job_id_1 {{ job_id }} > {{ job_logs.path }}/diff-jobs.txt"
   ignore_errors: true
