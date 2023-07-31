@@ -43,4 +43,11 @@
   vars:
     project_type: "openshift_cnf"
   when: cnf_to_certify is defined
+
+- name: Helm Chart Certification Project
+  include_role:
+    name: create-helmchart
+  vars:
+    project_type: "helmchart"
+  when: helmchart_to_certify is defined
 ...
