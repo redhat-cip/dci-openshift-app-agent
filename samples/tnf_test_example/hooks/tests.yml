@@ -1,5 +1,5 @@
 ---
-- name: Checking found CalalogSource with opcap
+- name: Checking found CatalogSource with opcap
   include_role:
     name: opcap-tool
   vars:

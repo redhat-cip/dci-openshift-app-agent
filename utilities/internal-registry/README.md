@@ -4,7 +4,7 @@ Some test suites may require a local registry to load/pull container images, in 
 
 This playbook helps enabling the OCP integrated registry on an already created cluster, configuring it with ephemeral storage. Please note that all the images are lost if you restart the registry.
 
-Also it is important to notice that enabling the internal registry will configure the cluster nodes to be able to pull from the internal registry endpoint, this requires changes applied via Maching Configs that will execute a cluster nodes rolling restart causing some delays or pods distruption depending on the cluster size.
+Also it is important to notice that enabling the internal registry will configure the cluster nodes to be able to pull from the internal registry endpoint, this requires changes applied via Machine Configs that will execute a cluster nodes rolling restart causing some delays or pods distruption depending on the cluster size.
 
 **The usage of this configuration is not recommended for production environments.**
 
@@ -17,7 +17,7 @@ The following is a list of actions performed by this playbook:
 1. The cluster's global pull secrets is updated withm the `ocp_registry_user` credentials.
 1. Access to the internal registry is allowed on the cluster's nodes by adding it as insecure registry (this will perform a rolling restart on the cluster nodes).
 
-The above actions are reverted by the `disable_ocp_registry` flag, except for the restoration of the original pull secret. Please see the [Recomendations](#recomendations) section for more information.
+The above actions are reverted by the `disable_ocp_registry` flag, except for the restoration of the original pull secret. Please see the [Recommendations](#recommendations) section for more information.
 
 ## Requirements
 
@@ -29,9 +29,9 @@ In order to execute the playbook the following requirements must be available:
 
 1. The community.kubernetes ansible collections must be installed.
 
-## Recomendations
+## Recommendations
 
-It is recomended to backup the global cluster pull secrets before enabling the internal registry and restore them once it is decided to disable the internal registry.
+It is recommended to backup the global cluster pull secrets before enabling the internal registry and restore them once it is decided to disable the internal registry.
 
 Backing up the global cluster pull secrets is done by the following command:
 

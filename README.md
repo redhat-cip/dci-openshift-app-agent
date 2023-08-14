@@ -19,7 +19,7 @@ Before starting make sure the next list of items are covered in the jumphost ser
 - Kubernetes Python module
 - An OpensShift cluster already deployed or a process to deploy it before running the `dci-openshift-app-agent`.
 
-In an already registered server with RHEL you can fullfil the repositories and Ansible 2.9 requirements with the following commands:
+In an already registered server with RHEL you can fulfil the repositories and Ansible 2.9 requirements with the following commands:
 
 ```ShellSession
 # subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms
@@ -132,7 +132,7 @@ The test results for each operator can be submitted to the [Red Hat connect Site
 
 ### Cloud Native Functions (CNF) Certification tests
 
-The [CNF-cert role](roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Funcions (TNF)](https://github.com/test-network-function/cnf-certification-test) in the order to meet minimum requirements for Red Hat OpenShift Certification.
+The [CNF-cert role](roles/cnf-cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Functions (TNF)](https://github.com/test-network-function/cnf-certification-test) in the order to meet minimum requirements for Red Hat OpenShift Certification.
 
 For specific details about the features and variables for this test suite see: [CNF-cert role](roles/cnf-cert/README.md) documentation.
 
