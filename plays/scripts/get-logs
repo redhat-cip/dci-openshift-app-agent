@@ -45,10 +45,20 @@ ${oc_path} get events --all-namespaces --sort-by='.metadata.creationTimestamp' >
 ${oc_path} get pods --all-namespaces -o wide > "${log_dir}/pods.txt"
 
 if [ "$DO_MUST_GATHER" = true ]; then
-  # must-gather - when a policy is defined, use the same mirror (local registry)
-  registry=$(${oc_path} get imageContentSourcePolicy image-policy-0 -o json 2>/dev/null |
-          jq -r '.spec.repositoryDigestMirrors[].mirrors[]' |
-          cut -d/ -f1)
+  # Get image sources if available
+  idms_reg=$(\
+      ${oc_path} get imagedigestmirrorsets -o json 2>/dev/null |
+        jq -r '.items[0].spec.imageDigestMirrors[0].mirrors[0] // ""'
+  )
+  icsp_reg=$(\
+      ${oc_path} get imagecontentsourcepolicy -o json 2>/dev/null |
+        jq -r '.items[0].spec.repositoryDigestMirrors[0].mirrors[0] // ""'
+  )
+  if [[ -n "${idms_reg}" ]]; then
+     registry=${idms_reg/\/*}
+  elif [[ -n "${icsp_reg}" ]]; then
+     registry=${icsp_reg/\/*}
+  fi
   for image in ${DCI_MUST_GATHER_IMAGES:-"registry.redhat.io/openshift4/ose-must-gather"}
   do
     if [ -n "${registry}" ];then
