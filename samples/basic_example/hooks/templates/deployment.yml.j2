@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  app: httpd
+  name: webserver
+spec:
+  replicas: {{ openshift_app_replicas | default(1) }}
+  selector:
+    matchLabels:
+      app: httpd
+  template:
+    metadata:
+      labels:
+        app: httpd
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - httpd
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - env:
+          name: webserver
+{% if dci_disconnected | default(false) | bool %}
+          image: {{ openshift_app_registry }}/{{ '/'.join(openshift_app_image.split('/')[1:]) }}
+{% else %}
+          image: {{ openshift_app_image }}
+{% endif %}
+          command:
+            - gunicorn
+            - -b
+            - "[::]:8080"
+            - httpbin:app
+            - -k
+            - gevent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1

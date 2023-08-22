@@ -9,18 +9,19 @@
     - python3-pyyaml
   become: true
 
-- name: "Configure the namespace variable"
+- name: "Set default variables if none provided"
   set_fact:
-    app_ns: "{{ dci_openshift_app_ns|default('myns') }}"
-    dci_openshift_app_image: mirror.gcr.io/library/nginx:latest
+    openshift_app_ns: "{{ dci_openshift_app_ns | default('myns') }}"
+    openshift_app_image: "{{ dci_openshift_app_image | default('mirror.gcr.io/kennethreitz/httpbin:latest') }}"
+    openshift_app_registry: "{{ dci_local_registry }}"
 
-- name: "basic_example : Mirror nginx image"
+- name: "Mirror pod image (disconnected)"
   include_role:
     name: mirror_images
   vars:
     images:
-      - "{{ dci_openshift_app_image }}"
+      - "{{ openshift_app_image }}"
     authfile: "{{ pullsecret_tmp_file }}"
   when:
     - dci_disconnected | default(false) | bool
-    - dci_local_registry | length
+    - openshift_app_registry | length

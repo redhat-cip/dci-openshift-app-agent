@@ -1,37 +1,22 @@
 ---
-- name: Create a simple pod
-  vars:
-    app_img: |-
-      {%- if dci_disconnected | default(false) | bool %}
-      {{ dci_local_registry }}/{{ '/'.join(dci_openshift_app_image.split('/')[1:]) }}
-      {%- else %}
-      {{ dci_openshift_app_image }}
-      {%- endif %}
+- name: "Create a Deployment of a webserver pod(s)"
   community.kubernetes.k8s:
     state: present
-    definition:
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        app: httpd
-        name: webserver
-        namespace: "{{ app_ns }}"
-      spec:
-        containers:
-          - name: webserver
-            image: "{{ app_img }}"
-            securityContext:
-              capabilities: {}
-            ports:
-              - containerPort: 80
-            livenessProbe:
-              failureThreshold: 3
-              httpGet:
-                path: /
-                port: 80
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            successThreshold: 1
+    namespace: "{{ openshift_app_ns }}"
+    definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+    wait: true
+
+- name: "Create a Service for the webserver pod(s)"
+  community.kubernetes.k8s:
+    state: present
+    namespace: "{{ openshift_app_ns }}"
+    definition: "{{ lookup('file', 'service.yml.j2') }}"
+    wait: true
+
+- name: "Create a Route for the webserver service"
+  community.kubernetes.k8s:
+    state: present
+    namespace: "{{ openshift_app_ns }}"
+    definition: "{{ lookup('file', 'route.yml.j2') }}"
     wait: true
 ...
