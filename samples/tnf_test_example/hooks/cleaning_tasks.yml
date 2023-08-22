@@ -39,14 +39,42 @@
     wait_sleep: 5
     wait_timeout: 120
 
-- name: Delete operator-catalog
-  community.kubernetes.k8s:
-    state: absent
-    api_version: operators.coreos.com/v1alpha1
-    name: "{{ tnf_operator_to_install.operator_name }}-catalog"
-    namespace: openshift-marketplace
-    kind: CatalogSource
+- name: "Cleanup CatalogSource"
+  block:
+    - name: Delete operator-catalog
+      community.kubernetes.k8s:
+        state: absent
+        api_version: operators.coreos.com/v1alpha1
+        name: "{{ tnf_operator_to_install.operator_name }}-catalog"
+        namespace: openshift-marketplace
+        kind: CatalogSource
+
+    - name: Get OLM pod for catalog-operator
+      community.kubernetes.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: openshift-operator-lifecycle-manager
+        label_selectors:
+          - app=catalog-operator
+      register: olm_pod
+
+    - name: Restart matching pods
+      community.kubernetes.k8s:
+        definition: |
+          {{ item }}
+        state: absent
+      loop: "{{ olm_pod.resources }}"
+
+    - name: Wait for OLM pod catalog-operator to be running
+      community.kubernetes.k8s_info:
+        kind: Pod
+        namespace: openshift-operator-lifecycle-manager
+        label_selectors:
+          - app=catalog-operator
+      register: olm_pod
+      until: olm_pod | json_query('resources[*].status.phase') | unique == ["Running"]
+      retries: 6
+      delay: 10
   when:
     - tnf_operator_to_install is defined
-
 ...
