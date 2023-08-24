@@ -14,6 +14,7 @@
     openshift_app_ns: "{{ dci_openshift_app_ns | default('myns') }}"
     openshift_app_image: "{{ dci_openshift_app_image | default('mirror.gcr.io/kennethreitz/httpbin:latest') }}"
     openshift_app_registry: "{{ dci_local_registry }}"
+    openshift_app_cmds: "{{ dci_openshift_app_cmd | default(['gunicorn', '-b', '[::]:8080', 'httpbin:app', '-k', 'gevent']) }}"
 
 - name: "Mirror pod image (disconnected)"
   include_role:

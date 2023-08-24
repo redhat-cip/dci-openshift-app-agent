@@ -31,13 +31,9 @@ spec:
 {% else %}
           image: {{ openshift_app_image }}
 {% endif %}
-          command:
-            - gunicorn
-            - -b
-            - "[::]:8080"
-            - httpbin:app
-            - -k
-            - gevent
+{% if openshift_app_cmds | length %}
+          command: {{ openshift_app_cmds }}
+{% endif %}
           ports:
             - containerPort: 8080
               protocol: TCP
