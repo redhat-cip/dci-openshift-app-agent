@@ -41,4 +41,9 @@
         timeout -v 20m
         plays/scripts/get-logs "{{ job_logs.path }}"
     ignore_errors: true
+
+  - name: "Remove the must-gather directory"
+    file:
+      path: "{{ job_logs.path }}/must_gather"
+      state: absent
 ...
