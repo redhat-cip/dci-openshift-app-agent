@@ -1,0 +1,62 @@
+---
+- block:
+  - name: "Create a Deployment of a webserver pod(s)"
+    community.kubernetes.k8s:
+      state: present
+      namespace: "{{ openshift_app_ns }}"
+      definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+      wait: true
+
+  - name: "Create a Service for the webserver pod(s)"
+    community.kubernetes.k8s:
+      state: present
+      namespace: "{{ openshift_app_ns }}"
+      definition: "{{ lookup('file', 'service.yml.j2') }}"
+      wait: true
+
+  - name: "Create a Route for the webserver service"
+    community.kubernetes.k8s:
+      state: present
+      namespace: "{{ openshift_app_ns }}"
+      definition: "{{ lookup('file', 'route.yml.j2') }}"
+      wait: true
+  when: openshift_app_helm_chart is not defined or openshift_app_helm_chart | length == 0
+
+- block:
+  - name: "Temp directory for helm client"
+    tempfile:
+      state: directory
+      prefix: dci_app_helm.
+    register: helm_tmp_dir
+
+  - name: Download Helm binary
+    vars:
+        helm_ver: "{{ helm_version | default('3.9.0') }}"
+    unarchive:
+      src: https://get.helm.sh/helm-v{{ helm_ver }}-linux-amd64.tar.gz
+      dest: "{{ helm_tmp_dir.path }}"
+      extra_opts:
+        - linux-amd64/helm
+        - --strip-components=1
+      remote_src: true
+
+  - name: Set helm_tool_path
+    set_fact:
+      helm_tool_path: "{{ helm_tmp_dir.path }}/helm"
+
+  - name: "Deploy webserver Helm chart"
+    community.kubernetes.helm:
+      name: "webserver"
+      chart_ref: "{{ openshift_app_helm_chart }}"
+      release_namespace: "{{ openshift_app_ns }}"
+      values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+      binary_path: "{{ helm_tool_path }}"
+      create_namespace: true
+      wait: true
+    vars:
+      openshift_app_replicas: 3
+  when:
+    - openshift_app_helm_chart is defined
+    - openshift_app_helm_chart | length > 0
+
+...
