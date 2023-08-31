@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.5.8
+Version:       0.5.9
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -10,7 +10,7 @@ Source0:       dci-openshift-app-agent-%{version}.tar.gz
 BuildRequires: systemd
 BuildRequires: systemd-units
 Requires: sudo
-Requires: dci-openshift-agent >= 0.5.8
+Requires: dci-openshift-agent >= 0.5.10
 Requires: dci-ansible >= 0.3.1
 %if 0%{?rhel} && 0%{?rhel} < 8
 Requires: python2-dciclient >= 3.1.0
@@ -81,6 +81,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Thu Aug 31 2023 Tony Garcia <tonyg@redhat.com> 0.5.9-1
+- Requires dci-openshift-agent >= 0.5.10 for utils
+
 * Mon Jul 31 2023 Beto Rdz <josearod@redhat.com> 0.5.8-1
 - Requires dci-openshift-agent >= 0.5.8 for common-roles
 
