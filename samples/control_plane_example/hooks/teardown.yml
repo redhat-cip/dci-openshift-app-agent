@@ -1,0 +1,19 @@
+---
+- name: "Remove the webserver helm chart"
+  community.kubernetes.helm:
+    name: "webserver"
+    release_namespace: "{{ openshift_app_ns }}"
+    binary_path: "{{ helm_tool_path }}"
+    release_state: absent
+    wait: true
+  when:
+    - openshift_app_helm_chart is defined
+    - openshift_app_helm_chart | length > 0
+
+- name: "Delete tmp tools directory"
+  file:
+    path: "{{ helm_tmp_dir.path }}"
+    state: absent
+  when:
+    - helm_tmp_dir is defined
+    - helm_tmp_dir.path is defined
