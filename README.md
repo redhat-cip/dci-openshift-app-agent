@@ -244,7 +244,7 @@ To use these samples, you need to include the variable `dci_config_dir` with the
 
         ansible_extravars:
           dci_openshift_app_ns: testns
-          dci_config_dir: /var/lib/dci-openshift-app-agent/samples/basic_example
+          dci_config_dir: /var/lib/dci-openshift-app-agent/samples/control_plane_example
 
 ## Storing secrets
 
