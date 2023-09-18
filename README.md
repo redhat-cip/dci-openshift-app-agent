@@ -281,6 +281,7 @@ A DCI job produces a set of relevant configuration files, logs, reports, and tes
 | apirequestcounts_ocp_compatibility.xml         | Files   | The compatibility of the workload with OCP versions 
 | version.txt                                    | Files   | Report of the OCP client and server version using during the deployment                   |
 | diff-jobs.txt                                  | Files   | A post-run stage to report that compares `the current` job versus the `previous job` of the same type regarding the components used |
+| operators.json                                 | Files   | A JSON file with details about the operators installed in the cluster                     |
 
 ## Known issues
 
