@@ -4,7 +4,7 @@
     catalog_path: "{{ dci_local_registry }}/telcoci/testnetworkfunction/{{ tnf_operator_to_install.operator_name }}-disconnected-catalog"
     catalog_version: "{{ tnf_operator_to_install.operator_version }}_{{ lookup('password', '/dev/null length=16 chars=ascii_lowercase,digits') }}"
 
-- name: Create temporary directory for ICSP
+- name: Create temporary directory for mirroring catalog
   tempfile:
     state: directory
     prefix: tnf_test_example_prerun_tmp_dir.
@@ -22,66 +22,50 @@
       environment:
         - DOCKER_CONFIG: "{{ tnf_test_example_prerun_tmp_dir.path }}"
   vars:
-    fbc_index_image:  "{{ catalog_path }}:{{ catalog_version }}"
+    fbc_index_image: "{{ catalog_path }}:{{ catalog_version }}"
     fbc_bundles:
       - "{{ tnf_operator_to_install.operator_bundle }}"
     fbc_opm_args: "--skip-tls-verify=false"
 
-- name: Push catalog image into local registry
+- name: Push catalog image to local registry and delete local image
   shell: >
-    podman push --authfile {{ pullsecret_tmp_file }}
-    {{ catalog_path }}:{{ catalog_version }}
+    set -ex;
+    podman push
+    --authfile {{ pullsecret_tmp_file }}
+    {{ catalog_path }}:{{ catalog_version }};
+    podman rmi {{ catalog_path }}:{{ catalog_version }}
 
-- name: Manage imageContentSourcePolicy update
-  block:
-    - name: "Get catalog SHA256"
-      shell:
-        cmd: >
-          skopeo inspect --authfile {{ pullsecret_tmp_file }}
-          docker://{{ catalog_path }}:{{ catalog_version }} | jq -r '.Digest'
-      register: catalog_sha
-      retries: 5
-      delay: 5
-      until:
-        - catalog_sha is not failed
+- name: Find ImageDigestMirrorSet in the cluster
+  community.kubernetes.k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ImageDigestMirrorSet
+  register: idms_res
 
-    - name: Mirror images and save manifests into a temporary directory
-      shell: >
-        {{ oc_tool_path }} adm catalog mirror -a {{ pullsecret_tmp_file }}
-        --max-components=3
-        {{ catalog_path }}@{{ catalog_sha.stdout }}
-        {{ dci_local_registry }}
-        --to-manifests={{ tnf_test_example_prerun_tmp_dir.path }}/tmp_oc
-      register: catalog_mirror
-      retries: 2
-      delay: 10
-      until: catalog_mirror.stderr.find('error:') == -1
+- name: Mirror generated catalog
+  include_role:
+    name: mirror-catalog
+  vars:
+    mc_oc_tool_path: "{{ oc_tool_path }}"
+    mc_catalog: "{{ catalog_path }}:{{ catalog_version }}"
+    mc_registry: "{{ dci_local_registry }}"
+    mc_pullsecret: "{{ pullsecret_tmp_file }}"
+    mc_is_type: "{{ idms_res.resources is defined and idms_res.resources | length | ternary('idms', 'icsp') }}"
 
-    - name: "Remove local catalog image"
-      shell: |
-        podman rmi "{{ catalog_path }}:{{ catalog_version }}"
+- name: Apply Image Source file
+  community.kubernetes.k8s:
+    definition: "{{ lookup('file', mc_is_file.path) }}"
 
-    - name: Re-define catalog path + sha
-      set_fact:
-        catalog_path: "{{ catalog_path }}@{{ catalog_sha.stdout }}"
+- name: Remove temporary directory
+  file:
+    path: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+    state: absent
 
-    - name: Apply ImageContentSourcePolicy
-      community.kubernetes.k8s:
-        definition: "{{ lookup('file', tnf_test_example_prerun_tmp_dir.path + '/tmp_oc/imageContentSourcePolicy.yaml') }}"
-
-    - name: Remove temporary directory
-      file:
-        path: "{{ tnf_test_example_prerun_tmp_dir.path }}"
-        state: absent
-
-    # kubeconfig and oc are referenced by dci_cluster_configs_dir variable on
-    # dci-openshift-agent, and both are saved under kubeconfig_path (removing "/kubeconfig")
-    - name: Wait for MCP status
-      include_role:
-        name: check-resource
-      vars:
-        resource_to_check: "MachineConfigPool"
-        check_wait_retries: 60
-        check_wait_delay: 60
-        check_reason: "TNF test example"
+- name: Wait for MCP status
+  include_role:
+    name: check-resource
+  vars:
+    resource_to_check: "MachineConfigPool"
+    check_wait_retries: 60
+    check_wait_delay: 60
+    check_reason: "TNF test example"
 ...

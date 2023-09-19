@@ -5,7 +5,7 @@
   vars:
     cs_name: "{{ tnf_operator_to_install.operator_name }}-catalog"
     cs_namespace: "openshift-marketplace"
-    cs_image: "{{ catalog_path | default('registry.redhat.io/redhat/certified-operator-index:v' + ocp_version) }}"
+    cs_image: "{{ mc_catalog_digest | default('registry.redhat.io/redhat/certified-operator-index:v' + ocp_version) }}"
     cs_publisher: "Red Hat"
 
 - name: "deploy-operators : Install operator"
