@@ -6,19 +6,9 @@
     status: "post-run"
   tags: [dci]
 
-- name: Dump deprecated API after executing the workload
-  block:
-    - name: Dump deprecated API after executing the workload
-      shell: >
-        set -o pipefail &&
-        {{ oc_tool_path }} get -o json apirequestcounts
-        | jq -r '.items[] | select(.status.removedInRelease!=null)'
-        | jq -s '.'
-        > {{ job_logs.path }}/apirequestcounts.after.json
-
-    - name: Compute removed API
-      include_role:
-        name: deprecated-api
+- name: Compute removed API after executing the workload
+  include_role:
+    name: deprecated-api
   when:
     - ocp_version is version("4.9", ">=")
     - check_workload_api | bool
