@@ -2,7 +2,7 @@
 
 - name: Verify mandatory tests
   include_role:
-    name: verify_tests
+    name: redhatci.ocp.verify_tests
   when:
     - tests_to_verify is defined
     - tests_to_verify | length > 0

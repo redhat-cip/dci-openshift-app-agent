@@ -2,7 +2,7 @@
 
 - name: Mirror images in disconnected environments
   include_role:
-    name: mirror_images
+    name: redhatci.ocp.mirror_images
   vars:
     images:
       - "{{ tnf_helm_chart_to_install.image_repository }}:{{ tnf_helm_chart_to_install.app_version }}"

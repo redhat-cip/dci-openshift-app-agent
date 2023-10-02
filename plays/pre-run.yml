@@ -29,7 +29,7 @@
     ic_gits: "{{ dci_gits_to_components|flatten }}"
     ic_dev_gits: "{{ dev_gits_to_components|flatten }}"
   include_role:
-    name: include_components
+    name: redhatci.ocp.include_components
 
 - name: Compute if all needed components are ga
   vars:
@@ -41,7 +41,7 @@
 
 - name: "dci-openshift-app-agent : Mirror must gather images"
   include_role:
-    name: mirror_images
+    name: redhatci.ocp.mirror_images
   vars:
     images: "{{ dci_must_gather_images | default(['registry.redhat.io/openshift4/ose-must-gather']) }}"
     authfile: "{{ pullsecret_tmp_file }}"

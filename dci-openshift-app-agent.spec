@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.6.0
+Version:       0.7.0
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -10,7 +10,6 @@ Source0:       dci-openshift-app-agent-%{version}.tar.gz
 BuildRequires: systemd
 BuildRequires: systemd-units
 Requires: sudo
-Requires: dci-openshift-agent >= 0.5.12
 Requires: dci-ansible >= 0.3.1
 %if 0%{?rhel} && 0%{?rhel} < 8
 Requires: python2-dciclient >= 3.1.0
@@ -72,7 +71,6 @@ exit 0
 %{_datadir}/dci-openshift-app-agent/dci-openshift-app-agent.yml
 %{_datadir}/dci-openshift-app-agent/plays/*.yml
 %{_datadir}/dci-openshift-app-agent/plays/scripts/*
-%{_datadir}/dci-openshift-app-agent/roles/*
 %{_datadir}/dci-openshift-app-agent/group_vars/all
 
 %{_unitdir}/*
@@ -82,6 +80,10 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Fri Oct 13 2023 Tony Garcia <tonyg@redhat.com> 0.7.0-1
+- Remove roles, use collections instead
+- Does not require the dci-openshif-agent any more
+
 * Mon Oct 09 2023 Jorge A Gallegos <jgallego@redhat.com> - 0.6.0-1
 - Adding Red Hat CI OCP collection as a dependency
 

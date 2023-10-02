@@ -1,7 +1,7 @@
 ---
 - name: Checking found CatalogSource with opcap
   include_role:
-    name: opcap_tool
+    name: redhatci.ocp.opcap_tool
   vars:
     opcap_target_catalog_source: "{{ tnf_operator_to_install.operator_name }}-catalog"
     opcap_catalog_source_namespace: "openshift-marketplace"

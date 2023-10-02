@@ -18,7 +18,7 @@
 
 - name: "Mirror pod image (disconnected)"
   include_role:
-    name: mirror_images
+    name: redhatci.ocp.mirror_images
   vars:
     images:
       - "{{ openshift_app_image }}"

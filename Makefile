@@ -37,6 +37,5 @@ install:
 	install -p -D -m 440 dci-openshift-app-agent.sudo $(BUILDROOT)$(SYSCONFDIR)/sudoers.d/$(NAME)
 	install -p -d -m 755 $(BUILDROOT)/$(SHAREDSTATEDIR)/$(NAME)
 	find samples -type f -exec install -v -p -D -m 644 "{}" "$(BUILDROOT)$(SHAREDSTATEDIR)/dci-openshift-app-agent/{}" \;
-	find roles/* -type f -exec install -v -p -D -m 644 "{}" "$(BUILDROOT)$(DATADIR)/dci-openshift-app-agent/{}" \;
 
 	install -v -p -D -m 755 dci-openshift-app-agent-ctl $(BUILDROOT)$(BINDIR)/dci-openshift-app-agent-ctl

@@ -23,7 +23,7 @@
 
     - name: Get OCP logs from namespace
       include_role:
-        name: get_logs_from_namespace
+        name: redhatci.ocp.get_logs_from_namespace
       vars:
         get_logs_folder: "{{ job_logs.path }}"
       loop: "{{ ns_list }}"

@@ -1,4 +1,0 @@
-Main logs:
-{{ mcp_logs.stdout }}
-Worker logs:
-{{ mcp_worker_logs | json_query('results[*].stdout') | join('\n') }}

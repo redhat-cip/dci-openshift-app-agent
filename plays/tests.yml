@@ -2,26 +2,26 @@
 
 - name: "Chart verifier tests"
   include_role:
-    name: chart_verifier
+    name: redhatci.ocp.chart_verifier
   when:
     - do_chart_verifier|bool
 
 - name: "cnf_cert tests"
   include_role:
-    name: cnf_cert
+    name: redhatci.ocp.cnf_cert
   vars:
     tnf_image_suffix: "{{ job_id }}"
   when: do_cnf_cert|bool
 
 - name: Preflight container-only tests
   include_role:
-    name: preflight
+    name: redhatci.ocp.preflight
     tasks_from: main_standalone_containers_certification
   when: preflight_containers_to_certify is defined
 
 - name: Preflight tests
   include_role:
-    name: preflight
+    name: redhatci.ocp.preflight
   when: preflight_operators_to_certify is defined
 
 - name: Operator-SDK Scorecard tests
@@ -34,19 +34,19 @@
     scorecard_dci_local_registry: "{{ dci_local_registry }}"
     scorecard_dci_disconnected: "{{ dci_disconnected }}"
   include_role:
-    name: operator_sdk
+    name: redhatci.ocp.operator_sdk
   when: scorecard_operators is defined
 
 - name: CNF Project Creation-Only tests for Vendor Validation
   include_role:
-    name: openshift_cnf
+    name: redhatci.ocp.openshift_cnf
   vars:
     project_type: "openshift_cnf"
   when: cnf_to_certify is defined
 
 - name: Helm Chart Certification Project
   include_role:
-    name: create_helmchart
+    name: redhatci.ocp.create_helmchart
   vars:
     project_type: "helmchart"
   when: helmchart_to_certify is defined

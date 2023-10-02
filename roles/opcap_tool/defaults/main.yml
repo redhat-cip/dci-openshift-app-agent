@@ -1,3 +1,0 @@
-opcap_repo: "https://github.com/opdev/opcap"
-opcap_version: "0.0.1"
-opcap_audit_plan: "OperatorInstall,OperandInstall"

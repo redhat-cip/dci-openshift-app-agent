@@ -1,3 +1,0 @@
----
-get_logs_ns: default
-get_logs_folder: "{{ job_logs.path }}"
