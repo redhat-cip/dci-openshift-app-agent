@@ -2,13 +2,13 @@
 
 - name: "Chart verifier tests"
   include_role:
-    name: chart-verifier
+    name: chart_verifier
   when:
     - do_chart_verifier|bool
 
-- name: "cnf-cert tests"
+- name: "cnf_cert tests"
   include_role:
-    name: cnf-cert
+    name: cnf_cert
   vars:
     tnf_image_suffix: "{{ job_id }}"
   when: do_cnf_cert|bool
@@ -34,19 +34,19 @@
     scorecard_dci_local_registry: "{{ dci_local_registry }}"
     scorecard_dci_disconnected: "{{ dci_disconnected }}"
   include_role:
-    name: operator-sdk
+    name: operator_sdk
   when: scorecard_operators is defined
 
 - name: CNF Project Creation-Only tests for Vendor Validation
   include_role:
-    name: openshift-cnf
+    name: openshift_cnf
   vars:
     project_type: "openshift_cnf"
   when: cnf_to_certify is defined
 
 - name: Helm Chart Certification Project
   include_role:
-    name: create-helmchart
+    name: create_helmchart
   vars:
     project_type: "helmchart"
   when: helmchart_to_certify is defined

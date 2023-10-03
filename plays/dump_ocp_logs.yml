@@ -1,10 +1,10 @@
 ---
 - block:
-  # If cnf-cert role is used with multiple namespaces, there may be more than one namespace
+  # If cnf_cert role is used with multiple namespaces, there may be more than one namespace
   # from which logs must be retrieved
   - name: Get OCP logs from namespaces
     block:
-    # tnf_config is defined in cnf-cert and it may contain dci_openshift_app_ns
+    # tnf_config is defined in cnf_cert and it may contain dci_openshift_app_ns
     # If no tnf_config is provided externally, ns_list will not be generated here
     - name: Obtain namespaces from tnf_config variable if exists (excepting dci_openshift_app_ns if provided)
       set_fact:
@@ -23,7 +23,7 @@
 
     - name: Get OCP logs from namespace
       include_role:
-        name: get-logs-from-namespace
+        name: get_logs_from_namespace
       vars:
         get_logs_folder: "{{ job_logs.path }}"
       loop: "{{ ns_list }}"

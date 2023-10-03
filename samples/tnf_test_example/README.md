@@ -4,7 +4,7 @@ This example deploys a couple of pods in different namespaces, to be used with t
 
 Note that this example works in OCP versions equal or higher than 4.8.x.
 
-A possible configuration to deploy this sample is the following (note that variables that are not defined, such as the ones related to `cnf-cert` role, would use default values):
+A possible configuration to deploy this sample is the following (note that variables that are not defined, such as the ones related to `cnf_cert` role, would use default values):
 
 ```yaml
 ---

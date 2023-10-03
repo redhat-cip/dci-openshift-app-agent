@@ -8,7 +8,7 @@
 
 - name: Compute removed API after executing the workload
   include_role:
-    name: deprecated-api
+    name: deprecated_api
   when:
     - ocp_version is version("4.9", ">=")
     - check_workload_api | bool

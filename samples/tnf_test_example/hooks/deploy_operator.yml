@@ -1,7 +1,7 @@
 ---
 - name: "Create CatalogSource for operator {{ tnf_operator_to_install.operator_name }}"
   include_role:
-    name: catalog-source
+    name: catalog_source
   vars:
     cs_name: "{{ tnf_operator_to_install.operator_name }}-catalog"
     cs_namespace: "openshift-marketplace"
@@ -10,7 +10,7 @@
 
 - name: "deploy-operators : Install operator"
   include_role:
-    name: olm-operator
+    name: olm_operator
   vars:
     operator: "{{ tnf_operator_to_install.operator_name }}"
     source: "{{ tnf_operator_to_install.operator_name }}-catalog"
