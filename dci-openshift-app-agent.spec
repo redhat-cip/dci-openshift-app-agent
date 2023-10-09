@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.5.11
+Version:       0.6.0
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -18,6 +18,7 @@ Requires: python2-dciclient >= 3.1.0
 Requires: python3-dciclient >= 3.1.0
 %endif
 Requires: ansible-collection-community-kubernetes
+Requires: ansible-collection-redhatci-ocp
 Requires(pre): shadow-utils
 Requires(post): systemd
 Requires(preun): systemd
@@ -81,6 +82,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Mon Oct 09 2023 Jorge A Gallegos <jgallego@redhat.com> - 0.6.0-1
+- Adding Red Hat CI OCP collection as a dependency
+
 * Thu Oct  5 2023 Tony Garcia <tonyg@redhat.com> 0.5.11-1
 - Requires dci-openshift-agent >= 0.5.12 for common-roles renaming
 
@@ -118,7 +122,7 @@ exit 0
 * Fri Jan 28 2022 Tony Garcia <tonyg@redhat.com> 0.3.2-1
 - Add LICENSE file
 
-* Wed Oct 10 2021 Ramon Perez <raperez@redhat.com> 0.3.1-1
+* Sun Oct 10 2021 Ramon Perez <raperez@redhat.com> 0.3.1-1
 - Sub-ids support in d-o-a-a user. Including d-o-a-a/plays/scripts/ entry.
 
 * Wed May  5 2021 Frederic Lepied <flepied@redhat.com> 0.3.0-1
