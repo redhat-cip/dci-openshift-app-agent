@@ -117,6 +117,12 @@
         id: '{{ job_id }}'
         tags: '{{ ["agent:openshift-app"] + dci_tags + dci_workarounds }}'
 
+    - name: Count workarounds
+      dci_job:
+        id: "{{ job_id }}"
+        key: "workarounds"
+        value: "{{ dci_workarounds | length }}"
+
     - name: Add cluster tag to the current job
       dci_job:
         id: '{{ job_id }}'
