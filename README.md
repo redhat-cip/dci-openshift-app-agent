@@ -144,6 +144,28 @@ Also, the [tnf_test_example sample](samples/tnf_test_example/README.md) can be f
 
 The [chart_verifier role](https://github.com/redhatci/ocp/tree/main/roles/chart_verifier/README.md) is able to deploy charts on an OCP cluster and run the helm chart verifier tests. Please see the role documentation for more details about how to run tests using via the app agent or using a pipeline.
 
+### Test suites execution order
+
+The test suites are executed in the following order, in the case all them are enabled.
+
+1. Helm chart erifier
+2. CNF cert
+3. Preflight container only
+4. Preflight operators
+5. Operator SDK
+
+Test suites may requires some delay between each execution. The following variables allow setting a pause between the execution of each test. The time must be set in minutes. See [tnf_test_example sample](samples/tnf_test_example/README.md) for a reference about the hooks structure.
+
+```
+chart_verified_wait: 0
+cnf_cert_wait: 0
+preflight_container_wait: 0
+preflight_operators_wait: 0
+operator_sdk_wait: 0
+```
+
+If the execution order or pre-defined workflow does not suits the partner needs, it it recommended to use agent hooks that will allow to use the roles available for the App agent and define a custom execution workflow. 
+
 ## General workflow
 
 The `dci-openshift-app-agent` is an Ansible playbook that enables Cloud-Native Applications and Operators in OpenShift using Red Hat Distributed CI service. The main entrypoint is the file `dci-openshift-app-agent.yml`. It is composed of several steps executed sequentially.

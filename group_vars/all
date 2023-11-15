@@ -40,7 +40,12 @@ dci_team_id: null
 dci_pipeline_id: null
 dci_ga_components_for_certification:
   - ocp
-
+# Wait minutes after running the test suite
+chart_verifier_wait: 0
+cnf_cert_wait: 0
+preflight_container_wait: 0
+preflight_operators_wait: 0
+operator_sdk_wait: 0
 ...
 
 # Local Variables:
