@@ -29,14 +29,6 @@ In an already registered server with RHEL you can fulfil the repositories and An
 # dnf -y install https://packages.distributed-ci.io/dci-release.el8.noarch.rpm
 ```
 
-Please make sure that you have followed these steps before continuing. Then, install Kubernetes module:
-
-```ShellSession
-# dnf install python3-kubernetes
-```
-
-> NOTE: Another option is to use pip3, and you can use a more recent version of the module, however it is not recommended.
-
 ## Installation
 
 The `dci-openshift-app-agent` is packaged and available as a RPM file located in [this repository](https://packages.distributed-ci.io/dci-release.el8.noarch.rpm). It can be installed in the jumphost server with the following command:
