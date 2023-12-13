@@ -23,7 +23,6 @@ check_workload_api: true
 # please think to define this variable
 # if you deal with private registries
 partner_creds: ""
-sync_cnf_cert_and_preflight: false
 dci_local_registry: |-
   {{ local_registry_host | default('') }}
   {%- if local_registry_port is defined %}
