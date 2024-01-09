@@ -9,6 +9,9 @@
 - name: Compute removed API after executing the workload
   include_role:
     name: redhatci.ocp.deprecated_api
+  vars:
+    deprecated_api_logs:
+      path: "{{ job_logs.path }}"
   when:
     - ocp_version is version("4.9", ">=")
     - check_workload_api | bool
