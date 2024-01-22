@@ -76,13 +76,13 @@
   include_role:
     name: redhatci.ocp.openshift_cnf
   vars:
-    project_type: "openshift_cnf"
+    product_type: "openshift_cnf"
   when: cnf_to_certify is defined
 
 - name: Helm Chart Certification Project
   include_role:
     name: redhatci.ocp.create_helmchart
   vars:
-    project_type: "helmchart"
+    product_type: "helmchart"
   when: helmchart_to_certify is defined
 ...
