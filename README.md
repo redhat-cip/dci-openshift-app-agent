@@ -150,9 +150,6 @@ Test suites may requires some delay between each execution. The following variab
 ```
 chart_verified_wait: 0
 cnf_cert_wait: 0
-preflight_container_wait: 0
-preflight_operators_wait: 0
-operator_sdk_wait: 0
 ```
 
 If the execution order or pre-defined workflow does not suits the partner needs, it it recommended to use agent hooks that will allow to use the roles available for the App agent and define a custom execution workflow. See [tnf_test_example sample](samples/tnf_test_example/README.md) for a reference about the hooks structure.

@@ -28,29 +28,19 @@
     - cnf_cert_wait|int > 0
 
 - name: Preflight container-only tests
+  vars:
+    preflight_dci_all_components_are_ga: "{{ dci_all_components_are_ga }}"
   include_role:
     name: redhatci.ocp.preflight
     tasks_from: main_standalone_containers_certification
   when: preflight_containers_to_certify is defined
 
-- name: "Pause after preflight_container"
-  pause:
-    minutes: "{{ preflight_container_wait }}"
-  when:
-    - preflight_container_wait is defined
-    - preflight_container_wait|int > 0
-
 - name: Preflight tests
+  vars:
+    preflight_dci_all_components_are_ga: "{{ dci_all_components_are_ga }}"
   include_role:
     name: redhatci.ocp.preflight
   when: preflight_operators_to_certify is defined
-
-- name: "Pause after preflight_operators"
-  pause:
-    minutes: "{{ preflight_operators_wait }}"
-  when:
-    - preflight_operators_wait is defined
-    - preflight_operators_wait|int > 0
 
 - name: Operator-SDK Scorecard tests
   vars:
@@ -64,13 +54,6 @@
   include_role:
     name: redhatci.ocp.operator_sdk
   when: scorecard_operators is defined
-
-- name: "Pause after operator_sdk"
-  pause:
-    minutes: "{{ operator_sdk_wait }}"
-  when:
-    - operator_sdk_wait is defined
-    - operator_sdk_wait|int > 0
 
 - name: CNF Project Creation-Only tests for Vendor Validation
   include_role:
