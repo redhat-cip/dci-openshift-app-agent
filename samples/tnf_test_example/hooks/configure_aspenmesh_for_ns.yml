@@ -1,4 +1,21 @@
 ---
+# This takes the same rule from system:openshift:scc:anyuid ClusterRole, but
+# using a Role instead
+- name: Create a Role to allow pods running under anyuid
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      kind: Role
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: use-anyuid
+        namespace: "{{ app_ns }}"
+      rules:
+        - apiGroups: ["security.openshift.io"]
+          resources: ["securitycontextconstraints"]
+          resourceNames: ["anyuid"]
+          verbs: ["use"]
+
 - name: Add RoleBinding to allow pods running under anyuid
   community.kubernetes.k8s:
     state: present
@@ -6,12 +23,12 @@
       apiVersion: rbac.authorization.k8s.io/v1
       kind: RoleBinding
       metadata:
-        name: "{{ app_ns }}:scc:anyuid"
+        name: "use-anyuid"
         namespace: "{{ app_ns }}"
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: Role
-        name: system:openshift:scc:anyuid
+        name: use-anyuid
       subjects:
         - kind: Group
           name: system:serviceaccounts:{{ app_ns }}
@@ -36,3 +53,26 @@
         name: "{{ app_ns }}"
         labels:
           istio-injection: enabled
+
+# The aspen-mesh-pull-secret provided in istio-system namespace is required on each namespace
+- name: Retrieve aspen-mesh-pull-secret from istio-system namespace
+  community.kubernetes.k8s_info:
+    namespace: istio-system
+    kind: Secret
+    name: aspen-mesh-pull-secret
+  register: am_pull_secret
+  no_log: true
+
+- name: Create aspen-mesh-pull-secret in target namespace
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: aspen-mesh-pull-secret
+        namespace: "{{ app_ns }}"
+      data:
+        .dockerconfigjson: "{{ am_pull_secret['resources'][0]['data']['.dockerconfigjson'] }}"
+      type: "kubernetes.io/dockerconfigjson"
+  no_log: true
