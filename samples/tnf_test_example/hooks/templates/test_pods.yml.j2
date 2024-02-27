@@ -47,6 +47,10 @@ spec:
 {% if app_ns == 'production-cnf' %}
       runtimeClassName: production-runtime-class
 {% endif %}
+{% if tnf_enable_service_mesh|default(false)|bool and am_installed|default(false)| bool %}
+      imagePullSecrets:
+      - name: aspen-mesh-pull-secret
+{% endif %}
       containers:
         - image: {{ tnf_app_image | default('quay.io/testnetworkfunction/cnf-test-partner:latest') }}
           imagePullPolicy: IfNotPresent
