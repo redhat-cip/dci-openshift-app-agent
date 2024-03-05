@@ -60,6 +60,11 @@
         - kind: Group
           name: system:serviceaccounts:{{ app_ns }}
 
+- name: Create NetworkPolicies for the pods deployed to deny traffic by default
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/network_policies_deny_traffic.yml.j2') | from_yaml }}"
+
 - name: Configure Aspenmesh for namespace
   include_tasks: configure_aspenmesh_for_ns.yml
   when:
@@ -138,11 +143,6 @@
   when:
     - tnf_enable_service_mesh | default(false) | bool
     - am_installed | default(false) | bool
-
-- name: Create NetworkPolicies for the pods deployed to deny traffic by default
-  community.kubernetes.k8s:
-    state: present
-    definition: "{{ lookup('template', 'templates/network_policies_deny_traffic.yml.j2') | from_yaml }}"
 
 - name: Create CRD under test
   community.kubernetes.k8s:

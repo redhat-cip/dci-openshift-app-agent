@@ -4,7 +4,7 @@ items:
   - apiVersion: policy/v1
     kind: PodDisruptionBudget
     metadata:
-      name: test-pdb-min
+      name: {{ app_ns }}-pdb-min
       namespace: {{ app_ns }}
     spec:
       minAvailable: 1
@@ -14,7 +14,7 @@ items:
   - apiVersion: policy/v1
     kind: PodDisruptionBudget
     metadata:
-      name: test-pdb-max
+      name: {{ app_ns }}-pdb-max
       namespace: {{ app_ns }}
     spec:
       maxUnavailable: 1

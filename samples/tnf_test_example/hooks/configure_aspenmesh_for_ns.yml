@@ -76,3 +76,10 @@
         .dockerconfigjson: "{{ am_pull_secret['resources'][0]['data']['.dockerconfigjson'] }}"
       type: "kubernetes.io/dockerconfigjson"
   no_log: true
+
+# We need to enable the traffic with istio-system and openshift-dns namespaces.
+# If not, istio-proxy container will never start
+- name: Create NetworkPolicies to allow required traffic for AM
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/network_policies_am.yml.j2') | from_yaml }}"
