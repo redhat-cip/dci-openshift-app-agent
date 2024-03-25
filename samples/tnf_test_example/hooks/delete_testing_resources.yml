@@ -1,11 +1,54 @@
 ---
+- name: Discover deployments
+  community.kubernetes.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    namespace: "{{ pods_in_same_ns.namespace }}"
+  register: deployments_in_namespace
 
-- name: Delete namespaces if not done before
+- name: Discover stateful sets
+  community.kubernetes.k8s_info:
+    api_version: apps/v1
+    kind: StatefulSet
+    namespace: "{{ pods_in_same_ns.namespace }}"
+  register: statefulsets_in_namespace
+
+- name: Delete deployments
+  community.kubernetes.k8s:
+    api_version: apps/v1
+    kind: Deployment
+    namespace: "{{ pods_in_same_ns.namespace }}"
+    name: "{{ item.metadata.name }}"
+    state: absent
+    delete_options:
+      gracePeriodSeconds: 30
+    wait: yes
+    wait_sleep: 5
+    wait_timeout: 120
+  loop: "{{ deployments_in_namespace.resources }}"
+
+- name: Delete stateful sets
+  community.kubernetes.k8s:
+    api_version: apps/v1
+    kind: StatefulSet
+    namespace: "{{ pods_in_same_ns.namespace }}"
+    name: "{{ item.metadata.name }}"
+    state: absent
+    delete_options:
+      gracePeriodSeconds: 30
+    wait: yes
+    wait_sleep: 5
+    wait_timeout: 120
+  loop: "{{ statefulsets_in_namespace.resources }}"
+
+- name: Delete namespace
   community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ pods_in_same_ns.namespace }}"
     state: absent
+    delete_options:
+      gracePeriodSeconds: 30
     wait: yes
     wait_sleep: 5
     wait_timeout: 120
