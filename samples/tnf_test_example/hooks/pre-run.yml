@@ -1,5 +1,4 @@
 ---
-
 # First task to do: if the variables are not correctly defined, do not continue.
 - name: Declare tnf variables
   include_tasks: declare_tnf_variables.yml

@@ -2,4 +2,5 @@
 
 collections:
   - name: community.kubernetes
+    version: 1.2.1
   - name: redhatci.ocp
