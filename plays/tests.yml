@@ -1,4 +1,10 @@
 ---
+- name: Helm Chart Certification Project
+  include_role:
+    name: redhatci.ocp.create_helmchart
+  vars:
+    product_type: "helmchart"
+  when: helmchart_to_certify is defined
 
 - name: "Chart verifier tests"
   include_role:
@@ -61,11 +67,4 @@
   vars:
     product_type: "openshift_cnf"
   when: cnf_to_certify is defined
-
-- name: Helm Chart Certification Project
-  include_role:
-    name: redhatci.ocp.create_helmchart
-  vars:
-    product_type: "helmchart"
-  when: helmchart_to_certify is defined
 ...
