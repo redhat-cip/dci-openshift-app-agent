@@ -24,7 +24,7 @@
 - name: "Find deployment JUnit files"
   find:
     paths: "{{ job_logs.path }}"
-    patterns: "*junit*.xml"
+    patterns: "*.xml"
   register: logs_matched
   tags: [dci]
 

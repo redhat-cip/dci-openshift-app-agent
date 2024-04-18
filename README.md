@@ -226,7 +226,7 @@ This hook is not required and can be omitted.
 
 You can put your logs in `{{ job_logs.path }}` and they will be uploaded in plays/post-run.yml
  > NOTE: Test result files must follow the Junit format, must be stored within 
- the `{{ job_logs.path }}` directory and the file name must follow the pattern `*junit*.xml`.
+ the `{{ job_logs.path }}` directory and the file name must follow the pattern `*.xml`.
 
 Tags:
 
