@@ -67,6 +67,16 @@
         dci_ui_url="{{ lookup('env','DCI_UI_URL') | default('https://www.distributed-ci.io', True) }}"
       no_log: true
 
+    - name: Check job topic
+      assert:
+        that:
+          - "dci_topic == job_info.job.topic.name"
+        fail_msg: "dci_topic is inconsistent: {{ dci_topic }} != {{ job_info.job.topic.name }}. Use dci-pipeline-schedule to schedule jobs."
+        success_msg: "dci_topic is consistent"
+      when:
+        - dci_topic is defined
+        - job_info is defined
+
     # Add the ocp component when called from dci-pipeline
     - name: Attach ocp component to the job
       dci_job_component:
@@ -76,7 +86,9 @@
       until: job_component_result is not failed
       retries: 5
       delay: 20
-      when: job_info is defined
+      when:
+        - job_info is defined
+        - ocp_component_id is defined
 
     # Schedule a new job only if not passed via dci-pipeline
     - name: "Schedule a new job"
