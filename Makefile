@@ -25,6 +25,10 @@ install:
 	  install -p -D -m 644 $$play $(BUILDROOT)$(DATADIR)/dci-openshift-app-agent/$$play; \
 	done
 
+	for internal_registry_file in utilities/internal-registry/*.yml; do \
+	  install -p -D -m 644 $$internal_registry_file  $(BUILDROOT)$(DATADIR)/dci-openshift-app-agent/$$internal_registry_file; \
+	done
+
 	for script in plays/scripts/*; do \
 	  install -p -D -m 755 $$script $(BUILDROOT)$(DATADIR)/dci-openshift-app-agent/$$script; \
 	done

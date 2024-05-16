@@ -39,6 +39,23 @@ The `dci-openshift-app-agent` is packaged and available as a RPM file located in
 
 To configure your DCI job pipelines, you need to install `dci-pipeline`. Instructions at [dci-pipeline documentation](../dci-pipeline/).
 
+### Folders and files location
+
+Once `dci-openshift-app-agent` package is installed, the files and resources you can find in this repository will be placed in the following locations:
+
+- `/etc/dci-openshift-app-agent` contains these folders and files: `dcirc.sh.dist` file, `hooks` folder, `hosts.yml` file and `settings.yml` file.
+- `/etc/sysconfig` folder contains the content of `sysconfig` folder, which is `dci-openshift-app-agent` file.
+- `/usr/share/dci-openshift-app-agent/` gathers the following folders and files: `ansible.cfg` file, `dci-openshift-app-agent.yml` file, `group_vars` folder, `plays` folder and `utilities` folder.
+- `/var/lib/dci-openshift-app-agent` folder holds the `samples` folder.
+- `/usr/bin` folder holds scripts such as `dci-openshift-app-agent-ctl`.
+
+> Note: scripts provided in this agent are deprecated. You should use `dci-pipeline` instead.
+
+Also, have in mind that:
+
+- `dci-openshift-app-agent` user (with sudo permissions) and group are created
+- Files under `systemd` folder in this repo will be used to create the corresponding system service for `dci-openshift-app-agent`.
+
 
 ## Configuration
 
