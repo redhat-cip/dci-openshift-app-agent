@@ -95,6 +95,7 @@ do\_certsuite                      | false                                      
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
 do\_must\_gather                   | true                                                 | Enable/Disable the generation of must_gather
 do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
+do\_container\_parallel\_test      | false                                                | If true, Run Preflight test in parallel for container that need to recertify or without submission to the portal
 tests\_to\_verify                  | undefined                                                | List of expected test results. When defined, it triggers the validation of actual test results against the expectations. Please check [verify-tests readme](https://github.com/redhatci/ocp/tree/main/roles/verify_tests/README.md) to get more details and an example of the configuration.
 |See [Operator Certification (preflight)](https://github.com/redhatci/ocp/tree/main/roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
 |See [k8s_best_practices_certsuite role](https://github.com/redhatci/ocp/tree/main/roles/k8s_best_practices_certsuite/README.md) for details to enable the Red Hat Best Practices Test Suite for Kubernetes                  ||
@@ -241,7 +242,7 @@ This hook is used for tasks required after the application has been installed an
 This hook is not required and can be omitted.
 
 You can put your logs in `{{ job_logs.path }}` and they will be uploaded in plays/post-run.yml
- > NOTE: Test result files must follow the Junit format, must be stored within 
+ > NOTE: Test result files must follow the Junit format, must be stored within
  the `{{ job_logs.path }}` directory and the file name must follow the pattern `*.xml`.
 
 Tags:

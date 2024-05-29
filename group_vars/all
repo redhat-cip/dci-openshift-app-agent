@@ -42,6 +42,7 @@ dci_ga_components_for_certification:
 # Wait minutes after running the test suite
 chart_verifier_wait: 0
 certsuite_wait: 0
+do_container_parallel_test: false
 ...
 
 # Local Variables:
