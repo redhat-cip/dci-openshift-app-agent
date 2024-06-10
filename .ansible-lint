@@ -1,3 +1,4 @@
 skip_list:
   - '301'                       # we use a lot of shell commands to get info
   - '303'                       # sometimes the module doesn't cover all the command options
+  - ignore-errors               # Allow ignore-errors: Linter is stupid and permits `failed_when: false` but disallows `ignore-errors`.

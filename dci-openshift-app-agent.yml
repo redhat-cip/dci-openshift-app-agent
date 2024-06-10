@@ -37,7 +37,7 @@
           include_tasks: plays/error.yml
 
         # The error may happen before creating the job_info variable, or it may happen in a
-        # job where dci tag is not enabled (so job_info variable is not created). Then, 
+        # job where dci tag is not enabled (so job_info variable is not created). Then,
         # we have to set a different error message in that case
         - name: Fail properly
           fail:
@@ -114,6 +114,7 @@
       copy:
         content: "{{ job_id }}"
         dest: "{{ JOB_ID_FILE }}"
+        mode: '0644'
       when: JOB_ID_FILE is defined
 
     - name: Set previous job id
@@ -236,7 +237,7 @@
           include_tasks: plays/failure.yml
 
         # The error may happen before creating the job_info variable, or it may happen in a
-        # job where dci tag is not enabled (so job_info variable is not created). Then, 
+        # job where dci tag is not enabled (so job_info variable is not created). Then,
         # we have to set a different error message in that case
         - name: Fail properly
           fail:
