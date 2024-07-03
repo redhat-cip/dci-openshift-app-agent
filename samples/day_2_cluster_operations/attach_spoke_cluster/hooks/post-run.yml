@@ -1,0 +1,9 @@
+---
+
+- name: Set outputs to be copied
+  set_fact:
+    outputs:
+      hub_kubeconfig: "{{ kubeconfig_path }}"
+      spoke_kubeconfig: "{{ spoke_cluster_kubeconfig_path }}"
+
+...

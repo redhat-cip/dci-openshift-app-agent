@@ -1,0 +1,9 @@
+---
+
+- name: Assert the required variables are defined
+  ansible.builtin.assert:
+    that:
+      - spoke_cluster_name is defined
+      - spoke_cluster_name | length > 0
+
+...

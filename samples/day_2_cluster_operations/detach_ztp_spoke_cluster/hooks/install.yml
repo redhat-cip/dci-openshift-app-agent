@@ -1,0 +1,16 @@
+---
+
+- name: Remove ZTP GitOps resources
+  ansible.builtin.include_role:
+    name: redhatci.ocp.remove_ztp_gitops_resources
+  vars:
+    rzgr_policies_namespace: "{{ spoke_cluster_name }}-policies"
+
+- name: Detach spoke cluster from hub cluster
+  ansible.builtin.include_role:
+    name: redhatci.ocp.acm_spoke_mgmt
+  vars:
+    asm_action: "detach"
+    asm_cluster_name: "{{ spoke_cluster_name }}"
+
+...
