@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: List
 items:
-{% for item in tnf_config %}
+{% for item in kbpc_test_config %}
 {% if item.targetpodlabels is defined and item.targetpodlabels is iterable %}
 {% for label in item.targetpodlabels %}
 {% if label|length %}
-{% for item2 in tnf_config %}
+{% for item2 in kbpc_test_config %}
 {% if item.namespace is defined and item.namespace|length and item2.namespace is defined and item2.namespace|length %}
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1

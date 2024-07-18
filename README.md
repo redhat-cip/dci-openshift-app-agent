@@ -83,7 +83,7 @@ dci\_url                           |                                            
 dci\_disconnected                  | false                                                | Set it to true if it is a disconnected environment. This variable is not defined in the default values, but all the checks that make use of this variable has a default value (i.e. false) defined.
 dci\_local\_registry               | ""                                                   | Registry to fetch containers that may be used. Mandatory for disconnected environments.
 provision\_cache\_store            | "/opt/cache"                                         | Directory aimed to share artifacts between dci-openshift-agent and dci-openshift-app-agent.
-partner\_creds                     | ""                                                   | Authfile with registries' creds. This variable must have a value if we are on a disconnected environment. In that case, it must include the creds for the local registry used, and optionally have private registry creds for partners. If it is a connected environment, this variable is optional and, if it has a value, the file would contain just private registry creds for partners. [In this link](https://man.archlinux.org/man/community/containers-common/containers-auth.json.5.en#FORMAT), there are examples about how the files should be formatted. This variable has to be defined when running preflight on CNF Cert Suite.
+partner\_creds                     | ""                                                   | Authfile with registries' creds. This variable must have a value if we are on a disconnected environment. In that case, it must include the creds for the local registry used, and optionally have private registry creds for partners. If it is a connected environment, this variable is optional and, if it has a value, the file would contain just private registry creds for partners. [In this link](https://man.archlinux.org/man/community/containers-common/containers-auth.json.5.en#FORMAT), there are examples about how the files should be formatted. This variable has to be defined when running preflight on Red Hat Best Practices Test Suite for Kubernetes.
 dci\_workarounds                   | []                                                   | List of workarounds to be considered in the execution. Each element of the list must be a String with the following format: bz\<id> or gh-org-repo-\<id>
 dci\_openshift\_app\_image         |                                                      | Image that can be to be used on the agent workloads. It needs to be defined in the partner hooks. It needs to be mirrored to a local registry in disconnected environments.
 dci\_openshift\_app\_ns            | "myns"                                               | Default namespace  to deploy workloads in the running cluster.
@@ -91,14 +91,13 @@ dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-ga
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 dci\_ga\_components\_for\_certification | ["ocp"]                                         | list of components that needs to be ga to submit a certification record
-do\_cnf\_cert                      |false                                                 | Enable/Disable the CNF Cert Suite (<https://github.com/test-network-function/cnf-certification-test>)
+do\_certsuite                      | false                                                | Enable/Disable the Red Hat Best Practices Test Suite for Kubernetes (<https://github.com/test-network-function/cnf-certification-test>)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
 do\_must\_gather                   | true                                                 | Enable/Disable the generation of must_gather
 do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
-sync\_cnf\_cert\_and\_preflight    | false                                                | If true, CNF Cert Suite output (claim.json file) would be used to create the `preflight_operators_to_check` variable needed for preflight tests.
 tests\_to\_verify                  | undefined                                                | List of expected test results. When defined, it triggers the validation of actual test results against the expectations. Please check [verify-tests readme](https://github.com/redhatci/ocp/tree/main/roles/verify_tests/README.md) to get more details and an example of the configuration.
 |See [Operator Certification (preflight)](https://github.com/redhatci/ocp/tree/main/roles/preflight/README.md) for details to enable the Operator Certifications tests suite ||
-|See [CNF-cert role](https://github.com/redhatci/ocp/tree/main/roles/cnf_cert/README.md) for details to enable the Cloud Native Functions (CNF) cert suite                   ||
+|See [k8s_best_practices_certsuite role](https://github.com/redhatci/ocp/tree/main/roles/k8s_best_practices_certsuite/README.md) for details to enable the Red Hat Best Practices Test Suite for Kubernetes                  ||
 |See [chart-verifier role](https://github.com/redhatci/ocp/tree/main/roles/chart_verifier/README.md) for details to enable the chart-verifier tests                          ||
 |See [resources-to-components role](https://github.com/redhatci/ocp/tree/main/roles/resources_to_components/README.md) for details to enable the creation of DCI components based on Kubernetes resources deployed in the cluster, making use of `rtc_resources_to_components` variable. ||
 
@@ -139,13 +138,13 @@ For specific details about the features and variables for this test suite see: [
 
 The test results for each operator can be submitted to the [Red Hat connect Site](https://connect.redhat.com/). Please see [Preflight Role](https://github.com/redhatci/ocp/tree/main/roles/preflight/README.md) documentation about how to enable this feature.
 
-### Cloud Native Functions (CNF) Certification tests
+### Red Hat Best Practices Test Suite for Kubernetes
 
-The [CNF_cert role](https://github.com/redhatci/ocp/tree/main/roles/cnf_cert/README.md) allows the deployment of CNFs and run the defined [Tests Network Functions (TNF)](https://github.com/test-network-function/cnf-certification-test) in the order to meet minimum requirements for Red Hat OpenShift Certification.
+The [k8s_best_practices_certsuite role](https://github.com/redhatci/ocp/tree/main/roles/k8s_best_practices_certsuite/README.md) allows to run the [certsuite tests](https://github.com/test-network-function/cnf-certification-test) in order to meet minimum requirements for Red Hat OpenShift Certification.
 
-For specific details about the features and variables for this test suite see: [CNF_cert role](https://github.com/redhatci/ocp/tree/main/roles/cnf_cert/README.md) documentation.
+For specific details about the features and variables for this test suite see: [k8s_best_practices_certsuite role](https://github.com/redhatci/ocp/tree/main/roles/k8s_best_practices_certsuite/README.md) documentation.
 
-Also, the [tnf_test_example sample](samples/tnf_test_example/README.md) can be followed as a good example of how to deploy a workload to be tested by the CNF Cert Suite.
+Also, the [tnf_test_example sample](samples/tnf_test_example/README.md) can be followed as a good example of how to deploy a workload to be tested by the Red Hat Best Practices Test Suite for Kubernetes.
 
 ### Helm Chart Verifier
 
@@ -158,7 +157,7 @@ The [chart_verifier role](https://github.com/redhatci/ocp/tree/main/roles/chart_
 The test suites are executed in the following order, in the case all them are enabled.
 
 1. Helm chart erifier
-2. CNF cert
+2. Red Hat Best Practices Test Suite for Kubernetes
 3. Preflight container only
 4. Preflight operators
 5. Operator SDK
@@ -166,7 +165,7 @@ The test suites are executed in the following order, in the case all them are en
 Test suites may requires some delay between each execution. The following variables allow setting a pause between the execution of each test. The time must be set in minutes.
 ```
 chart_verified_wait: 0
-cnf_cert_wait: 0
+certsuite_wait: 0
 ```
 
 If the execution order or pre-defined workflow does not suits the partner needs, it it recommended to use agent hooks that will allow to use the roles available for the App agent and define a custom execution workflow. See [tnf_test_example sample](samples/tnf_test_example/README.md) for a reference about the hooks structure.
@@ -299,9 +298,9 @@ A DCI job produces a set of relevant configuration files, logs, reports, and tes
 | nodes.txt                                      | Files   | Output of the `oc get nodes -o yaml` command                                              |
 | must_gather.tar.gz                             | Files   | Debugging information about your cluster, it can be used for support cases or for troubleshooting using the [O Must Gather tool](https://github.com/kxr/o-must-gather)    |
 | pods.txt                                       | Files   | Output of the `oc get pods -A` command                                                    |
-| tnf_config.yml                                 | Files   | The config file passed to tnf test suite (if enabled)                                     |
-| dci-tnf-execution.log and cnf-certsuite.log    | Files   | The output of tnf execution, for troubleshooting purposes                                 |
-| claim.json                                     | Files   | Claim file generated by the TNF test suite (if enabled)                                   |
+| tnf_config.yml                                 | Files   | The config file passed to certsuite      (if enabled)                                     |
+| certsuite-stdout.log and certsuite.log    | Files   | The output of certsuite execution, for troubleshooting purposes                                |
+| claim.json                                     | Files   | Claim file generated by the certsuite (if enabled)                                        |
 | \<preflight_*\>                                | Files   | Multiple logs, reports, and test results generated by the execution of the preflight test suite (if enabled) |
 | \<chart-name\>_*report.yaml                    | Files   | Helm chart verifier report for the chart under test                                       |
 | helm-submission-report.txt                     | Files   | Report of helm charts submitted for certification (if enabled)                            |
@@ -316,7 +315,7 @@ A DCI job produces a set of relevant configuration files, logs, reports, and tes
 
 ### Libvirt Considerations
 
-If you want to test the CNF Cert Suite in a libvirt environment, remember to tag the OCP nodes to fit in the NodeSelector property defined in partner's pod (`NodeSelectors: role=partner`):
+If you want to test the Red Hat Best Practices Test Suite for Kubernetes in a libvirt environment, remember to tag the OCP nodes to fit in the NodeSelector property defined in partner's pod (`NodeSelectors: role=partner`):
 
 ```ShellSession
 for master in $(oc get node -l node-role.kubernetes.io/master -o=custom-columns=name:.metadata.name --no-headers); do \
@@ -373,7 +372,7 @@ Conditions in which the issue appeared:
 
 - dci-openshift-app-agent installed.
 - Execution of dci-openshift-app-agent directly using dci-openshift-app-agent-ctl, with the dci-openshift-app-agent user.
-- Attempt to run a container, using podman, in localhost (e.g. tnf container for running the CNF Cert Suite).
+- Attempt to run a container, using podman, in localhost (e.g. certsuite container for running the Red Hat Best Practices Test Suite for Kubernetes).
 
 Under these conditions, the error presented is the following (there may be other different errors, but all related to the same issue - lack of IDs available):
 

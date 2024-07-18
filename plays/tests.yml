@@ -16,22 +16,35 @@
   pause:
     minutes: "{{ chart_verifier_wait }}"
   when:
-    - chart_verifier_wait is defined
     - chart_verifier_wait|int > 0
 
+# Include legacy call to cnf_cert to keep backwards compatibility
 - name: Run cnf_cert tests
   include_role:
     name: redhatci.ocp.cnf_cert
   vars:
     tnf_image_suffix: "{{ job_id }}"
-  when: do_cnf_cert|bool
-
-- name: "Pause after cnf_cert"
-  pause:
-    minutes: "{{ cnf_cert_wait }}"
   when:
-    - cnf_cert_wait is defined
-    - cnf_cert_wait|int > 0
+    - do_cnf_cert is defined
+    - do_cnf_cert|default(false)|bool
+
+- name: Run k8s_best_practices_certsuite tests
+  include_role:
+    name: redhatci.ocp.k8s_best_practices_certsuite
+  vars:
+    kbpc_kubeconfig: "{{ kubeconfig_path }}"
+    kbpc_log_path: "{{ job_logs.path }}"
+    kbpc_pullsecret: "{{ pullsecret_tmp_file | default('') }}"
+    kbpc_registry: "{{ dci_local_registry }}"
+    kbpc_partner_creds: "{{ partner_creds }}"
+    kbpc_image_suffix: "{{ job_id }}"
+  when: do_certsuite|bool
+
+- name: "Pause after certsuite"
+  pause:
+    minutes: "{{ certsuite_wait }}"
+  when:
+    - certsuite_wait|int > 0
 
 - name: Preflight container-only tests
   vars:
@@ -53,7 +66,7 @@
     scorecard_oc_tool_path: "{{ oc_tool_path }}"
     scorecard_partner_creds: "{{ partner_creds }}"
     scorecard_kubeconfig_path: "{{ kubeconfig_path }}"
-    scorecard_pullsecret_tmp_file: "{{ pullsecret_tmp_file }}"
+    scorecard_pullsecret_tmp_file: "{{ pullsecret_tmp_file | default('') }}"
     scorecard_job_logs: "{{ job_logs }}"
     scorecard_dci_local_registry: "{{ dci_local_registry }}"
     scorecard_dci_disconnected: "{{ dci_disconnected }}"

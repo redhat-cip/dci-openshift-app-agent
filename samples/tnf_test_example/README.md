@@ -1,18 +1,20 @@
 # TNF Test example
 
-This example deploys a couple of pods in different namespaces, to be used with the CNF Test Suite provided by [test-network-function](https://github.com/test-network-function/cnf-certification-test) in a multi-namespace scenario.
+This example deploys a couple of pods in different namespaces, to be used with the [Red Hat Best Practices Test Suite for Kubernetes](https://github.com/test-network-function/cnf-certification-test) in a multi-namespace scenario.
+
+> Even though CNF Cert Suite has been renamed to Red Hat Best Practices Test Suite for Kubernetes, this example will keep tnf_test_example name.
 
 Note that this example works in OCP versions equal or higher than 4.8.x.
 
-A possible configuration to deploy this sample is the following (note that variables that are not defined, such as the ones related to `cnf_cert` role, would use default values):
+A possible configuration to deploy this sample is the following (note that variables that are not defined, such as the ones related to `k8s_best_practices_certsuite` role, would use default values):
 
 ```yaml
 ---
 dci_tags: ["debug"]
 dci_config_dir: "/var/lib/dci-openshift-app-agent/samples/tnf_test_example"
 dci_components_by_query: ["type:tnf_test_example"]
-do_cnf_cert: true
-tnf_config:
+do_certsuite: true
+kbpc_test_config:
   - namespace: "test-cnf"
     targetpodlabels: [environment=test]
     targetoperatorlabels: [operators.coreos.com/mongodb-enterprise.test-cnf=]
@@ -48,8 +50,8 @@ Other resources related to the pods under test are also deployed:
 
 Finally, apart from the pods under test, it also deploys, in one of the namespaces:
 
-- An operator, which can be based on [mongodb-enterprise](https://catalog.redhat.com/software/operators/detail/5e9872923f398525a0ceafba) or in [simple-demo-operator](https://github.com/redhat-openshift-ecosystem/certified-operators/tree/main/operators/simple-demo-operator), in order to execute CNF Cert Suite and Preflight tests over this operator.
-- A Helm chart, based on [fredco samplechart](https://github.com/openshift-helm-charts/charts/tree/main/charts/partners/fredco/samplechart/0.1.3), in order to execute CNF Cert Suite tests over this Helm chart.
+- An operator, which can be based on [mongodb-enterprise](https://catalog.redhat.com/software/operators/detail/5e9872923f398525a0ceafba) or in [simple-demo-operator](https://github.com/redhat-openshift-ecosystem/certified-operators/tree/main/operators/simple-demo-operator), in order to execute certsuite and Preflight tests over this operator.
+- A Helm chart, based on [fredco samplechart](https://github.com/openshift-helm-charts/charts/tree/main/charts/partners/fredco/samplechart/0.1.3), in order to execute certsuite tests over this Helm chart.
 
 The specific operator and Helm chart that are deployed depend on the `tnf_test_example` DCI component used. Currently, we support `v0.0.1` (it uses simple-demo-operator is used) and `v0.0.2` (the latest one, where mongodb-enterprise operator is used). By using `dci_components_by_query` variable in your settings file, you can select the component that best suits you.
 

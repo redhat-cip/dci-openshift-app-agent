@@ -1,6 +1,6 @@
 Name:          dci-openshift-app-agent
-Version:       0.8.0
-Release:       2.VERS%{?dist}
+Version:       0.9.0
+Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
 URL:           https://github.com/redhat-cip/dci-openshift-app-agent
@@ -16,7 +16,7 @@ Requires: python2-dciclient >= 3.1.0
 %else
 Requires: python3-dciclient >= 3.1.0
 %endif
-Requires: ansible-collection-redhatci-ocp >= 0.4.0
+Requires: ansible-collection-redhatci-ocp >= 0.13.0
 Requires(pre): shadow-utils
 Requires(post): systemd
 Requires(preun): systemd
@@ -80,6 +80,9 @@ exit 0
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Fri Jul 26 2024 Ramon Perez <raperez@redhat.com> 0.9.0-1
+- Requires redhatci.ocp >= 0.13.0 for k8s_best_practices_certsuite
+
 * Thu May 16 2024 Ramon Perez <raperez@redhat.com> 0.8.0-2
 - Include missed utilities folder
 

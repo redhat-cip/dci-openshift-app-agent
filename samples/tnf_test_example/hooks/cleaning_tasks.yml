@@ -20,11 +20,11 @@
 
 - name: Delete testing resources
   include_tasks: delete_testing_resources.yml
-  loop: "{{ tnf_config }}"
+  loop: "{{ kbpc_test_config }}"
   loop_control:
     loop_var: pods_in_same_ns
   when:
-    - tnf_config | default('') | length
+    - kbpc_test_config | default('') | length
     - pods_in_same_ns.namespace | default('') | length
 
 - name: Delete SCC Category 1 - CNFs that require Service Mesh
