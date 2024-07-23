@@ -1,6 +1,6 @@
 ---
 
-- name: pre-run
+- name: Pre-run
   dci_job:
     id: "{{ job_id }}"
     status: "pre-run"
@@ -54,7 +54,7 @@
 
 ### Mirror must-gather images
 
-- name: "dci-openshift-app-agent : Mirror must gather images"
+- name: Mirror must gather images
   include_role:
     name: redhatci.ocp.mirror_images
   vars:

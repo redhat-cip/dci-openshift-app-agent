@@ -19,7 +19,7 @@
     - chart_verifier_wait is defined
     - chart_verifier_wait|int > 0
 
-- name: "cnf_cert tests"
+- name: Run cnf_cert tests
   include_role:
     name: redhatci.ocp.cnf_cert
   vars:

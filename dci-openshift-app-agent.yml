@@ -6,7 +6,8 @@
   tags:
     - kubeconfig
   tasks:
-    - block:
+    - name: Kubeconfig tasks
+      block:
         - name: Display proxy settings
           debug:
             msg: "http_proxy={{ lookup('env','http_proxy') }} https_proxy={{ lookup('env','https_proxy') }} no_proxy={{ lookup('env','no_proxy') }}"
@@ -61,10 +62,10 @@
   tasks:
     - name: Read credentials from env vars
       set_fact:
-        dci_client_id="{{ lookup('env','DCI_CLIENT_ID') }}"
-        dci_api_secret="{{ lookup('env','DCI_API_SECRET') }}"
-        dci_cs_url="{{ lookup('env','DCI_CS_URL') }}"
-        dci_ui_url="{{ lookup('env','DCI_UI_URL') | default('https://www.distributed-ci.io', True) }}"
+        dci_client_id: "{{ lookup('env','DCI_CLIENT_ID') }}"
+        dci_api_secret: "{{ lookup('env','DCI_API_SECRET') }}"
+        dci_cs_url: "{{ lookup('env','DCI_CS_URL') }}"
+        dci_ui_url: "{{ lookup('env','DCI_UI_URL') | default('https://www.distributed-ci.io', True) }}"
       no_log: true
 
     - name: Check job topic
@@ -161,7 +162,8 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
-    - block:
+    - name: Pre-run tasks
+      block:
 
         - name: "Setup job_logs directory"
           include_tasks: plays/log-dir.yml
@@ -181,7 +183,8 @@
     - pre-run
     - partner-pre-run
   tasks:
-    - block:
+    - name: Pre-run hooks
+      block:
 
         - name: "Setup job_logs directory"
           include_tasks: plays/log-dir.yml
@@ -202,7 +205,8 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
-    - block:
+    - name: Install tasks
+      block:
         - name: Set job state - running
           dci_job:
             id: "{{ job_id }}"
@@ -261,7 +265,8 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
-    - block:
+    - name: Tests tasks
+      block:
 
         - name: "Setup job_logs directory"
           include_tasks: plays/log-dir.yml
@@ -282,7 +287,8 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
-    - block:
+    - name: Test hooks
+      block:
 
         - name: "Setup job_logs directory"
           include_tasks: plays/log-dir.yml
@@ -303,7 +309,8 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
-    - block:
+    - name: Test results
+      block:
 
         - name: "Check test results"
           include_tasks: plays/check-test-results.yml
@@ -318,7 +325,8 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
-    - block:
+    - name: Post-run tasks
+      block:
         - name: Run the post-run hook
           include_tasks: '{{ dci_config_dir }}/hooks/post-run.yml'
           when: check_post_run.stat.exists
@@ -350,7 +358,7 @@
       when:
         - dci_teardown_on_success
 
-    - name: success
+    - name: Success
       dci_job:
         id: "{{ job_id }}"
         status: "success"

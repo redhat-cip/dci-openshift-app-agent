@@ -1,6 +1,6 @@
 ---
 
-- name: post-run
+- name: Post-run
   dci_job:
     id: "{{ job_id }}"
     status: "post-run"

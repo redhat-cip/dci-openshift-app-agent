@@ -1,4 +1,20 @@
-skip_list:
-  - '301'                       # we use a lot of shell commands to get info
-  - '303'                       # sometimes the module doesn't cover all the command options
-  - ignore-errors               # Allow ignore-errors: Linter is stupid and permits `failed_when: false` but disallows `ignore-errors`.
+---
+
+display_relative_path: true
+exclude_paths:
+  - systemd
+  - tests
+  - utils
+
+profile: production
+use_default_rules: true
+verbosity: 1
+
+warn_list:
+  - command-instead-of-module
+  - fqcn[action-core]
+  - ignore-errors
+  - jinja[spacing]             # multiline is not working https://github.com/ansible/ansible-lint/discussions/3015
+  - no-changed-when
+  - var-naming[no-role-prefix] # TODO: use the custom redhat-ci var-naming rule
+  - yaml[line-length]

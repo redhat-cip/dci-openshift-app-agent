@@ -1,6 +1,6 @@
 ---
 
-- name: error
+- name: Error
   dci_job:
     id: "{{ job_id }}"
     status: "error"
