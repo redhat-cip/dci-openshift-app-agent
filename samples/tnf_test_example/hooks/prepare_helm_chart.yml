@@ -4,8 +4,9 @@
   include_role:
     name: redhatci.ocp.mirror_images
   vars:
-    images:
+    mi_images:
       - "{{ tnf_helm_chart_to_install.image_repository }}:{{ tnf_helm_chart_to_install.app_version }}"
-    authfile: "{{ pullsecret_tmp_file }}"
+    mi_authfile: "{{ pullsecret_tmp_file }}"
+    mi_registry: "{{ dci_local_registry }}"
 
 ...

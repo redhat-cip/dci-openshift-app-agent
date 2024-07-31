@@ -20,9 +20,10 @@
   include_role:
     name: redhatci.ocp.mirror_images
   vars:
-    images:
+    mi_images:
       - "{{ openshift_app_image }}"
-    authfile: "{{ pullsecret_tmp_file }}"
+    mi_authfile: "{{ pullsecret_tmp_file }}"
+    mi_registry: "{{ openshift_app_registry }}"
   when:
     - dci_disconnected | default(false) | bool
     - openshift_app_registry | length

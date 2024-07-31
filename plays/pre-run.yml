@@ -58,8 +58,9 @@
   include_role:
     name: redhatci.ocp.mirror_images
   vars:
-    images: "{{ dci_must_gather_images | default(['registry.redhat.io/openshift4/ose-must-gather']) }}"
-    authfile: "{{ pullsecret_tmp_file }}"
+    mi_images: "{{ dci_must_gather_images | default(['registry.redhat.io/openshift4/ose-must-gather']) }}"
+    mi_authfile: "{{ pullsecret_tmp_file }}"
+    mi_registry: "{{ dci_local_registry }}"
   when:
     - dci_disconnected | default(false) | bool
     - dci_local_registry | length
