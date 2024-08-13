@@ -31,10 +31,10 @@
 
 # Obtained from Verizon VCP Webscale Core and Edge Cloud Native Network Function Requirements, v1.4.
 # Note that this SCC seems to be incompatible with the execution of this test suite:
-# https://github.com/test-network-function/cnf-certification-test/blob/main/CATALOG.md#sys-ptrace-capability
+# https://github.com/redhat-best-practices-for-k8s/certsuite/blob/main/CATALOG.md#sys-ptrace-capability
 # So sys-ptrace-capability will not be checked in this example.
 # Configuration example for enabling SYS_PTRACE:
-# https://github.com/test-network-function/cnf-certification-test-partner/blob/main/examples/accesscontrol/sysptrace_pass.yaml
+# https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/examples/accesscontrol/sysptrace_pass.yaml
 - name: Create SCC Category 1 - CNFs that do not require advanced networking features
   community.kubernetes.k8s:
     state: present

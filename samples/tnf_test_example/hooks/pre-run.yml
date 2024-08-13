@@ -23,7 +23,7 @@
     name: redhatci.ocp.mirror_images
   vars:
     mi_images:
-      - quay.io/testnetworkfunction/cnf-test-partner:latest
+      - quay.io/redhat-best-practices-for-k8s/certsuite-sample-workload:latest
     mi_authfile: "{{ pullsecret_tmp_file }}"
     mi_registry: "{{ dci_local_registry }}"
   when:

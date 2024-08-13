@@ -91,7 +91,7 @@ dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-ga
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 dci\_ga\_components\_for\_certification | ["ocp"]                                         | list of components that needs to be ga to submit a certification record
-do\_certsuite                      | false                                                | Enable/Disable the Red Hat Best Practices Test Suite for Kubernetes (<https://github.com/test-network-function/cnf-certification-test>)
+do\_certsuite                      | false                                                | Enable/Disable the Red Hat Best Practices Test Suite for Kubernetes (<https://github.com/redhat-best-practices-for-k8s/certsuite>)
 do\_chart\_verifier                | false                                                | Enable/Disable the Chart Verifier
 do\_must\_gather                   | true                                                 | Enable/Disable the generation of must_gather
 do\_preflight\_tests               | false                                                | Trigger to activate the preflight tests
@@ -140,7 +140,7 @@ The test results for each operator can be submitted to the [Red Hat connect Site
 
 ### Red Hat Best Practices Test Suite for Kubernetes
 
-The [k8s_best_practices_certsuite role](https://github.com/redhatci/ocp/tree/main/roles/k8s_best_practices_certsuite/README.md) allows to run the [certsuite tests](https://github.com/test-network-function/cnf-certification-test) in order to meet minimum requirements for Red Hat OpenShift Certification.
+The [k8s_best_practices_certsuite role](https://github.com/redhatci/ocp/tree/main/roles/k8s_best_practices_certsuite/README.md) allows to run the [certsuite tests](https://github.com/redhat-best-practices-for-k8s/certsuite) in order to meet minimum requirements for Red Hat OpenShift Certification.
 
 For specific details about the features and variables for this test suite see: [k8s_best_practices_certsuite role](https://github.com/redhatci/ocp/tree/main/roles/k8s_best_practices_certsuite/README.md) documentation.
 
@@ -378,7 +378,7 @@ Under these conditions, the error presented is the following (there may be other
 
 ```Log
 Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
- Error: unable to pull quay.io/testnetworkfunction/cnf-certification-test:unstable: unable to pull image: Error committing the finished image: error adding layer with blob "sha256:0a3cf4c29951bdca5c283957249a78290fb441c4ef2ce74f51815056e4be7e7f": Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
+ Error: unable to pull quay.io/redhat-best-practices-for-k8s/certsuite:unstable: unable to pull image: Error committing the finished image: error adding layer with blob "sha256:0a3cf4c29951bdca5c283957249a78290fb441c4ef2ce74f51815056e4be7e7f": Error processing tar file(exit status 1): there might not be enough IDs available in the namespace (requested 0:5 for /usr/bin/write): lchown /usr/bin/write: invalid argument
 ```
 
 The problem seems to be related to the subordinate user and group mapping applied for the dci-openshift-app-agent user, a feature that is needed to run rootless containers in podman, or to isolate containers with a user namespace.

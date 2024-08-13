@@ -1,6 +1,6 @@
 # TNF Test example
 
-This example deploys a couple of pods in different namespaces, to be used with the [Red Hat Best Practices Test Suite for Kubernetes](https://github.com/test-network-function/cnf-certification-test) in a multi-namespace scenario.
+This example deploys a couple of pods in different namespaces, to be used with the [Red Hat Best Practices Test Suite for Kubernetes](https://github.com/redhat-best-practices-for-k8s/certsuite) in a multi-namespace scenario.
 
 > Even though CNF Cert Suite has been renamed to Red Hat Best Practices Test Suite for Kubernetes, this example will keep tnf_test_example name.
 
@@ -19,14 +19,14 @@ kbpc_test_config:
     targetpodlabels: [environment=test]
     targetoperatorlabels: [operators.coreos.com/mongodb-enterprise.test-cnf=]
     target_crds:
-      - nameSuffix: "crdexamples.test-network-function.com"
+      - nameSuffix: "crdexamples.redhat-best-practices-for-k8s.com"
         scalable: false
     exclude_connectivity_regexp: ""
   - namespace: "production-cnf"
     targetpodlabels: [environment=production]
     targetoperatorlabels: []
     target_crds:
-      - nameSuffix: "crdexamples.test-network-function.com"
+      - nameSuffix: "crdexamples.redhat-best-practices-for-k8s.com"
         scalable: false
     exclude_connectivity_regexp: ""
 ...
@@ -39,11 +39,11 @@ Other resources related to the pods under test are also deployed:
 - Configuration for istio injection, in order to install istio-proxy container on each pod, if istio/Aspenmesh is installed in the cluster. This is only done if `tnf_enable_service_mesh` control flag is set to `true` (`false` by default).
 - (If no default StorageClass is present in the cluster) Local StorageClass and PersistentVolumes, attached to the pods under test in `production-cnf` namespace.
 - A custom SCC applied to all the pods. This SCC follows the Verizon recommendations to use best practices for deploying pods securely.
-- Resource quotas, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/resource-quota.yaml).
-- Network policies, extracted from these sources: [(1)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/ingress-deny-all-np.yaml), [(2)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/egress-deny-all-np.yaml) and [(3)](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/pod-to-pod-np.yaml).
-- CRD under test, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/local-crd-under-test.yaml).
-- Pod disruption budget, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/blob/main/test-target/pod-disruption-budget.yaml).
-- Hugepages configuration in the pods under test, extracted from [this repository](https://github.com/test-network-function/cnf-certification-test-partner/tree/main/examples/platform).
+- Resource quotas, extracted from [this repository](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/test-target/resource-quota.yaml).
+- Network policies, extracted from these sources: [(1)](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/test-target/ingress-deny-all-np.yaml), [(2)](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/test-target/egress-deny-all-np.yaml) and [(3)](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/test-target/pod-to-pod-np.yaml).
+- CRD under test, extracted from [this repository](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/test-target/local-crd-under-test.yaml).
+- Pod disruption budget, extracted from [this repository](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/test-target/pod-disruption-budget.yaml).
+- Hugepages configuration in the pods under test, extracted from [this repository](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/tree/main/examples/platform).
   - Note that, to use this feature, you need to activate `tnf_enable_hugepages: true` in your code (default to `false`).
 - Affinity rules applied to the pods under test. In the case of `test-cnf` namespace, pods are deployed using `podAntiAffinity` rule to keep the pods in different worker nodes, and in `production-cnf` namespace, a `podAffinity` rule is used to keep the pods in the same worker node, also using `AffinityRequired: 'true'` label.
 - Pods in `test-cnf` namespace are deployed with non-guaranteed QoS, whereas pods in `production-cnf` are deployed with guaranteed QoS, together with certain CPU allocation constraints and runtime class definition.
@@ -57,7 +57,7 @@ The specific operator and Helm chart that are deployed depend on the `tnf_test_e
 
 Note that the component defines some data that is used by the hooks. Here you have an [example](https://www.distributed-ci.io/topics/818491de-8ee6-4ae8-a9bc-2d2ce62ef71c/components/95d2c742-d3a3-4bb5-8b8c-7a9a3243eec7) that you can check. If you click in `Data` > `See content`, you will see a JSON string containing the following variables (which needs to be declared):
 
-* `tnf_app_image`: image to be used in the pods under test. In our case, the specification, obtained from [this repository](https://github.com/test-network-function/cnf-certification-test-partner), is a suitable one for passing all the test suites from the CNF Test Suite.
+* `tnf_app_image`: image to be used in the pods under test. In our case, the specification, obtained from [this repository](https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload), is a suitable one for passing all the test suites from the CNF Test Suite.
 * `tnf_operator_to_install`: information related to the operator to be installed. It must include the following variables within it:
   * `operator_name`: name of the operator.
   * `operator_version`: version of the operator.
@@ -72,7 +72,7 @@ These resources create services in the namespace that are updated to `PreferDual
 Example of values for these variables are the following (for connected environments; in disconnected, `tnf_app_image` must point to a private registry):
 
 ```yaml
-tnf_app_image: quay.io/testnetworkfunction/cnf-test-partner:latest
+tnf_app_image: quay.io/redhat-best-practices-for-k8s/certsuite-sample-workload:latest
 tnf_operator_to_install:
   operator_name: mongodb-enterprise
   operator_version: v1.17.0
