@@ -16,7 +16,7 @@ Requires: python2-dciclient >= 3.1.0
 %else
 Requires: python3-dciclient >= 3.1.0
 %endif
-Requires: ansible-collection-redhatci-ocp >= 0.14.0
+Requires: ansible-collection-redhatci-ocp >= 0.16.0
 Requires(pre): shadow-utils
 Requires(post): systemd
 Requires(preun): systemd

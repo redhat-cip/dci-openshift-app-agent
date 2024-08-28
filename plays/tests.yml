@@ -54,13 +54,6 @@
     tasks_from: main_standalone_containers_certification
   when: preflight_containers_to_certify is defined
 
-- name: Preflight tests
-  vars:
-    preflight_dci_all_components_are_ga: "{{ dci_all_components_are_ga }}"
-  include_role:
-    name: redhatci.ocp.preflight
-  when: preflight_operators_to_certify is defined
-
 - name: Operator-SDK Scorecard tests
   vars:
     scorecard_oc_tool_path: "{{ oc_tool_path }}"
@@ -80,4 +73,19 @@
   vars:
     product_type: "openshift_cnf"
   when: cnf_to_certify is defined
+
+- name: Compute removed API after executing the workload
+  include_role:
+    name: redhatci.ocp.deprecated_api
+  vars:
+    deprecated_api_logs:
+      path: "{{ job_logs.path }}"
+  when: check_workload_api | default(true) | bool
+
+- name: Preflight check operator tests
+  vars:
+    preflight_dci_all_components_are_ga: "{{ dci_all_components_are_ga }}"
+  include_role:
+    name: redhatci.ocp.preflight
+  when: preflight_operators_to_certify is defined
 ...

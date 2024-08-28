@@ -13,7 +13,7 @@
       - python3-junit_xml
     state: present
   become: true
-  when: check_workload_api | bool
+  when: check_workload_api | default(true) | bool
 
 - name: Include installed software and git repos as components
   vars:

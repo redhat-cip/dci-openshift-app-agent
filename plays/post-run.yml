@@ -6,16 +6,6 @@
     status: "post-run"
   tags: [dci]
 
-- name: Compute removed API after executing the workload
-  include_role:
-    name: redhatci.ocp.deprecated_api
-  vars:
-    deprecated_api_logs:
-      path: "{{ job_logs.path }}"
-  when:
-    - ocp_version is version("4.9", ">=")
-    - check_workload_api | bool
-
 # Only do this if `outputs` variable is not defined, to allow customizing
 # this variable.
 # By default, we provide the kubeconfig as standard output.

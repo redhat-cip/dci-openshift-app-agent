@@ -18,8 +18,6 @@ dci_openshift_app_ns: "myns"
 do_certsuite: false
 do_chart_verifier: false
 do_must_gather: true
-# check workload for deprecated API and OCP compatibility
-check_workload_api: true
 # please think to define this variable
 # if you deal with private registries
 partner_creds: ""
