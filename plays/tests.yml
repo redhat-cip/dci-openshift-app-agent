@@ -18,16 +18,6 @@
   when:
     - chart_verifier_wait|int > 0
 
-# Include legacy call to cnf_cert to keep backwards compatibility
-- name: Run cnf_cert tests
-  include_role:
-    name: redhatci.ocp.cnf_cert
-  vars:
-    tnf_image_suffix: "{{ job_id }}"
-  when:
-    - do_cnf_cert is defined
-    - do_cnf_cert|default(false)|bool
-
 - name: Run k8s_best_practices_certsuite tests
   include_role:
     name: redhatci.ocp.k8s_best_practices_certsuite
