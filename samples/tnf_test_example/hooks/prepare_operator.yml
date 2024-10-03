@@ -67,6 +67,4 @@
     resource_to_check: "MachineConfigPool"
     check_wait_retries: 60
     check_wait_delay: 60
-    check_reason: "TNF test example"
-    cr_oc: "{{ oc_tool_path }}"
 ...
