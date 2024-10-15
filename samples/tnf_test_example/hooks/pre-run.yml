@@ -35,6 +35,7 @@
 - name: Preparing the operator in disconnected environments
   include_tasks: prepare_operator.yml
   when:
+    - tnf_install_operator | default(true) | bool
     - tnf_operator_to_install is defined
     - dci_disconnected | default(false) | bool
     - dci_local_registry | length

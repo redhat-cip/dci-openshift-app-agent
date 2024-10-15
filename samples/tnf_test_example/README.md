@@ -51,6 +51,9 @@ Other resources related to the pods under test are also deployed:
 Finally, apart from the pods under test, it also deploys, in one of the namespaces:
 
 - An operator, which can be based on [mongodb-enterprise](https://catalog.redhat.com/software/operators/detail/5e9872923f398525a0ceafba) or in [simple-demo-operator](https://github.com/redhat-openshift-ecosystem/certified-operators/tree/main/operators/simple-demo-operator), in order to execute certsuite and Preflight tests over this operator.
+
+> Note the operator will only be installed if `tnf_install_operator` flag is set to `true`.
+
 - A Helm chart, based on [fredco samplechart](https://github.com/openshift-helm-charts/charts/tree/main/charts/partners/fredco/samplechart/0.1.3), in order to execute certsuite tests over this Helm chart.
 
 The specific operator and Helm chart that are deployed depend on the `tnf_test_example` DCI component used. Currently, we support `v0.0.1` (it uses simple-demo-operator is used) and `v0.0.2` (the latest one, where mongodb-enterprise operator is used). By using `dci_components_by_query` variable in your settings file, you can select the component that best suits you.

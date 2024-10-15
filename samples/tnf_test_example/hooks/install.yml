@@ -109,6 +109,7 @@
 - name: Deploy operator
   include_tasks: deploy_operator.yml
   when:
+    - tnf_install_operator | default(true) | bool
     - tnf_operator_to_install is defined
 
 - name: Deploy Helm chart

@@ -5,6 +5,7 @@
     operator_namespace: "{{ target_ns }}"
     operator_name: "{{ tnf_operator_to_install.operator_name }}"
   when:
+    - tnf_install_operator | default(true) | bool
     - tnf_operator_to_install is defined
     - target_ns is defined
 
@@ -16,6 +17,7 @@
     namespace: openshift-marketplace
     kind: CatalogSource
   when:
+    - tnf_install_operator | default(true) | bool
     - tnf_operator_to_install is defined
 
 - name: Delete testing resources
