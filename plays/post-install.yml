@@ -1,7 +1,7 @@
 ---
 
 - name: Create components for already deployed Kubernetes resources
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.resources_to_components
   when: rtc_resources_to_components | length
 

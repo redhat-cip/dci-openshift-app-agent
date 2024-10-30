@@ -5,30 +5,32 @@
   hosts: jumphost
   tags:
     - kubeconfig
+  environment:
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Kubeconfig tasks
       block:
         - name: Display proxy settings
-          debug:
-            msg: "http_proxy={{ lookup('env','http_proxy') }} https_proxy={{ lookup('env','https_proxy') }} no_proxy={{ lookup('env','no_proxy') }}"
+          ansible.builtin.debug:
+            msg: "http_proxy={{ lookup('env', 'http_proxy') }} https_proxy={{ lookup('env', 'https_proxy') }} no_proxy={{ lookup('env', 'no_proxy') }}"
 
         - name: Check kubeconfig
-          include_tasks: 'plays/check_kubeconfig.yml'
+          ansible.builtin.include_tasks: 'plays/check_kubeconfig.yml'
 
         # Check prerequisite
         - name: "Check prerequisite"
-          include_tasks: 'plays/check_prerequisite.yml'
+          ansible.builtin.include_tasks: 'plays/check_prerequisite.yml'
 
       rescue: &error_with_upload_logs
         - name: "Run common logging process"
-          include_tasks:
+          ansible.builtin.include_tasks:
             file: plays/common_logging.yml
             apply:
               environment:
                 KUBECONFIG: "{{ kubeconfig_path }}"
 
         - name: "Execute the teardown process"
-          include_tasks:
+          ansible.builtin.include_tasks:
             file: "{{ dci_config_dir }}/hooks/teardown.yml"
             apply:
               environment:
@@ -38,7 +40,7 @@
             - check_teardown.stat.exists
 
         - name: "Run the teardown play"
-          include_tasks:
+          ansible.builtin.include_tasks:
             file: plays/teardown.yml
             apply:
               environment:
@@ -47,41 +49,43 @@
             - dci_teardown_on_failure
 
         - name: "Execute the error process"
-          include_tasks: plays/error.yml
+          ansible.builtin.include_tasks: plays/error.yml
 
         # The error may happen before creating the job_info variable, or it may happen in a
         # job where dci tag is not enabled (so job_info variable is not created). Then,
         # we have to set a different error message in that case
         - name: Fail properly
-          fail:
+          ansible.builtin.fail:
             msg: "Error: Something went wrong"
           when: job_info is not defined
 
         # Use dci tag to avoid problems with job_info.job.id, which would not be defined
         # if dci tag is not enabled
         - name: Fail properly
-          fail:
+          ansible.builtin.fail:
             msg: "Error: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
           tags: [dci]
 
 # Step 0b : initial step
 - name: "Execute initial step"
-  hosts: jumphost
+  hosts: localhost
   gather_facts: false
   tags:
     - job
     - dci
+  environment:
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Read credentials from env vars
-      set_fact:
-        dci_client_id: "{{ lookup('env','DCI_CLIENT_ID') }}"
-        dci_api_secret: "{{ lookup('env','DCI_API_SECRET') }}"
-        dci_cs_url: "{{ lookup('env','DCI_CS_URL') }}"
-        dci_ui_url: "{{ lookup('env','DCI_UI_URL') | default('https://www.distributed-ci.io', True) }}"
+      ansible.builtin.set_fact:
+        dci_client_id: "{{ lookup('env', 'DCI_CLIENT_ID') }}"
+        dci_api_secret: "{{ lookup('env', 'DCI_API_SECRET') }}"
+        dci_cs_url: "{{ lookup('env', 'DCI_CS_URL') }}"
+        dci_ui_url: "{{ lookup('env', 'DCI_UI_URL') | default('https://www.distributed-ci.io', True) }}"
       no_log: true
 
     - name: Check job topic
-      assert:
+      ansible.builtin.assert:
         that:
           - "dci_topic == job_info.job.topic.name"
         fail_msg: "dci_topic is inconsistent: {{ dci_topic }} != {{ job_info.job.topic.name }}. Use dci-pipeline-schedule to schedule jobs."
@@ -120,18 +124,18 @@
       when: job_info is not defined
 
     - name: Set job id
-      set_fact:
+      ansible.builtin.set_fact:
         job_id: "{{ job_info.job.id }}"
 
     - name: Copy the job_id to the JOB_ID_FILE if it exists
-      copy:
+      ansible.builtin.copy:
         content: "{{ job_id }}"
         dest: "{{ JOB_ID_FILE }}"
         mode: '0644'
       when: JOB_ID_FILE is defined
 
     - name: Set previous job id
-      set_fact:
+      ansible.builtin.set_fact:
         dci_previous_job_id: "{{ job_info.job.previous_job_id }}"
       when:
         - 'dci_previous_job_id is not defined'
@@ -157,13 +161,24 @@
       when: cluster_name is defined
 
     - name: "Merge pull secrets"
-      include_tasks: 'plays/pullsecrets.yml'
+      ansible.builtin.include_tasks: 'plays/pullsecrets.yml'
       when: dci_disconnected | default(false) | bool
 
     # Keep in sync with test-runner parsing from d-o-a
     - name: UI URL
-      debug:
+      ansible.builtin.debug:
         msg: 'Follow the log at: {{ dci_ui_url }}/jobs/{{ job_id }}/jobStates' # noqa 204
+
+    - name: Set facts also in jumphost host scope
+      ansible.builtin.set_fact:
+        job_id: "{{ job_id }}"
+        dci_client_id: "{{ dci_client_id }}"
+        dci_api_secret: "{{ dci_api_secret }}"
+        dci_cs_url: "{{ dci_cs_url }}"
+        dci_ui_url: "{{ dci_ui_url }}"
+        pullsecret_tmp_file: "{{ pullsecret_tmp_file | default() }}"
+      delegate_to: jumphost
+      delegate_facts: true
 
 # Step 1a : Red Hat "pre-run" step
 - name: "Execute Red Hat pre-run step"
@@ -173,16 +188,17 @@
     - redhat-pre-run
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Pre-run tasks
       block:
 
         - name: "Setup job_logs directory"
-          include_tasks: plays/log-dir.yml
+          ansible.builtin.include_tasks: plays/log-dir.yml
           when: job_logs is undefined
 
         - name: "Execute pre-run"
-          include_tasks: 'plays/pre-run.yml'
+          ansible.builtin.include_tasks: 'plays/pre-run.yml'
 
       rescue: *error_with_upload_logs
 
@@ -191,6 +207,7 @@
   hosts: jumphost
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tags:
     - pre-run
     - partner-pre-run
@@ -199,11 +216,11 @@
       block:
 
         - name: "Setup job_logs directory"
-          include_tasks: plays/log-dir.yml
+          ansible.builtin.include_tasks: plays/log-dir.yml
           when: job_logs is undefined
 
         - name: Run the pre-run hook
-          include_tasks: '{{ dci_config_dir }}/hooks/pre-run.yml'
+          ansible.builtin.include_tasks: '{{ dci_config_dir }}/hooks/pre-run.yml'
           when: check_pre_run.stat.exists
 
       rescue: *error_with_upload_logs
@@ -216,6 +233,7 @@
     - running
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Install tasks
       block:
@@ -223,47 +241,48 @@
           dci_job:
             id: "{{ job_id }}"
             status: "running"
+          delegate_to: localhost
           tags: [dci]
 
         - name: "Execute install play"
-          include_tasks: 'plays/install.yml'
+          ansible.builtin.include_tasks: 'plays/install.yml'
 
         - name: "Execute install hook"
-          include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
+          ansible.builtin.include_tasks: "{{ dci_config_dir }}/hooks/install.yml"
 
         - name: "Execute post-install play"
-          include_tasks: 'plays/post-install.yml'
+          ansible.builtin.include_tasks: 'plays/post-install.yml'
 
       rescue: &failure_with_upload_logs
         - name: "Run common logging process"
-          include_tasks: plays/common_logging.yml
+          ansible.builtin.include_tasks: plays/common_logging.yml
 
         - name: "Execute the teardown process"
-          include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
+          ansible.builtin.include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
           when:
             - dci_teardown_on_failure
             - check_teardown.stat.exists
 
         - name: "Run the teardown play"
-          include_tasks: plays/teardown.yml
+          ansible.builtin.include_tasks: plays/teardown.yml
           when:
             - dci_teardown_on_failure
 
         - name: "Execute the failure process"
-          include_tasks: plays/failure.yml
+          ansible.builtin.include_tasks: plays/failure.yml
 
         # The error may happen before creating the job_info variable, or it may happen in a
         # job where dci tag is not enabled (so job_info variable is not created). Then,
         # we have to set a different error message in that case
         - name: Fail properly
-          fail:
+          ansible.builtin.fail:
             msg: "Failure: Something went wrong"
           when: job_info is not defined
 
         # Use dci tag to avoid problems with job_info.job.id, which would not be defined
         # if dci tag is not enabled
         - name: Fail properly
-          fail:
+          ansible.builtin.fail:
             msg: "Failure: Something went wrong, review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
           tags: [dci]
 
@@ -276,16 +295,17 @@
     - redhat-testing
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Tests tasks
       block:
 
         - name: "Setup job_logs directory"
-          include_tasks: plays/log-dir.yml
+          ansible.builtin.include_tasks: plays/log-dir.yml
           when: job_logs is undefined
 
         - name: "Execute Red Hat tests"
-          include_tasks: plays/tests.yml
+          ansible.builtin.include_tasks: plays/tests.yml
 
       rescue: *failure_with_upload_logs
 
@@ -298,16 +318,17 @@
     - partner-testing
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Test hooks
       block:
 
         - name: "Setup job_logs directory"
-          include_tasks: plays/log-dir.yml
+          ansible.builtin.include_tasks: plays/log-dir.yml
           when: job_logs is undefined
 
         - name: "Execute tests hook"
-          include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
+          ansible.builtin.include_tasks: "{{ dci_config_dir }}/hooks/tests.yml"
           when: check_tests.stat.exists
 
       rescue: *failure_with_upload_logs
@@ -320,12 +341,13 @@
     - testing
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Test results
       block:
 
         - name: "Check test results"
-          include_tasks: plays/check-test-results.yml
+          ansible.builtin.include_tasks: plays/check-test-results.yml
 
       rescue: *failure_with_upload_logs
 
@@ -336,15 +358,16 @@
     - post-run
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Post-run tasks
       block:
         - name: Run the post-run hook
-          include_tasks: '{{ dci_config_dir }}/hooks/post-run.yml'
+          ansible.builtin.include_tasks: '{{ dci_config_dir }}/hooks/post-run.yml'
           when: check_post_run.stat.exists
 
         - name: "Run post-run"
-          include_tasks: plays/post-run.yml
+          ansible.builtin.include_tasks: plays/post-run.yml
 
       rescue: *error_with_upload_logs
 
@@ -355,18 +378,19 @@
     - success
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: "Run common logging process"
-      include_tasks: plays/common_logging.yml
+      ansible.builtin.include_tasks: plays/common_logging.yml
 
     - name: "Execute the teardown process"
-      include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
+      ansible.builtin.include_tasks: "{{ dci_config_dir }}/hooks/teardown.yml"
       when:
         - dci_teardown_on_success
         - check_teardown.stat.exists
 
     - name: "Run the teardown play"
-      include_tasks: plays/teardown.yml
+      ansible.builtin.include_tasks: plays/teardown.yml
       when:
         - dci_teardown_on_success
 
@@ -374,10 +398,11 @@
       dci_job:
         id: "{{ job_id }}"
         status: "success"
+      delegate_to: localhost
       tags: [dci]
 
     - name: "Final step"
-      debug:
+      ansible.builtin.debug:
         msg: "The job is now finished. Review the log at: https://www.distributed-ci.io/jobs/{{ job_info.job.id }}/jobStates"
       tags: [dci]
 ...

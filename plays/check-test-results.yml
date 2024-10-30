@@ -1,7 +1,7 @@
 ---
 
 - name: Verify mandatory tests
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.verify_tests
   when:
     - tests_to_verify is defined

@@ -1,32 +1,32 @@
 ---
 # Check which hooks are present
 - name: "Check if pre-run hooks is present"
-  stat:
+  ansible.builtin.stat:
     path: "{{ dci_config_dir }}/hooks/pre-run.yml"
   register: check_pre_run
 
 - name: "Check if install hooks is present"
-  stat:
+  ansible.builtin.stat:
     path: "{{ dci_config_dir }}/hooks/install.yml"
   register: check_install
 
 - name: "Check if tests hooks is present"
-  stat:
+  ansible.builtin.stat:
     path: "{{ dci_config_dir }}/hooks/tests.yml"
   register: check_tests
 
 - name: "Check if post-run hooks is present"
-  stat:
+  ansible.builtin.stat:
     path: "{{ dci_config_dir }}/hooks/post-run.yml"
   register: check_post_run
 
 - name: "Check if teardown hooks is present"
-  stat:
+  ansible.builtin.stat:
     path: "{{ dci_config_dir }}/hooks/teardown.yml"
   register: check_teardown
 
 - name: "Fail if hooks/install.yml NOT found"
-  fail:
+  ansible.builtin.fail:
     msg: "install.yml not found at {{ dci_config_dir }}/hooks/"
   when: not check_install.stat.exists
 

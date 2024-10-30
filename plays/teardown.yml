@@ -1,12 +1,12 @@
 ---
 - name: Delete temporary file for saving pullsecret content
-  file:
+  ansible.builtin.file:
     path: "{{ pullsecret_tmp_file }}"
     state: absent
   when: pullsecret_tmp_file is defined
 
 - name: "Remove client tmp directory"
-  file:
+  ansible.builtin.file:
     path: "{{ client_tmp_dir.path }}"
     state: absent
   when: client_tmp_dir is defined

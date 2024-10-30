@@ -1,25 +1,25 @@
 ---
 - name: Helm Chart Certification Project
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.create_helmchart
   vars:
     product_type: "helmchart"
   when: helmchart_to_certify is defined
 
 - name: "Chart verifier tests"
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.chart_verifier
   when:
     - do_chart_verifier|bool
 
 - name: "Pause after chart_verifier"
-  pause:
+  ansible.builtin.pause:
     minutes: "{{ chart_verifier_wait }}"
   when:
     - chart_verifier_wait|int > 0
 
 - name: Run k8s_best_practices_certsuite tests
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.k8s_best_practices_certsuite
   vars:
     kbpc_kubeconfig: "{{ kubeconfig_path }}"
@@ -31,7 +31,7 @@
   when: do_certsuite|bool
 
 - name: "Pause after certsuite"
-  pause:
+  ansible.builtin.pause:
     minutes: "{{ certsuite_wait }}"
   when:
     - certsuite_wait|int > 0
@@ -39,7 +39,7 @@
 - name: Preflight container-only tests
   vars:
     preflight_dci_all_components_are_ga: "{{ dci_all_components_are_ga }}"
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.preflight
     tasks_from: main_standalone_containers_certification
   when: preflight_containers_to_certify is defined
@@ -53,20 +53,22 @@
     scorecard_job_logs: "{{ job_logs }}"
     scorecard_dci_local_registry: "{{ dci_local_registry }}"
     scorecard_dci_disconnected: "{{ dci_disconnected }}"
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.operator_sdk
   when: scorecard_operators is defined
 
 - name: CNF Project Creation-Only tests for Vendor Validation
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.openshift_cnf
   vars:
     product_type: "openshift_cnf"
   when: cnf_to_certify is defined
 
 - name: Compute removed API after executing the workload
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.deprecated_api
+    apply:
+      delegate_to: localhost
   vars:
     deprecated_api_logs:
       path: "{{ job_logs.path }}"
@@ -75,7 +77,7 @@
 - name: Preflight check operator tests
   vars:
     preflight_dci_all_components_are_ga: "{{ dci_all_components_are_ga }}"
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.preflight
   when: preflight_operators_to_certify is defined
 ...
