@@ -47,9 +47,6 @@ Once `dci-openshift-app-agent` package is installed, the files and resources you
 - `/etc/sysconfig` folder contains the content of `sysconfig` folder, which is `dci-openshift-app-agent` file.
 - `/usr/share/dci-openshift-app-agent/` gathers the following folders and files: `ansible.cfg` file, `dci-openshift-app-agent.yml` file, `group_vars` folder, `plays` folder and `utilities` folder.
 - `/var/lib/dci-openshift-app-agent` folder holds the `samples` folder.
-- `/usr/bin` folder holds scripts such as `dci-openshift-app-agent-ctl`.
-
-> Note: scripts provided in this agent are deprecated. You should use `dci-pipeline` instead.
 
 Also, have in mind that:
 
@@ -373,7 +370,6 @@ You might encounter an error when running the dci-openshift-app-agent for first 
 Conditions in which the issue appeared:
 
 - dci-openshift-app-agent installed.
-- Execution of dci-openshift-app-agent directly using dci-openshift-app-agent-ctl, with the dci-openshift-app-agent user.
 - Attempt to run a container, using podman, in localhost (e.g. certsuite container for running the Red Hat Best Practices Test Suite for Kubernetes).
 
 Under these conditions, the error presented is the following (there may be other different errors, but all related to the same issue - lack of IDs available):
@@ -491,20 +487,6 @@ export no_proxy=10.X.Y.Z/24,.example.com
 ```
 
 > NOTE: Also consider setting the proxy settings in the /etc/rhsm/rhsm.conf file if you use the Red Hat CDN to pull packages, otherwise the agent might fail to install dependencies required during the execution of the CNF test suite.
-
-## Testing a code change
-
-If you want to test a code change from Gerrit, you need to have `dci-check-change` installed on your system from the `dci-openshift-agent` package.
-
-Then for example, if you want to test the change from <https://softwarefactory-project.io/r/c/dci-openshift-app-agent/+/22647>, issue the following command:
-
-```ShellSession
-dci-check-change 22647 /var/lib/dci-openshift-agent/clusterconfigs/kubeconfig
-```
-
-You can omit the kubeconfig file as a second argument if you want `dci-check-change` to re-install OCP using `dci-openshift-agent-ctl` before testing the change.
-
-All the other arguments will be passed to `dci-openshift-app-agent-ctl`.
 
 ## License
 

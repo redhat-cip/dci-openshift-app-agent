@@ -1,5 +1,5 @@
 Name:          dci-openshift-app-agent
-Version:       0.10.0
+Version:       1.0.0
 Release:       1.VERS%{?dist}
 Summary:       DCI OpenShift App Agent
 License:       ASL 2.0
@@ -18,9 +18,6 @@ Requires: python3-dciclient >= 3.1.0
 %endif
 Requires: ansible-collection-redhatci-ocp >= 0.16.0
 Requires(pre): shadow-utils
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
 
 %description
 DCI OpenShift App Agent
@@ -43,26 +40,11 @@ getent passwd dci-openshift-app-agent >/dev/null || \
             -c "DCI Openshift App Agent service" dci-openshift-app-agent
 exit 0
 
-%post
-%systemd_post %{name}.service
-%systemd_preun %{name}.timer
-
-%preun
-%systemd_preun %{name}.service
-%systemd_preun %{name}.timer
-
-%postun
-%systemd_postun %{name}.service
-%systemd_postun %{name}.timer
-
 %files
 %license LICENSE
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hooks/*.yml
 %config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/hosts.yml
-%config(noreplace) %{_sysconfdir}/dci-openshift-app-agent/settings.yml
 %config(noreplace) %{_sysconfdir}/sysconfig/dci-openshift-app-agent
-
-%{_bindir}/dci-openshift-app-agent-ctl
 
 %{_sysconfdir}/dci-openshift-app-agent/dcirc.sh.dist
 
@@ -73,13 +55,14 @@ exit 0
 %{_datadir}/dci-openshift-app-agent/group_vars/all
 %{_datadir}/dci-openshift-app-agent/utilities/internal-registry/*.yml
 
-%{_unitdir}/*
-
 %dir %{_sharedstatedir}/dci-openshift-app-agent
 %attr(0755, dci-openshift-app-agent, dci-openshift-app-agent) %{_sharedstatedir}/dci-openshift-app-agent
 %{_sysconfdir}/sudoers.d/%{name}
 
 %changelog
+* Fri Nov 22 2024 Frederic Lepied <flepied@redhat.com> 1.0.0-1
+- remove dci-openshift-app-agent-ctl
+
 * Wed Jul 31 2024 Tony Garcia <tonyg@redhat.com> 0.10.0-1
 - Requires redhatci.ocp >= 0.14.0 for mirror_images role changes
 
