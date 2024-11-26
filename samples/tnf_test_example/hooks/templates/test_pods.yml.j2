@@ -52,7 +52,7 @@ spec:
       - name: aspen-mesh-pull-secret
 {% endif %}
       containers:
-        - image: {{ tnf_app_image | default('quay.io/redhat-best-practices-for-k8s/certsuite-sample-workload:latest') }}
+        - image: {{ ( dci_disconnected|default(false)|bool and dci_local_registry|length ) | ternary(dci_local_registry, 'quay.io') }}/{{ tnf_app_image | default('redhat-best-practices-for-k8s/certsuite-sample-workload:latest') }}
           imagePullPolicy: IfNotPresent
           name: test
           ports:

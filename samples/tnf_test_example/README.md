@@ -72,10 +72,10 @@ Note that the component defines some data that is used by the hooks. Here you ha
 
 These resources create services in the namespace that are updated to `PreferDualStack` IP family policy, then obtaining an IPv6 IP address if the OCP cluster is configured in dual-stack mode.
 
-Example of values for these variables are the following (for connected environments; in disconnected, `tnf_app_image` must point to a private registry):
+Example of values for these variables are the following (in connected, it will use quay.io; in disconnected, the image must be present in a `dci_local_registry`):
 
 ```yaml
-tnf_app_image: quay.io/redhat-best-practices-for-k8s/certsuite-sample-workload:latest
+tnf_app_image: redhat-best-practices-for-k8s/certsuite-sample-workload:latest
 tnf_operator_to_install:
   operator_name: mongodb-enterprise
   operator_version: v1.17.0
