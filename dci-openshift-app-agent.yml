@@ -141,7 +141,13 @@
     - name: 'Set DCI tags for the current job'
       dci_job:
         id: '{{ job_id }}'
-        tags: '{{ ["agent:openshift-app"] + dci_tags + dci_workarounds }}'
+        tags: >
+          {{
+            [ (dci_disconnected | default(false) | bool) | ternary("disconnected", "connected") ] +
+            ["agent:openshift-app"] +
+            dci_tags +
+            dci_workarounds
+          }}
 
     - name: Count workarounds
       dci_job:
