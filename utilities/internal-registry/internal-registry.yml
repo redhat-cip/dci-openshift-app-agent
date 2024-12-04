@@ -20,7 +20,7 @@
       when: not kubeconfig.stat.exists
 
     - name: "Get the current OCP registry details"
-      community.kubernetes.k8s_info:
+      kubernetes.core.k8s_info:
         api: imageregistry.operator.openshift.io/v1
         kind: Config
         name: cluster

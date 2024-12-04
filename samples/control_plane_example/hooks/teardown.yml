@@ -1,6 +1,6 @@
 ---
 - name: "Remove the webserver helm chart"
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "webserver"
     release_namespace: "{{ openshift_app_ns }}"
     binary_path: "{{ helm_tool_path }}"

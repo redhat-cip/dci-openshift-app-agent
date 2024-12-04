@@ -10,7 +10,7 @@
     - target_ns is defined
 
 - name: Delete operator-catalog
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: absent
     api_version: operators.coreos.com/v1alpha1
     name: "{{ tnf_operator_to_install.operator_name }}-catalog"
@@ -30,7 +30,7 @@
     - pods_in_same_ns.namespace | default('') | length
 
 - name: Delete SCC Category 1 - CNFs that require Service Mesh
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: security.openshift.io/v1
     name: restricted-cat-1
     kind: SecurityContextConstraints
@@ -40,7 +40,7 @@
     wait_timeout: 120
 
 - name: Delete local-storage StorageClass if present
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: storage.k8s.io/v1
     name: local-storage
     kind: StorageClass
@@ -50,7 +50,7 @@
     wait_timeout: 120
 
 - name: Delete custom RuntimeClass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: node.k8s.io/v1
     name: production-runtime-class
     kind: RuntimeClass

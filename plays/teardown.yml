@@ -12,7 +12,7 @@
   when: client_tmp_dir is defined
 
 - name: Delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ dci_openshift_app_ns }}"

@@ -8,7 +8,7 @@
   ignore_errors: true
 
 - name: "Rollback storage and disable the image-registry"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: imageregistry.operator.openshift.io/v1
       kind: Config
@@ -37,34 +37,34 @@
     - idp_index.stdout != "null"
 
 - name: "Remove the backend dci-registry-secret"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: absent
     kind: Secret
     name: dci-registry-secret
     namespace: openshift-config
 
 - name: "Revoke registry-editor permissions to ocp_registry_user"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: rbac.authorization.k8s.io/v1
     state: absent
     kind: ClusterRoleBinding
     name: editor-ocp_registry_user
 
 - name: "Remove the ocp_registry_user"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: absent
     kind: User
     name: ocp_registry_user
 
 - name: "Remove the ocp_registry_user identity"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: user.openshift.io/v1
     state: absent
     kind: Identity
     name: "dci-http-idp:ocp_registry_user"
 
 - name: "Remove the insecure registries entries"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: config.openshift.io/v1
       kind: Image

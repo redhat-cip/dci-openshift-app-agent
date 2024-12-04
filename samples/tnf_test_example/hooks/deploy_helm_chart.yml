@@ -38,7 +38,7 @@
     image_repository: "{{ ( dci_disconnected|default(false)|bool and dci_local_registry|length ) | ternary(dci_local_registry + '/' + image_name, tnf_helm_chart_to_install.image_repository) }}"
 
 - name: Deploy Helm chart
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: tnf-test-example
     chart_ref: "{{ tnf_test_example_helm_chart.path }}/tnf_test_example.tgz"
     release_namespace: "{{ target_ns }}"
@@ -48,7 +48,7 @@
         repository: "{{ image_repository }}"
 
 - name: Wait until Helm chart is deployed
-  community.kubernetes.helm_info:
+  kubernetes.core.helm_info:
     name: tnf-test-example
     release_namespace: "{{ target_ns }}"
     binary_path: "{{ helm_tool_path }}"

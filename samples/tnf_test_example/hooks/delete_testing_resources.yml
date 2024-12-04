@@ -1,20 +1,20 @@
 ---
 - name: Discover deployments
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: apps/v1
     kind: Deployment
     namespace: "{{ pods_in_same_ns.namespace }}"
   register: deployments_in_namespace
 
 - name: Discover stateful sets
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: apps/v1
     kind: StatefulSet
     namespace: "{{ pods_in_same_ns.namespace }}"
   register: statefulsets_in_namespace
 
 - name: Delete deployments
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: apps/v1
     kind: Deployment
     namespace: "{{ pods_in_same_ns.namespace }}"
@@ -28,7 +28,7 @@
   loop: "{{ deployments_in_namespace.resources }}"
 
 - name: Delete stateful sets
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: apps/v1
     kind: StatefulSet
     namespace: "{{ pods_in_same_ns.namespace }}"
@@ -42,7 +42,7 @@
   loop: "{{ statefulsets_in_namespace.resources }}"
 
 - name: Delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ pods_in_same_ns.namespace }}"
@@ -61,7 +61,7 @@
     - app_ns == 'production-cnf'
 
 - name: Delete anyuid RoleBinding setting sidecar security policy
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     name: "{{ pods_in_same_ns.namespace }}:scc:anyuid"
@@ -72,7 +72,7 @@
     - am_installed | default(false) | bool
 
 - name: "Delete use-restricted-cat-1 RoleBinding"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     name: use-restricted-cat-1
@@ -80,7 +80,7 @@
     state: absent
 
 - name: "Delete use-restricted-cat-1 Role"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: rbac.authorization.k8s.io/v1
     kind: Role
     name: use-restricted-cat-1

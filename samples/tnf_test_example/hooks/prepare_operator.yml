@@ -36,7 +36,7 @@
     podman rmi {{ catalog_path }}:{{ catalog_version }}
 
 - name: Check if IDMS is supported
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     kind: CustomResourceDefinition
     name: imagedigestmirrorsets.config.openshift.io
   register: idms_res
@@ -52,7 +52,7 @@
     mc_is_type: "{{ idms_res.resources is defined and idms_res.resources | length | ternary('idms', 'icsp') }}"
 
 - name: Apply Image Source file
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition: "{{ lookup('file', mc_is_file.path) }}"
 
 - name: Remove temporary directory

@@ -4,7 +4,7 @@
     seconds: 40
 
 - name: Search for all running pods
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     namespace: "{{ openshift_app_ns }}"
     kind: Pod
     name: webserver

@@ -27,7 +27,7 @@ In order to execute the playbook the following requirements must be available:
 
 1. The `oc` command must be available in the PATH.
 
-1. The community.kubernetes ansible collections must be installed.
+1. The kubernetes.core ansible collections must be installed.
 
 ## Recommendations
 

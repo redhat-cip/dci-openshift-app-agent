@@ -1,7 +1,7 @@
 ---
 
 - name: "Enable ephemeral storage for OCP registry"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: imageregistry.operator.openshift.io/v1
       kind: Config
@@ -12,7 +12,7 @@
           emptyDir: {}
 
 - name: "Enable the OCP registry"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: imageregistry.operator.openshift.io/v1
       kind: Config
@@ -22,7 +22,7 @@
         managementState: "Managed"
 
 - name: "Wait for image-registry pods to be Running"
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Pod
     wait: yes
@@ -34,7 +34,7 @@
   no_log: true
 
 - name: "Expose the registry via default route"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: imageregistry.operator.openshift.io/v1
       kind: Config
@@ -44,7 +44,7 @@
         defaultRoute: true
 
 - name: "Get the registry route"
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api: route.openshift.io/v1
     kind: Route
     name: default-route
@@ -96,7 +96,7 @@
   register: encoded_secret
 
 - name: "Create dci-registry-secret backend secret"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: v1
       kind: Secret
@@ -108,7 +108,7 @@
         htpasswd: "{{ encoded_secret.content }}"
 
 - name: "Grant registry-editor permissions to ocp_registry_user"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
@@ -128,7 +128,7 @@
     seconds: 60
 
 - name: "Get the OCP registry details"
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: config.openshift.io/v1
     kind: Infrastructure
     name: cluster
@@ -177,7 +177,7 @@
   until: not login_cmd.failed
 
 - name: "Get dci-registry-secret details"
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api: v1
     kind: Secret
     name: "pull-secret"
@@ -221,7 +221,7 @@
   register: dci_pull_secret
 
 - name: "Update the general pullsecret"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: v1
       kind: Secret
@@ -253,7 +253,7 @@
       - "Work directory: {{ creds_dir }}"
 
 - name: "Allow insecure registries on nodes"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: config.openshift.io/v1
       kind: Image

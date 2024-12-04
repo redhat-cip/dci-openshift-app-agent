@@ -52,7 +52,7 @@
 
 # Retrieve default StorageClass if present in the cluster
 - name: Check cluster StorageClass resources defined
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: StorageClass
   register: storage_classes

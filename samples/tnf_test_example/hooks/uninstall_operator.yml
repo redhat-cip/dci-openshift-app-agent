@@ -1,6 +1,6 @@
 ---
 - name: Get Subscription Details
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: operators.coreos.com/v1alpha1
     kind: Subscription
     namespace: "{{ operator_namespace }}"
@@ -8,7 +8,7 @@
   register: subscription_details
 
 - name: Get Cluster Namespaces
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     kind: Namespace
   register: cluster_namespaces
   no_log: true
@@ -17,7 +17,7 @@
   vars:
     namespace_names: "{{ cluster_namespaces.resources | map(attribute='metadata.name') |  reject('match', '^openshift.*') | list }}"
     current_csv: "{{ subscription_details.resources[0].status.currentCSV | default('') }}"
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api: operators.coreos.com/v1alpha1
     kind: ClusterServiceVersion
     namespace: "{{ item }}"
@@ -29,7 +29,7 @@
     - current_csv | length
 
 - name: Delete subscription
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition: |
       {{ item }}
     state: absent

@@ -1,7 +1,7 @@
 ---
 # to be used with production-cnf pods
 - name: Create custom RuntimeClass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: node.k8s.io/v1
@@ -12,7 +12,7 @@
 
 # Create local-storage StorageClass is no StorageClass is present in the cluster
 - name: Create local-storage StorageClass
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: storage.k8s.io/v1
@@ -36,7 +36,7 @@
 # Configuration example for enabling SYS_PTRACE:
 # https://github.com/redhat-best-practices-for-k8s/certsuite-sample-workload/blob/main/examples/accesscontrol/sysptrace_pass.yaml
 - name: Create SCC Category 1 - CNFs that do not require advanced networking features
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       kind: SecurityContextConstraints
@@ -95,7 +95,7 @@
     loop_var: pods_in_same_ns
 
 - name: Create NetworkPolicies for the pods deployed to allow inter-intra namespaces traffic
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/network_policies_allow_traffic.yml.j2') | from_yaml }}"
   when:
@@ -120,7 +120,7 @@
 - name: Patch services created by operator and Helm chart
   block:
     - name: Get services deployed by operator and Helm chart
-      community.kubernetes.k8s_info:
+      kubernetes.core.k8s_info:
         kind: Service
         namespace: "{{ target_ns }}"
       register: created_services
@@ -128,7 +128,7 @@
     # If cluster is dual-stack, services will automatically receive an IPv6 IP address
     # under spec.clusterIPs.
     - name: Patch services to set them up as PreferDualStack ipFamilyPolicy
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kind: Service
         name: "{{ service.metadata.name }}"
         namespace: "{{ target_ns }}"

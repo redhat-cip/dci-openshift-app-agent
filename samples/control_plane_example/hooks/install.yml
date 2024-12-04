@@ -1,7 +1,7 @@
 ---
 - block:
   - name: "Create a Deployment of a webserver pod(s)"
-    community.kubernetes.k8s:
+    kubernetes.core.k8s:
       state: present
       namespace: "{{ openshift_app_ns }}"
       definition: "{{ lookup('template', 'deployment.yml.j2') }}"
@@ -9,14 +9,14 @@
       wait_timeout: "{{ ((openshift_app_replicas|default(1)|int + 2) * 120)|int }}"
 
   - name: "Create a Service for the webserver pod(s)"
-    community.kubernetes.k8s:
+    kubernetes.core.k8s:
       state: present
       namespace: "{{ openshift_app_ns }}"
       definition: "{{ lookup('file', 'service.yml.j2') }}"
       wait: true
 
   - name: "Create a Route for the webserver service"
-    community.kubernetes.k8s:
+    kubernetes.core.k8s:
       state: present
       namespace: "{{ openshift_app_ns }}"
       definition: "{{ lookup('file', 'route.yml.j2') }}"
@@ -46,7 +46,7 @@
       helm_tool_path: "{{ helm_tmp_dir.path }}/helm"
 
   - name: "Deploy webserver Helm chart"
-    community.kubernetes.helm:
+    kubernetes.core.helm:
       name: "webserver"
       chart_ref: "{{ openshift_app_helm_chart }}"
       release_namespace: "{{ openshift_app_ns }}"

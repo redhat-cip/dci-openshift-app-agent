@@ -330,7 +330,7 @@ After installing the agent, login as dci-openshift-app-agent user and install th
 
 ```ShellSession
 # su - dci-openshift-app-agent
-$ ansible-galaxy collection install community.kubernetes
+$ ansible-galaxy collection install kubernetes.core
 $ ansible-galaxy collection install community.general
 ```
 
@@ -341,7 +341,7 @@ You can upgrade the current version for the dci-openshift-app-agent user only or
 ```ShellSession
 $ python3 -m pip install -U kubernetes --user
 # or
-$ python3 -m pip install kubernetes==12.0.1 --user
+$ python3 -m pip install kubernetes==26.1.0 --user
 ```
 
 #### Upgrading Ansible version

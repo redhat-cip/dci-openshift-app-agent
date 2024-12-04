@@ -1,7 +1,7 @@
 - name: Tasks when using external StorageClass
   block:
     - name: "Delete PVCs"
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         state: absent
         api: v1
         kind: PersistentVolumeClaim
@@ -17,7 +17,7 @@
 - name: Tasks when using local volumes
   block:
     - name: Delete local volumes
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         api_version: v1
         name: "volume-{{ volume_name_suffix }}"
         kind: PersistentVolume

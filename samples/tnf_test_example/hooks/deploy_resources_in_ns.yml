@@ -3,7 +3,7 @@
 # differ from those specified using resource_definition or src, according to Ansible docs.
 # Using security labels adapted to OCP >=4.12 requirements.
 - name: Create namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1
@@ -19,7 +19,7 @@
 # the RoleBinding is applied by default to all pods, as there is a new security
 # context unit test in certsuite validating this.
 - name: Create ServiceAccount for test pods
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1
@@ -29,7 +29,7 @@
         namespace: "{{ app_ns }}"
 
 - name: Adding restricted-cat-1 policy to a Role
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       kind: Role
@@ -44,7 +44,7 @@
           verbs: ["use"]
 
 - name: Create RoleBinding for restricted-cat-1 applications
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
@@ -61,7 +61,7 @@
           name: system:serviceaccounts:{{ app_ns }}
 
 - name: Create NetworkPolicies for the pods deployed to deny traffic by default
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/network_policies_deny_traffic.yml.j2') | from_yaml }}"
 
@@ -72,7 +72,7 @@
     - am_installed | default(false) | bool
 
 - name: Create ResourceQuotas for namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/resource_quota.yml.j2') | from_yaml }}"
 
@@ -88,12 +88,12 @@
 # In test-cnf namespace, a Deployment will be used.
 # In production-cnf namespace, a StatefulSet will be used.
 - name: Create two replicated testing pods
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/test_pods.yml.j2') | from_yaml }}"
 
 - name: Wait until all test pods are running
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     namespace: "{{ app_ns }}"
     kind: Pod
     label_selectors:
@@ -111,7 +111,7 @@
     - "test_result.resources[1].status.phase == 'Running'"
 
 - name: Wait until PVCs move to Bound status
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     namespace: "{{ app_ns }}"
     kind: PersistentVolumeClaim
   register: pvc_check
@@ -145,7 +145,7 @@
     - am_installed | default(false) | bool
 
 - name: Create CRD under test
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/test_crd.yml.j2') | from_yaml }}"
   when: pods_in_same_ns.target_crds|length
@@ -154,6 +154,6 @@
     loop_var: target_crd
 
 - name: Create PodDisruptionBudget for the pods deployed
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'templates/pod_disruption_budget.yml.j2') | from_yaml }}"
