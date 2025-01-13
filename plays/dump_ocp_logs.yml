@@ -2,8 +2,8 @@
 # kbpc_test_config is defined in certsuite and it may contain dci_openshift_app_ns
 # If no kbpc_test_config is provided externally, ns_list will not be generated here
 - name: Obtain namespaces from kbpc_test_config variable if exists (excepting dci_openshift_app_ns if provided)
-  set_fact:
-    ns_list: "{{ ns_list|default([]) + [ item.namespace ] }}"
+  ansible.builtin.set_fact:
+    ns_list: "{{ ns_list | default([]) + [ item.namespace ] }}"
   when:
     - kbpc_test_config | default('') | length
     - item.namespace | default('') | length
@@ -13,11 +13,11 @@
 # This appends dci_openshift_app_ns to ns_list (which is empty if kbpc_test_config is not
 # provided externally)
 - name: Append dci_openshift_app_ns to the list
-  set_fact:
-    ns_list: "{{ ns_list|default([]) + [ dci_openshift_app_ns ] }}"
+  ansible.builtin.set_fact:
+    ns_list: "{{ ns_list | default([]) + [ dci_openshift_app_ns ] }}"
 
 - name: Get OCP logs from namespace
-  include_role:
+  ansible.builtin.include_role:
     name: redhatci.ocp.get_logs_from_namespace
   vars:
     glfn_dir: "{{ job_logs.path }}"
@@ -32,14 +32,14 @@
     MUST_GATHER_OPTS: "/usr/bin/gather since-time={{ job_info.job.created_at }}"
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin:/usr/local/bin/{% if client_tmp_dir.path is defined %}:{{ client_tmp_dir.path }}{% endif %}"
     DO_MUST_GATHER: "{{ do_must_gather | lower }}"
-  shell:
+  ansible.builtin.shell:
     cmd: >
       timeout -v 20m
       plays/scripts/get-logs "{{ job_logs.path }}"
   ignore_errors: true
 
 - name: "Remove the must-gather directory"
-  file:
+  ansible.builtin.file:
     path: "{{ job_logs.path }}/must_gather"
     state: absent
 ...

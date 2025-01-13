@@ -1,14 +1,14 @@
 ---
 
 - name: "Setup job_logs directory"
-  include_tasks: plays/log-dir.yml
+  ansible.builtin.include_tasks: plays/log-dir.yml
   when: job_logs is undefined
 
 - name: "Collect OCP logs"
-  include_tasks: dump_ocp_logs.yml
+  ansible.builtin.include_tasks: dump_ocp_logs.yml
 
 - name: "Find files to be uploaded to DCI (log,txt,html,yaml,yml,json,pcap,trace,csv)"
-  find:
+  ansible.builtin.find:
     paths: "{{ job_logs.path }}"
     patterns: "*.log,*.txt,*.html,*.yaml,*.yml,*.json,*.pcap,*.trace,*.csv"
   register: logs_matched
@@ -17,12 +17,12 @@
 - name: "Upload logs (text)"
   vars:
     mime_type: "text/plain"
-  include_tasks: upload_logs.yml
+  ansible.builtin.include_tasks: upload_logs.yml
   with_items: "{{ logs_matched.files }}"
   tags: [dci]
 
 - name: "Find deployment JUnit files"
-  find:
+  ansible.builtin.find:
     paths: "{{ job_logs.path }}"
     patterns: "*.xml"
   register: logs_matched
@@ -31,12 +31,12 @@
 - name: "Upload JUnit files"
   vars:
     mime_type: "application/junit"
-  include_tasks: upload_logs.yml
+  ansible.builtin.include_tasks: upload_logs.yml
   with_items: "{{ logs_matched.files }}"
   tags: [dci]
 
 - name: "Find deployment compressed files"
-  find:
+  ansible.builtin.find:
     paths: "{{ job_logs.path }}"
     patterns: "*.gz"
   register: logs_matched
@@ -45,12 +45,12 @@
 - name: "Upload compressed files to DCI Control Server"
   vars:
     mime_type: "application/x-gzip"
-  include_tasks: upload_logs.yml
+  ansible.builtin.include_tasks: upload_logs.yml
   with_items: "{{ logs_matched.files }}"
   tags: [dci]
 
 - name: "Remove log dir"
-  file:
+  ansible.builtin.file:
     path: "{{ job_logs.path }}"
     state: absent
 ...

@@ -4,9 +4,9 @@
   block:
     - name: Upload to DCI Control Server ({{ item.path | basename }})
       environment:
-        DCI_CLIENT_ID: "{{ lookup('env','DCI_CLIENT_ID') }}"
-        DCI_API_SECRET: "{{ lookup('env','DCI_API_SECRET') }}"
-        DCI_CS_URL: "{{ lookup('env','DCI_CS_URL') }}"
+        DCI_CLIENT_ID: "{{ lookup('env', 'DCI_CLIENT_ID') }}"
+        DCI_API_SECRET: "{{ lookup('env', 'DCI_API_SECRET') }}"
+        DCI_CS_URL: "{{ lookup('env', 'DCI_CS_URL') }}"
       dci_file:
         path: "{{ item.path }}"
         name: "{{ item.path | basename }}"
@@ -15,13 +15,13 @@
 
   rescue:
     - name: "Create a local log directory"
-      file:
+      ansible.builtin.file:
         path: "{{ dci_local_log_dir }}/{{ job_id }}"
         state: directory
         mode: '0755'
 
     - name: Copy locally ({{ item.path | basename }})
-      copy:
+      ansible.builtin.copy:
         src: "{{ item.path }}"
         dest: "{{ dci_local_log_dir }}/{{ job_id }}/"
         mode: '0644'
