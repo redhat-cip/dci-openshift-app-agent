@@ -51,6 +51,9 @@
         - name: "Execute the error process"
           ansible.builtin.include_tasks: plays/error.yml
 
+        - name: Run agent cleanup
+          include_tasks: plays/agent-cleanup.yml
+
         # The error may happen before creating the job_info variable, or it may happen in a
         # job where dci tag is not enabled (so job_info variable is not created). Then,
         # we have to set a different error message in that case
@@ -277,6 +280,9 @@
         - name: "Execute the failure process"
           ansible.builtin.include_tasks: plays/failure.yml
 
+        - name: Run agent cleanup
+          include_tasks: plays/agent-cleanup.yml
+
         # The error may happen before creating the job_info variable, or it may happen in a
         # job where dci tag is not enabled (so job_info variable is not created). Then,
         # we have to set a different error message in that case
@@ -399,6 +405,9 @@
       ansible.builtin.include_tasks: plays/teardown.yml
       when:
         - dci_teardown_on_success
+
+    - name: Run agent cleanup
+      include_tasks: plays/agent-cleanup.yml
 
     - name: Success
       dci_job:

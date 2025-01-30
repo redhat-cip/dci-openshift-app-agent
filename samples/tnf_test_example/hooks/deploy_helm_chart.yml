@@ -3,7 +3,7 @@
 - name: Create temporary directory
   tempfile:
     state: directory
-    prefix: tnf_test_example_helm_chart.
+    prefix: "dci_tnf_helm_{{ job_id | default('') }}_"
   register: tnf_test_example_helm_chart
 
 - name: Download Helm binary

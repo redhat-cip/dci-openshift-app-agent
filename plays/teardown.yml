@@ -1,19 +1,8 @@
 ---
-- name: Delete temporary file for saving pullsecret content
-  ansible.builtin.file:
-    path: "{{ pullsecret_tmp_file }}"
-    state: absent
-  when: pullsecret_tmp_file is defined
-
-- name: "Remove client tmp directory"
-  ansible.builtin.file:
-    path: "{{ client_tmp_dir.path }}"
-    state: absent
-  when: client_tmp_dir is defined
-
 - name: Delete namespace
   kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ dci_openshift_app_ns }}"
     state: absent
+...

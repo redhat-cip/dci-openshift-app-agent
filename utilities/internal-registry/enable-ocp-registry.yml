@@ -71,6 +71,7 @@
 - name: "Create working directory"
   tempfile:
     state: directory
+    prefix: "dci_int_reg_{ job_id | default('') }}_"
     path: "{{ playbook_dir }}"
   register: creds_dir
 

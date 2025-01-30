@@ -27,7 +27,7 @@
   - name: "Temp directory for helm client"
     tempfile:
       state: directory
-      prefix: dci_app_helm.
+      prefix: "dci_app_helm_{{ job_id | default('') }}_"
     register: helm_tmp_dir
 
   - name: Download Helm binary

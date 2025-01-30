@@ -1,0 +1,43 @@
+---
+- name: "Remove pullsecret file"
+  ansible.builtin.file:
+    path: "{{ pullsecret_tmp_file }}"
+    state: absent
+  when: pullsecret_tmp_file is defined
+
+- name: "Remove client tmp directory"
+  ansible.builtin.file:
+    path: "{{ client_tmp_dir.path }}"
+    state: absent
+  when: client_tmp_dir is defined
+
+- name: "Remove helm temp file"
+  ansible.builtin.file:
+    path: "{{ tnf_test_example_helm_chart.path }}"
+    state: absent
+  when: tnf_test_example_helm_chart is defined
+
+- name: "Remove TNF pre run dir"
+  ansible.builtin.file:
+    path: "{{ tnf_test_example_prerun_tmp_dir.path }}"
+    state: absent
+  when: tnf_test_example_prerun_tmp_dir is defined
+
+- name: "Remove Helm temp directory"
+  ansible.builtin.file:
+    path: "{{ helm_tmp_dir.path }}"
+    state: absent
+  when: helm_tmp_dir is defined
+
+- name: "Remove internal registry temp dir"
+  ansible.builtin.file:
+    path: "{{ creds_dir.path }}"
+    state: absent
+  when: creds_dir is defined
+
+- name: "Remove logs directory"
+  ansible.builtin.file:
+    path: "{{ job_logs.path }}"
+    state: absent
+  when: job_logs is defined
+...
