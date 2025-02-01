@@ -23,12 +23,6 @@
     state: absent
   when: tnf_test_example_prerun_tmp_dir is defined
 
-- name: "Remove Helm temp directory"
-  ansible.builtin.file:
-    path: "{{ helm_tmp_dir.path }}"
-    state: absent
-  when: helm_tmp_dir is defined
-
 - name: "Remove internal registry temp dir"
   ansible.builtin.file:
     path: "{{ creds_dir.path }}"
