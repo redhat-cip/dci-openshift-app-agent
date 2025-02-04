@@ -11,18 +11,6 @@
     state: absent
   when: client_tmp_dir is defined
 
-- name: "Remove helm temp file"
-  ansible.builtin.file:
-    path: "{{ tnf_test_example_helm_chart.path }}"
-    state: absent
-  when: tnf_test_example_helm_chart is defined
-
-- name: "Remove TNF pre run dir"
-  ansible.builtin.file:
-    path: "{{ tnf_test_example_prerun_tmp_dir.path }}"
-    state: absent
-  when: tnf_test_example_prerun_tmp_dir is defined
-
 - name: "Remove internal registry temp dir"
   ansible.builtin.file:
     path: "{{ creds_dir.path }}"
