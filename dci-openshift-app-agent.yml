@@ -180,12 +180,14 @@
 
     - name: Set facts also in jumphost host scope
       ansible.builtin.set_fact:
+        job_info: "{{ job_info }}"
         job_id: "{{ job_id }}"
         dci_client_id: "{{ dci_client_id }}"
         dci_api_secret: "{{ dci_api_secret }}"
         dci_cs_url: "{{ dci_cs_url }}"
         dci_ui_url: "{{ dci_ui_url }}"
         pullsecret_tmp_file: "{{ pullsecret_tmp_file | default() }}"
+        ocp_component_id: "{{ ocp_component_id }}"
       delegate_to: jumphost
       delegate_facts: true
 
