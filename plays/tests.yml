@@ -80,4 +80,18 @@
   ansible.builtin.include_role:
     name: redhatci.ocp.preflight
   when: preflight_operators_to_certify is defined
+
+- name: Get final job info
+  dci_job:
+    id: "{{ job_id }}"
+  register: job_info_updated
+  delegate_to: localhost
+
+- name: Test_ if the OCP component is present
+  assert:
+    success_msg: "{{ ocp_component_id }} is present"
+    fail_msg: "{{ ocp_component_id }} is absent"
+    that:
+      - (job_info_updated['job']['components'] | selectattr('id', 'equalto', ocp_component_id) | list | length) > 0
+  ignore_errors: true
 ...
