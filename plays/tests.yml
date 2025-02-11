@@ -18,6 +18,20 @@
   when:
     - chart_verifier_wait|int > 0
 
+- name: CNF Project Creation-Only tests for Vendor Validation
+  include_role:
+    name: redhatci.ocp.openshift_cnf
+  vars:
+    product_type: "openshift_cnf"
+  when: cnf_to_certify is defined
+
+- name: Set KBPC CWE Project ID from CNF Certification Project
+  ansible.builtin.set_fact:
+    kbpc_cwe_project_id: "{{ cert_project_id }}"
+  when:
+    - cnf_to_certify is defined
+    - cert_project_id | length > 0
+
 - name: Run k8s_best_practices_certsuite tests
   ansible.builtin.include_role:
     name: redhatci.ocp.k8s_best_practices_certsuite
@@ -56,13 +70,6 @@
   ansible.builtin.include_role:
     name: redhatci.ocp.operator_sdk
   when: scorecard_operators is defined
-
-- name: CNF Project Creation-Only tests for Vendor Validation
-  ansible.builtin.include_role:
-    name: redhatci.ocp.openshift_cnf
-  vars:
-    product_type: "openshift_cnf"
-  when: cnf_to_certify is defined
 
 - name: Compute removed API after executing the workload
   ansible.builtin.include_role:
