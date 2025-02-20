@@ -31,11 +31,17 @@
   retries: 3
   delay: 10
 
-- name: Set image to be used
+- name: "Render Chart values file"
   vars:
     image_name: "{{ tnf_helm_chart_to_install.image_repository | regex_replace('^[^/]*/', '') }}"
-  set_fact:
-    image_repository: "{{ ( dci_disconnected|default(false)|bool and dci_local_registry|length ) | ternary(dci_local_registry + '/' + image_name, tnf_helm_chart_to_install.image_repository) }}"
+    image_repository: "{{ ( dci_disconnected|default(false)|bool and dci_local_registry|length ) |
+                      ternary(dci_local_registry + '/' + image_name, tnf_helm_chart_to_install.image_repository) }}"
+  copy:
+    content: |
+      image:
+        repository: {{ image_repository }}
+    dest: "{{ tnf_test_example_helm_chart.path }}/values.yml"
+    mode: 0600
 
 - name: Deploy Helm chart
   kubernetes.core.helm:
@@ -43,9 +49,8 @@
     chart_ref: "{{ tnf_test_example_helm_chart.path }}/tnf_test_example.tgz"
     release_namespace: "{{ target_ns }}"
     binary_path: "{{ helm_tool_path }}"
-    values:
-      image:
-        repository: "{{ image_repository }}"
+    values_files:
+      - "{{ tnf_test_example_helm_chart.path }}/values.yml"
 
 - name: Wait until Helm chart is deployed
   kubernetes.core.helm_info:
