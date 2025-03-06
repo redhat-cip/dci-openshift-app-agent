@@ -6,7 +6,7 @@
       namespace: "{{ openshift_app_ns }}"
       definition: "{{ lookup('template', 'deployment.yml.j2') }}"
       wait: true
-      wait_timeout: "{{ ((openshift_app_replicas|default(1)|int + 2) * 120)|int }}"
+      wait_timeout: "{{ ((openshift_app_replicas|default(1)|int + 2) * 240)|int }}"
 
   - name: "Create a Service for the webserver pod(s)"
     kubernetes.core.k8s:
