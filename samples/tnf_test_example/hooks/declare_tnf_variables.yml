@@ -16,7 +16,7 @@
       assert:
         that: "{{ item }} is defined"
         fail_msg: "The variable {{ item }} is required"
-      with_items:
+      loop:
           - tnf_app_image
   when:
     - tnf_operator_to_install is not defined
@@ -30,15 +30,15 @@
       assert:
         that: "{{ item }} is defined"
         fail_msg: "The variable {{ item }} is required"
-      with_items:
-          - tnf_app_image
-          - tnf_operator_to_install
-          - tnf_operator_to_install.operator_name
-          - tnf_operator_to_install.operator_version
-          - tnf_operator_to_install.operator_bundle
-          - tnf_helm_chart_to_install
-          - tnf_helm_chart_to_install.chart_url
-          - tnf_helm_chart_to_install.image_repository
+      loop:
+        - tnf_app_image
+        - tnf_operator_to_install
+        - tnf_operator_to_install.operator_name
+        - tnf_operator_to_install.operator_version
+        - tnf_operator_to_install.operator_bundle
+        - tnf_helm_chart_to_install
+        - tnf_helm_chart_to_install.chart_url
+        - tnf_helm_chart_to_install.image_repository
 
     # Needed for doing the mirroring of the image
     - name: Validate that app_version for tnf_helm_chart is provided in disconnected environments

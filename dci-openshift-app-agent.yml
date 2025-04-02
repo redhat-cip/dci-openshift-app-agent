@@ -77,7 +77,7 @@
     - job
     - dci
   environment:
-    TMPDIR: "{{ ansible_env.HOME }}/tmp"
+    TMPDIR: "{{ hostvars['jumphost']['ansible_env']['HOME'] }}/tmp"
   tasks:
     - name: Read credentials from env vars
       ansible.builtin.set_fact:
