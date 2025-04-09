@@ -36,6 +36,7 @@
     cmd: >
       timeout -v 20m
       plays/scripts/get-logs "{{ job_logs.path }}"
+  delegate_to: localhost
   ignore_errors: true
 
 - name: "Remove the must-gather directory"
