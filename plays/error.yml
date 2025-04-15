@@ -6,5 +6,5 @@
     status: "error"
   tags: [dci]
   when: job_id is defined
-
+  delegate_to: localhost
 ...

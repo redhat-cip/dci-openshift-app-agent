@@ -12,6 +12,7 @@
         name: "{{ item.path | basename }}"
         job_id: "{{ job_id }}"
         mime: "{{ mime_type }}"
+      delegate_to: localhost
 
   rescue:
     - name: "Create a local log directory"
