@@ -9,7 +9,7 @@
         DCI_CS_URL: "{{ lookup('env', 'DCI_CS_URL') }}"
       dci_file:
         path: "{{ item.path }}"
-        name: "{{ item.path | basename }}"
+        name: "{{ (remove_ext | default(False) | bool) | ternary(item.path | basename | splitext | first, item.path | basename) }}"
         job_id: "{{ job_id }}"
         mime: "{{ mime_type }}"
       delegate_to: localhost
