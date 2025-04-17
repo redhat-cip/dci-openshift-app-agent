@@ -35,6 +35,7 @@ dci_configuration: null
 dci_previous_job_id: null
 dci_team_id: null
 dci_pipeline_id: null
+dci_hide_secrets: true
 dci_ga_components_for_certification:
   - ocp
 # Wait minutes after running the test suite

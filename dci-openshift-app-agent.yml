@@ -77,7 +77,7 @@
     - job
     - dci
   environment:
-    TMPDIR: "{{ hostvars['jumphost']['ansible_env']['HOME'] }}/tmp"
+    TMPDIR: "{{ ansible_env.HOME }}/tmp"
   tasks:
     - name: Read credentials from env vars
       ansible.builtin.set_fact:
@@ -85,7 +85,7 @@
         dci_api_secret: "{{ lookup('env', 'DCI_API_SECRET') }}"
         dci_cs_url: "{{ lookup('env', 'DCI_CS_URL') }}"
         dci_ui_url: "{{ lookup('env', 'DCI_UI_URL') | default('https://www.distributed-ci.io', True) }}"
-      no_log: true
+      no_log: "{{ dci_hide_secrets }}"
 
     - name: Check job topic
       ansible.builtin.assert:
