@@ -5,5 +5,5 @@
     id: "{{ job_id }}"
     status: "failure"
   tags: [dci]
-
+  delegate_to: localhost
 ...
