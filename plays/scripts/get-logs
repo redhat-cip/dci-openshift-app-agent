@@ -42,8 +42,23 @@ ${oc_path} get subs -A -o json | jq '[.items[] | {operator_name: .spec.name, ver
 ${oc_path} get network cluster -o yaml > "${log_dir}/clusternetwork.yaml"
 ${oc_path} get nodes -o wide > "${log_dir}/nodes.txt"
 ${oc_path} get nodes -o yaml > "${log_dir}/all-nodes.yaml"
-${oc_path} get events --all-namespaces --sort-by='.metadata.creationTimestamp' > "${log_dir}/events.txt"
 ${oc_path} get pods --all-namespaces -o wide > "${log_dir}/pods.txt"
+
+# Get events with created object time
+${oc_path} get events --all-namespaces --sort-by='.metadata.creationTimestamp' -o json |
+  jq -r '
+    "NAMESPACE\tCREATED\tLAST SEEN\tTYPE\tREASON\tOBJECT\tMESSAGE",
+    (.items[] | [
+      (.involvedObject.namespace | tostring),
+      (.metadata.creationTimestamp | tostring),
+      (.lastTimestamp | tostring),
+      (.type | tostring),
+      (.reason | tostring),
+      ((.involvedObject.kind // "") + "/" + (.involvedObject.name // "")),
+      (.message | tostring | gsub("\n"; ";"))
+    ] | @tsv)' |
+  column -t -s $'\t' \
+  > "${log_dir}/events.txt"
 
 if [ "$DO_MUST_GATHER" = true ]; then
   # Get image sources if available
