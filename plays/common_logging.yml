@@ -6,6 +6,7 @@
 
 - name: "Collect OCP logs"
   ansible.builtin.include_tasks: dump_ocp_logs.yml
+  when: dci_gather_logs | bool
 
 - name: "Find files to be uploaded to DCI (log,txt,html,yaml,yml,json,pcap,trace,csv)"
   ansible.builtin.find:

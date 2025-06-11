@@ -6,6 +6,7 @@ dci_cache_dir: /var/lib/dci-openshift-app-agent
 dci_components: []
 dci_teardown_on_success: true
 dci_teardown_on_failure: false
+dci_gather_logs: true
 ocp_clients_url: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp
 ocp_clients:
   - 'openshift-client'
