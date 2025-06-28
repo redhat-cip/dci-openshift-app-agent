@@ -32,6 +32,7 @@
 - name: "Upload JUnit files"
   vars:
     mime_type: "application/junit"
+    remove_ext: true
   ansible.builtin.include_tasks: upload_logs.yml
   with_items: "{{ logs_matched.files }}"
   tags: [dci]
