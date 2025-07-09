@@ -22,6 +22,14 @@
           ansible.builtin.include_tasks: 'plays/check_prerequisite.yml'
 
       rescue: &error_with_upload_logs
+        - name: Set job state - error
+          dci_job:
+            id: "{{ job_info.job_id }}"
+            status: "error"
+          when: job_info is defined
+          delegate_to: localhost
+          tags: [dci]
+
         - name: "Run common logging process"
           ansible.builtin.include_tasks:
             file: plays/common_logging.yml
@@ -47,9 +55,6 @@
                 KUBECONFIG: "{{ kubeconfig_path }}"
           when:
             - dci_teardown_on_failure
-
-        - name: "Execute the error process"
-          ansible.builtin.include_tasks: plays/error.yml
 
         - name: Run agent cleanup
           include_tasks: plays/agent-cleanup.yml
