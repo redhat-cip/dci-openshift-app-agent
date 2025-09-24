@@ -24,7 +24,7 @@
       rescue: &error_with_upload_logs
         - name: Set job state - error
           dci_job:
-            id: "{{ job_info.job_id }}"
+            id: "{{ job_info.job.id }}"
             status: "error"
           when: job_info is defined
           delegate_to: localhost
