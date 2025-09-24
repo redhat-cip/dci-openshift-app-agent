@@ -86,6 +86,7 @@ dci\_workarounds                   | []                                         
 dci\_openshift\_app\_image         |                                                      | Image that can be to be used on the agent workloads. It needs to be defined in the partner hooks. It needs to be mirrored to a local registry in disconnected environments.
 dci\_openshift\_app\_ns            | "myns"                                               | Default namespace  to deploy workloads in the running cluster.
 dci\_must\_gather\_images          | ["registry.redhat.io/openshift4/ose-must-gather"]    | List of the must-gather images to use when retrieving logs.
+dci_cluster_metadata               | True                                                 | Adds metadata (job_info) to the cluster in a configmap under the openshift-dci namespace.
 provisioner\_name                  |                                                      | Provisioner address (name or IP) to be accessed for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 provisioner\_user                  |                                                      | Provisioner username, used to access to the provisioner for retrieving logs with must-gather images. If not defined, logs will not be retrieved.
 dci\_ga\_components\_for\_certification | ["ocp"]                                         | list of components that needs to be ga to submit a certification record
