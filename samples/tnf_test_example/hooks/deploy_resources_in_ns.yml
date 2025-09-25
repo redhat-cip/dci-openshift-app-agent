@@ -102,6 +102,7 @@
   retries: 60
   delay: 5
   until:
+    - test_result.resources is defined
     - "test_result.resources|length == 2"
     - "'status' in test_result.resources[0]"
     - "'phase' in test_result.resources[0].status"
@@ -118,6 +119,7 @@
   retries: 6
   delay: 10
   until:
+    - pvc_check.resources is defined
     - "pvc_check.resources|length == 2"
     - "'status' in pvc_check.resources[0]"
     - "'phase' in pvc_check.resources[0].status"

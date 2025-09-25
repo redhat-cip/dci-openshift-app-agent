@@ -28,6 +28,8 @@
       set_fact:
         am_installed: "{{ (am_chart_check | json_query(status_query) | flatten | unique) == ['deployed'] }}"
 
-  when: istio_system_namespace.resources|length > 0
+  when:
+    - istio_system_namespace.resources is defined
+    - istio_system_namespace.resources|length > 0
 
 ...

@@ -74,6 +74,6 @@
       when:
         - storage_class is defined
   when:
-    - storage_classes is defined
+    - storage_classes.resources is defined
     - storage_classes.resources | length > 0
 ...
